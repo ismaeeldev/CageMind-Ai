@@ -1,0 +1,78 @@
+Hey, I wanted to give a clearer breakdown of what I’m looking to have completed for the site.
+
+The site is a UFC/MMA AI analytics and prediction platform with a frontend/base already built through Claude AI. I want to turn it into a fully functional SaaS-style web app with subscriptions, automated live data, fighter databases, Elo rankings, and prediction tools.
+
+Main features needed:
+
+* Full user authentication (signup/login/logout)
+* User accounts with saved data
+* Backend/database integration
+* Stripe monthly subscription system
+* Premium feature/paywall access control
+* Automated fighter/event/stat updating
+* Mobile + desktop optimization
+* Dark/light mode toggle
+
+I want all fighter and event data to be fully automated and constantly updated with minimal errors, no duplicate fighters, and accurate records/results.
+
+Please pull/update data from:
+
+* roster.watch
+* Tapology
+* ESPN
+* UFC
+
+Specifically:
+
+* Import the full roster from roster.watch
+* Automatically add newly added fighters
+* Pull fight cards/bout order from Tapology, ESPN, and UFC
+* Cross-check data to prevent duplicates and incorrect records
+
+Please ensure all fighters contain full relevant data including:
+
+* Records
+* Weight class
+* Age
+* Height/reach
+* Finish stats
+* Elo rating
+* Fight history
+* Performance metrics
+* Prediction/model stats
+
+Paywall structure:
+
+FREE:
+
+* Events tab viewable
+
+  * but prediction picks remain locked unless subscribed
+* Elo Rankings tab
+* Fighters tab
+* Model tab
+* Performance tab
+
+PAID ONLY:
+
+* Betting tab
+* Matchup Lab
+* Prediction picks
+* Most homepage content
+
+Homepage:
+
+* Only the most upcoming UFC event should be fully viewable for free
+* Everything else should be locked behind subscription
+
+Event automation:
+After every UFC event:
+
+* Move event to past events
+* Update fighter records/results
+* Update Elo rankings
+* Update performance statistics automatically
+
+Goal:
+Create a polished, automated UFC analytics/prediction platform with reliable live-updating data, subscriptions, premium tools, and scalable infrastructure.
+

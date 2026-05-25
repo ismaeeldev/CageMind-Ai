@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  subscription Subscription?
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  status               String    @default("inactive")
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model Fighter {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  weightClass String?
+  age         Int?
+  height      Float?
+  reach       Float?
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  draws       Int      @default(0)
+  koWins      Int      @default(0)
+  subWins     Int      @default(0)
+  eloRating   Int      @default(1500)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  fightsAsFighter1 Fight[] @relation("Fighter1")
+  fightsAsFighter2 Fight[] @relation("Fighter2")
+  fightsWon        Fight[] @relation("FightWinner")
+}
+
+model Event {
+  id         String   @id @default(uuid())
+  name       String
+  date       DateTime
+  location   String?
+  isUpcoming Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  fights Fight[]
+}
+
+model Fight {
+  id      String @id @default(uuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  fighter1Id String
+  fighter1   Fighter @relation("Fighter1", fields: [fighter1Id], references: [id])
+
+  fighter2Id String
+  fighter2   Fighter @relation("Fighter2", fields: [fighter2Id], references: [id])
+
+  winnerId String?
+  winner   Fighter? @relation("FightWinner", fields: [winnerId], references: [id])
+
+  weightClass  String?
+  rounds       Int     @default(3)
+  isTitleFight Boolean @default(false)
+
+  oddsFighter1 Int?
+  oddsFighter2 Int?
+  aiPrediction String?
+  aiConfidence Float?
+
+  method      String?
+  endingRound Int?
+  endingTime  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, fighter1Id, fighter2Id])
+}
