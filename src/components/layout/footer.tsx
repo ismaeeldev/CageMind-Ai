@@ -7,9 +7,15 @@ export function Footer() {
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
-            <Link href="/" className="inline-block mb-4">
-              <span className="font-bold text-xl tracking-tight text-primary">
-                Octagon AI
+            <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-premium/10 border border-premium/30 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-premium">
+                  <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                </svg>
+              </div>
+              <span className="inline-flex items-center font-black text-xl tracking-tighter uppercase">
+                <span className="text-foreground">Octagon</span>
+                <span className="text-premium ml-1">AI</span>
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm">

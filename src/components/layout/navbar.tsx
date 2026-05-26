@@ -8,9 +8,15 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Container className="flex h-16 items-center">
         <div className="flex flex-1 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="inline-block font-bold text-xl tracking-tight text-primary">
-              Octagon AI
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-premium/10 border border-premium/30 group-hover:bg-premium/20 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-premium">
+                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+              </svg>
+            </div>
+            <span className="inline-flex items-center font-black text-xl tracking-tighter uppercase">
+              <span className="text-foreground">Octagon</span>
+              <span className="text-premium ml-1">AI</span>
             </span>
           </Link>
         </div>

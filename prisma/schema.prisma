@@ -43,6 +43,7 @@ model Fighter {
   koWins      Int      @default(0)
   subWins     Int      @default(0)
   eloRating   Int      @default(1500)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -57,6 +58,7 @@ model Event {
   date        DateTime
   location    String?
   isUpcoming  Boolean  @default(true)
+  isProcessed Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -93,5 +95,35 @@ model Fight {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  predictionHistory PredictionHistory[]
+
   @@unique([eventId, fighter1Id, fighter2Id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String   // Storing JSON string for details (e.g. Elo changes)
+  createdAt DateTime @default(now())
+}
+
+model JobExecution {
+  id          String    @id @default(uuid())
+  jobName     String
+  status      String    // "RUNNING", "SUCCESS", "FAILED"
+  error       String?
+  durationMs  Int?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+}
+
+model PredictionHistory {
+  id             String   @id @default(uuid())
+  fightId        String
+  fight          Fight    @relation(fields: [fightId], references: [id], onDelete: Cascade)
+  winProbFighter1 Float
+  winProbFighter2 Float
+  confidence     Float
+  explanation    String
+  createdAt      DateTime @default(now())
 }

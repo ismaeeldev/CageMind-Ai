@@ -153,6 +153,7 @@ exports.Prisma.FighterScalarFieldEnum = {
   koWins: 'koWins',
   subWins: 'subWins',
   eloRating: 'eloRating',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -163,6 +164,7 @@ exports.Prisma.EventScalarFieldEnum = {
   date: 'date',
   location: 'location',
   isUpcoming: 'isUpcoming',
+  isProcessed: 'isProcessed',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -187,6 +189,33 @@ exports.Prisma.FightScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  details: 'details',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.JobExecutionScalarFieldEnum = {
+  id: 'id',
+  jobName: 'jobName',
+  status: 'status',
+  error: 'error',
+  durationMs: 'durationMs',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+};
+
+exports.Prisma.PredictionHistoryScalarFieldEnum = {
+  id: 'id',
+  fightId: 'fightId',
+  winProbFighter1: 'winProbFighter1',
+  winProbFighter2: 'winProbFighter2',
+  confidence: 'confidence',
+  explanation: 'explanation',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -208,7 +237,10 @@ exports.Prisma.ModelName = {
   Subscription: 'Subscription',
   Fighter: 'Fighter',
   Event: 'Event',
-  Fight: 'Fight'
+  Fight: 'Fight',
+  AuditLog: 'AuditLog',
+  JobExecution: 'JobExecution',
+  PredictionHistory: 'PredictionHistory'
 };
 
 /**

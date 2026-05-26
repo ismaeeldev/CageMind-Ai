@@ -13,7 +13,34 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Octagon AI | UFC & MMA Analytics Platform",
-  description: "Leverage automated data, live fight odds, and AI-driven prediction models.",
+  description: "Leverage automated data, live fight odds, and AI-driven prediction models to gain an edge.",
+  keywords: ["UFC", "MMA", "AI Predictions", "Fight Odds", "Sports Betting", "Octagon AI"],
+  openGraph: {
+    title: "Octagon AI | Predictive MMA Analytics",
+    description: "The world's most advanced AI prediction engine for MMA.",
+    url: "https://octagon.ai",
+    siteName: "Octagon AI",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Octagon AI Dashboard",
+      }
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Octagon AI",
+    description: "AI-driven UFC predictions and analytics.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({

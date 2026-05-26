@@ -38,6 +38,21 @@ export type Event = $Result.DefaultSelection<Prisma.$EventPayload>
  * 
  */
 export type Fight = $Result.DefaultSelection<Prisma.$FightPayload>
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model JobExecution
+ * 
+ */
+export type JobExecution = $Result.DefaultSelection<Prisma.$JobExecutionPayload>
+/**
+ * Model PredictionHistory
+ * 
+ */
+export type PredictionHistory = $Result.DefaultSelection<Prisma.$PredictionHistoryPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -209,6 +224,36 @@ export class PrismaClient<
     * ```
     */
   get fight(): Prisma.FightDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogs
+    * const auditLogs = await prisma.auditLog.findMany()
+    * ```
+    */
+  get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.jobExecution`: Exposes CRUD operations for the **JobExecution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more JobExecutions
+    * const jobExecutions = await prisma.jobExecution.findMany()
+    * ```
+    */
+  get jobExecution(): Prisma.JobExecutionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.predictionHistory`: Exposes CRUD operations for the **PredictionHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PredictionHistories
+    * const predictionHistories = await prisma.predictionHistory.findMany()
+    * ```
+    */
+  get predictionHistory(): Prisma.PredictionHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -647,7 +692,10 @@ export namespace Prisma {
     Subscription: 'Subscription',
     Fighter: 'Fighter',
     Event: 'Event',
-    Fight: 'Fight'
+    Fight: 'Fight',
+    AuditLog: 'AuditLog',
+    JobExecution: 'JobExecution',
+    PredictionHistory: 'PredictionHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -663,7 +711,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "subscription" | "fighter" | "event" | "fight"
+      modelProps: "user" | "subscription" | "fighter" | "event" | "fight" | "auditLog" | "jobExecution" | "predictionHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1037,6 +1085,228 @@ export namespace Prisma {
           }
         }
       }
+      AuditLog: {
+        payload: Prisma.$AuditLogPayload<ExtArgs>
+        fields: Prisma.AuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          update: {
+            args: Prisma.AuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      JobExecution: {
+        payload: Prisma.$JobExecutionPayload<ExtArgs>
+        fields: Prisma.JobExecutionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.JobExecutionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.JobExecutionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          findFirst: {
+            args: Prisma.JobExecutionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.JobExecutionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          findMany: {
+            args: Prisma.JobExecutionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          create: {
+            args: Prisma.JobExecutionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          createMany: {
+            args: Prisma.JobExecutionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.JobExecutionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          delete: {
+            args: Prisma.JobExecutionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          update: {
+            args: Prisma.JobExecutionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          deleteMany: {
+            args: Prisma.JobExecutionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.JobExecutionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.JobExecutionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>[]
+          }
+          upsert: {
+            args: Prisma.JobExecutionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$JobExecutionPayload>
+          }
+          aggregate: {
+            args: Prisma.JobExecutionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateJobExecution>
+          }
+          groupBy: {
+            args: Prisma.JobExecutionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<JobExecutionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.JobExecutionCountArgs<ExtArgs>
+            result: $Utils.Optional<JobExecutionCountAggregateOutputType> | number
+          }
+        }
+      }
+      PredictionHistory: {
+        payload: Prisma.$PredictionHistoryPayload<ExtArgs>
+        fields: Prisma.PredictionHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PredictionHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PredictionHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.PredictionHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PredictionHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.PredictionHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.PredictionHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.PredictionHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PredictionHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.PredictionHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          update: {
+            args: Prisma.PredictionHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.PredictionHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PredictionHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PredictionHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.PredictionHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PredictionHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.PredictionHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePredictionHistory>
+          }
+          groupBy: {
+            args: Prisma.PredictionHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PredictionHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PredictionHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<PredictionHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1150,6 +1420,9 @@ export namespace Prisma {
     fighter?: FighterOmit
     event?: EventOmit
     fight?: FightOmit
+    auditLog?: AuditLogOmit
+    jobExecution?: JobExecutionOmit
+    predictionHistory?: PredictionHistoryOmit
   }
 
   /* Types for Logging */
@@ -1302,6 +1575,37 @@ export namespace Prisma {
    */
   export type EventCountOutputTypeCountFightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FightWhereInput
+  }
+
+
+  /**
+   * Count Type FightCountOutputType
+   */
+
+  export type FightCountOutputType = {
+    predictionHistory: number
+  }
+
+  export type FightCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    predictionHistory?: boolean | FightCountOutputTypeCountPredictionHistoryArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * FightCountOutputType without action
+   */
+  export type FightCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FightCountOutputType
+     */
+    select?: FightCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * FightCountOutputType without action
+   */
+  export type FightCountOutputTypeCountPredictionHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PredictionHistoryWhereInput
   }
 
 
@@ -3541,6 +3845,7 @@ export namespace Prisma {
     koWins: number | null
     subWins: number | null
     eloRating: number | null
+    isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3558,6 +3863,7 @@ export namespace Prisma {
     koWins: number | null
     subWins: number | null
     eloRating: number | null
+    isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3575,6 +3881,7 @@ export namespace Prisma {
     koWins: number
     subWins: number
     eloRating: number
+    isActive: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3618,6 +3925,7 @@ export namespace Prisma {
     koWins?: true
     subWins?: true
     eloRating?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3635,6 +3943,7 @@ export namespace Prisma {
     koWins?: true
     subWins?: true
     eloRating?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3652,6 +3961,7 @@ export namespace Prisma {
     koWins?: true
     subWins?: true
     eloRating?: true
+    isActive?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3756,6 +4066,7 @@ export namespace Prisma {
     koWins: number
     subWins: number
     eloRating: number
+    isActive: boolean
     createdAt: Date
     updatedAt: Date
     _count: FighterCountAggregateOutputType | null
@@ -3792,6 +4103,7 @@ export namespace Prisma {
     koWins?: boolean
     subWins?: boolean
     eloRating?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
@@ -3813,6 +4125,7 @@ export namespace Prisma {
     koWins?: boolean
     subWins?: boolean
     eloRating?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["fighter"]>
@@ -3830,6 +4143,7 @@ export namespace Prisma {
     koWins?: boolean
     subWins?: boolean
     eloRating?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["fighter"]>
@@ -3847,11 +4161,12 @@ export namespace Prisma {
     koWins?: boolean
     subWins?: boolean
     eloRating?: boolean
+    isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weightClass" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
+  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weightClass" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
   export type FighterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
     fightsAsFighter2?: boolean | Fighter$fightsAsFighter2Args<ExtArgs>
@@ -3881,6 +4196,7 @@ export namespace Prisma {
       koWins: number
       subWins: number
       eloRating: number
+      isActive: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["fighter"]>
@@ -4321,6 +4637,7 @@ export namespace Prisma {
     readonly koWins: FieldRef<"Fighter", 'Int'>
     readonly subWins: FieldRef<"Fighter", 'Int'>
     readonly eloRating: FieldRef<"Fighter", 'Int'>
+    readonly isActive: FieldRef<"Fighter", 'Boolean'>
     readonly createdAt: FieldRef<"Fighter", 'DateTime'>
     readonly updatedAt: FieldRef<"Fighter", 'DateTime'>
   }
@@ -4822,6 +5139,7 @@ export namespace Prisma {
     date: Date | null
     location: string | null
     isUpcoming: boolean | null
+    isProcessed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4832,6 +5150,7 @@ export namespace Prisma {
     date: Date | null
     location: string | null
     isUpcoming: boolean | null
+    isProcessed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4842,6 +5161,7 @@ export namespace Prisma {
     date: number
     location: number
     isUpcoming: number
+    isProcessed: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -4854,6 +5174,7 @@ export namespace Prisma {
     date?: true
     location?: true
     isUpcoming?: true
+    isProcessed?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4864,6 +5185,7 @@ export namespace Prisma {
     date?: true
     location?: true
     isUpcoming?: true
+    isProcessed?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4874,6 +5196,7 @@ export namespace Prisma {
     date?: true
     location?: true
     isUpcoming?: true
+    isProcessed?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -4957,6 +5280,7 @@ export namespace Prisma {
     date: Date
     location: string | null
     isUpcoming: boolean
+    isProcessed: boolean
     createdAt: Date
     updatedAt: Date
     _count: EventCountAggregateOutputType | null
@@ -4984,6 +5308,7 @@ export namespace Prisma {
     date?: boolean
     location?: boolean
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     fights?: boolean | Event$fightsArgs<ExtArgs>
@@ -4996,6 +5321,7 @@ export namespace Prisma {
     date?: boolean
     location?: boolean
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["event"]>
@@ -5006,6 +5332,7 @@ export namespace Prisma {
     date?: boolean
     location?: boolean
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["event"]>
@@ -5016,11 +5343,12 @@ export namespace Prisma {
     date?: boolean
     location?: boolean
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "date" | "location" | "isUpcoming" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "date" | "location" | "isUpcoming" | "isProcessed" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fights?: boolean | Event$fightsArgs<ExtArgs>
     _count?: boolean | EventCountOutputTypeDefaultArgs<ExtArgs>
@@ -5039,6 +5367,7 @@ export namespace Prisma {
       date: Date
       location: string | null
       isUpcoming: boolean
+      isProcessed: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["event"]>
@@ -5470,6 +5799,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Event", 'DateTime'>
     readonly location: FieldRef<"Event", 'String'>
     readonly isUpcoming: FieldRef<"Event", 'Boolean'>
+    readonly isProcessed: FieldRef<"Event", 'Boolean'>
     readonly createdAt: FieldRef<"Event", 'DateTime'>
     readonly updatedAt: FieldRef<"Event", 'DateTime'>
   }
@@ -6221,6 +6551,8 @@ export namespace Prisma {
     fighter1?: boolean | FighterDefaultArgs<ExtArgs>
     fighter2?: boolean | FighterDefaultArgs<ExtArgs>
     winner?: boolean | Fight$winnerArgs<ExtArgs>
+    predictionHistory?: boolean | Fight$predictionHistoryArgs<ExtArgs>
+    _count?: boolean | FightCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["fight"]>
 
   export type FightSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6297,6 +6629,8 @@ export namespace Prisma {
     fighter1?: boolean | FighterDefaultArgs<ExtArgs>
     fighter2?: boolean | FighterDefaultArgs<ExtArgs>
     winner?: boolean | Fight$winnerArgs<ExtArgs>
+    predictionHistory?: boolean | Fight$predictionHistoryArgs<ExtArgs>
+    _count?: boolean | FightCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FightIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -6318,6 +6652,7 @@ export namespace Prisma {
       fighter1: Prisma.$FighterPayload<ExtArgs>
       fighter2: Prisma.$FighterPayload<ExtArgs>
       winner: Prisma.$FighterPayload<ExtArgs> | null
+      predictionHistory: Prisma.$PredictionHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6735,6 +7070,7 @@ export namespace Prisma {
     fighter1<T extends FighterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FighterDefaultArgs<ExtArgs>>): Prisma__FighterClient<$Result.GetResult<Prisma.$FighterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     fighter2<T extends FighterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FighterDefaultArgs<ExtArgs>>): Prisma__FighterClient<$Result.GetResult<Prisma.$FighterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     winner<T extends Fight$winnerArgs<ExtArgs> = {}>(args?: Subset<T, Fight$winnerArgs<ExtArgs>>): Prisma__FighterClient<$Result.GetResult<Prisma.$FighterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    predictionHistory<T extends Fight$predictionHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Fight$predictionHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7201,6 +7537,30 @@ export namespace Prisma {
   }
 
   /**
+   * Fight.predictionHistory
+   */
+  export type Fight$predictionHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    where?: PredictionHistoryWhereInput
+    orderBy?: PredictionHistoryOrderByWithRelationInput | PredictionHistoryOrderByWithRelationInput[]
+    cursor?: PredictionHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PredictionHistoryScalarFieldEnum | PredictionHistoryScalarFieldEnum[]
+  }
+
+  /**
    * Fight without action
    */
   export type FightDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7216,6 +7576,3184 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: FightInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuditLog
+   */
+
+  export type AggregateAuditLog = {
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  export type AuditLogMinAggregateOutputType = {
+    id: string | null
+    action: string | null
+    details: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogMaxAggregateOutputType = {
+    id: string | null
+    action: string | null
+    details: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditLogCountAggregateOutputType = {
+    id: number
+    action: number
+    details: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuditLogMinAggregateInputType = {
+    id?: true
+    action?: true
+    details?: true
+    createdAt?: true
+  }
+
+  export type AuditLogMaxAggregateInputType = {
+    id?: true
+    action?: true
+    details?: true
+    createdAt?: true
+  }
+
+  export type AuditLogCountAggregateInputType = {
+    id?: true
+    action?: true
+    details?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLog to aggregate.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditLogs
+    **/
+    _count?: true | AuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLog[P]>
+      : GetScalarType<T[P], AggregateAuditLog[P]>
+  }
+
+
+
+
+  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
+    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
+    having?: AuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogCountAggregateInputType | true
+    _min?: AuditLogMinAggregateInputType
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type AuditLogGroupByOutputType = {
+    id: string
+    action: string
+    details: string
+    createdAt: Date
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    details?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    details?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    details?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditLog"]>
+
+  export type AuditLogSelectScalar = {
+    id?: boolean
+    action?: boolean
+    details?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "details" | "createdAt", ExtArgs["result"]["auditLog"]>
+
+  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      action: string
+      details: string
+      createdAt: Date
+    }, ExtArgs["result"]["auditLog"]>
+    composites: {}
+  }
+
+  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
+
+  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditLogCountAggregateInputType | true
+    }
+
+  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
+    /**
+     * Find zero or one AuditLog that matches the filter.
+     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany()
+     * 
+     * // Get first 10 AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditLog.
+     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
+     * @example
+     * // Create one AuditLog
+     * const AuditLog = await prisma.auditLog.create({
+     *   data: {
+     *     // ... data to create a AuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditLogs.
+     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditLogs and returns the data saved in the database.
+     * @param {AuditLogCreateManyAndReturnArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditLog.
+     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
+     * @example
+     * // Delete one AuditLog
+     * const AuditLog = await prisma.auditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditLog.
+     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
+     * @example
+     * // Update one AuditLog
+     * const auditLog = await prisma.auditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditLogs.
+     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
+     * @example
+     * // Delete a few AuditLogs
+     * const { count } = await prisma.auditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs and returns the data updated in the database.
+     * @param {AuditLogUpdateManyAndReturnArgs} args - Arguments to update many AuditLogs.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuditLogs and only return the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditLog.
+     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
+     * @example
+     * // Update or create a AuditLog
+     * const auditLog = await prisma.auditLog.upsert({
+     *   create: {
+     *     // ... data to create a AuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
+     * @example
+     * // Count the number of AuditLogs
+     * const count = await prisma.auditLog.count({
+     *   where: {
+     *     // ... the filter for the AuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogCountArgs>(
+      args?: Subset<T, AuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
+
+    /**
+     * Group by AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLog model
+   */
+  readonly fields: AuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLog model
+   */
+  interface AuditLogFieldRefs {
+    readonly id: FieldRef<"AuditLog", 'String'>
+    readonly action: FieldRef<"AuditLog", 'String'>
+    readonly details: FieldRef<"AuditLog", 'String'>
+    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditLog findUnique
+   */
+  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findUniqueOrThrow
+   */
+  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findFirst
+   */
+  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findFirstOrThrow
+   */
+  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findMany
+   */
+  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditLogs to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog create
+   */
+  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLog.
+     */
+    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLog createMany
+   */
+  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog createManyAndReturn
+   */
+  export type AuditLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog update
+   */
+  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLog.
+     */
+    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLog to update.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog updateMany
+   */
+  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog updateManyAndReturn
+   */
+  export type AuditLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog upsert
+   */
+  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLog to update in case it exists.
+     */
+    where: AuditLogWhereUniqueInput
+    /**
+     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
+     */
+    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    /**
+     * In case the AuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLog delete
+   */
+  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Filter which AuditLog to delete.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog deleteMany
+   */
+  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogs to delete
+     */
+    where?: AuditLogWhereInput
+    /**
+     * Limit how many AuditLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLog without action
+   */
+  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model JobExecution
+   */
+
+  export type AggregateJobExecution = {
+    _count: JobExecutionCountAggregateOutputType | null
+    _avg: JobExecutionAvgAggregateOutputType | null
+    _sum: JobExecutionSumAggregateOutputType | null
+    _min: JobExecutionMinAggregateOutputType | null
+    _max: JobExecutionMaxAggregateOutputType | null
+  }
+
+  export type JobExecutionAvgAggregateOutputType = {
+    durationMs: number | null
+  }
+
+  export type JobExecutionSumAggregateOutputType = {
+    durationMs: number | null
+  }
+
+  export type JobExecutionMinAggregateOutputType = {
+    id: string | null
+    jobName: string | null
+    status: string | null
+    error: string | null
+    durationMs: number | null
+    startedAt: Date | null
+    completedAt: Date | null
+  }
+
+  export type JobExecutionMaxAggregateOutputType = {
+    id: string | null
+    jobName: string | null
+    status: string | null
+    error: string | null
+    durationMs: number | null
+    startedAt: Date | null
+    completedAt: Date | null
+  }
+
+  export type JobExecutionCountAggregateOutputType = {
+    id: number
+    jobName: number
+    status: number
+    error: number
+    durationMs: number
+    startedAt: number
+    completedAt: number
+    _all: number
+  }
+
+
+  export type JobExecutionAvgAggregateInputType = {
+    durationMs?: true
+  }
+
+  export type JobExecutionSumAggregateInputType = {
+    durationMs?: true
+  }
+
+  export type JobExecutionMinAggregateInputType = {
+    id?: true
+    jobName?: true
+    status?: true
+    error?: true
+    durationMs?: true
+    startedAt?: true
+    completedAt?: true
+  }
+
+  export type JobExecutionMaxAggregateInputType = {
+    id?: true
+    jobName?: true
+    status?: true
+    error?: true
+    durationMs?: true
+    startedAt?: true
+    completedAt?: true
+  }
+
+  export type JobExecutionCountAggregateInputType = {
+    id?: true
+    jobName?: true
+    status?: true
+    error?: true
+    durationMs?: true
+    startedAt?: true
+    completedAt?: true
+    _all?: true
+  }
+
+  export type JobExecutionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JobExecution to aggregate.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned JobExecutions
+    **/
+    _count?: true | JobExecutionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: JobExecutionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: JobExecutionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: JobExecutionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: JobExecutionMaxAggregateInputType
+  }
+
+  export type GetJobExecutionAggregateType<T extends JobExecutionAggregateArgs> = {
+        [P in keyof T & keyof AggregateJobExecution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateJobExecution[P]>
+      : GetScalarType<T[P], AggregateJobExecution[P]>
+  }
+
+
+
+
+  export type JobExecutionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: JobExecutionWhereInput
+    orderBy?: JobExecutionOrderByWithAggregationInput | JobExecutionOrderByWithAggregationInput[]
+    by: JobExecutionScalarFieldEnum[] | JobExecutionScalarFieldEnum
+    having?: JobExecutionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: JobExecutionCountAggregateInputType | true
+    _avg?: JobExecutionAvgAggregateInputType
+    _sum?: JobExecutionSumAggregateInputType
+    _min?: JobExecutionMinAggregateInputType
+    _max?: JobExecutionMaxAggregateInputType
+  }
+
+  export type JobExecutionGroupByOutputType = {
+    id: string
+    jobName: string
+    status: string
+    error: string | null
+    durationMs: number | null
+    startedAt: Date
+    completedAt: Date | null
+    _count: JobExecutionCountAggregateOutputType | null
+    _avg: JobExecutionAvgAggregateOutputType | null
+    _sum: JobExecutionSumAggregateOutputType | null
+    _min: JobExecutionMinAggregateOutputType | null
+    _max: JobExecutionMaxAggregateOutputType | null
+  }
+
+  type GetJobExecutionGroupByPayload<T extends JobExecutionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<JobExecutionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof JobExecutionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], JobExecutionGroupByOutputType[P]>
+            : GetScalarType<T[P], JobExecutionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type JobExecutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jobName?: boolean
+    status?: boolean
+    error?: boolean
+    durationMs?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jobName?: boolean
+    status?: boolean
+    error?: boolean
+    durationMs?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jobName?: boolean
+    status?: boolean
+    error?: boolean
+    durationMs?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+  }, ExtArgs["result"]["jobExecution"]>
+
+  export type JobExecutionSelectScalar = {
+    id?: boolean
+    jobName?: boolean
+    status?: boolean
+    error?: boolean
+    durationMs?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+  }
+
+  export type JobExecutionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "jobName" | "status" | "error" | "durationMs" | "startedAt" | "completedAt", ExtArgs["result"]["jobExecution"]>
+
+  export type $JobExecutionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "JobExecution"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      jobName: string
+      status: string
+      error: string | null
+      durationMs: number | null
+      startedAt: Date
+      completedAt: Date | null
+    }, ExtArgs["result"]["jobExecution"]>
+    composites: {}
+  }
+
+  type JobExecutionGetPayload<S extends boolean | null | undefined | JobExecutionDefaultArgs> = $Result.GetResult<Prisma.$JobExecutionPayload, S>
+
+  type JobExecutionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<JobExecutionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: JobExecutionCountAggregateInputType | true
+    }
+
+  export interface JobExecutionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['JobExecution'], meta: { name: 'JobExecution' } }
+    /**
+     * Find zero or one JobExecution that matches the filter.
+     * @param {JobExecutionFindUniqueArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends JobExecutionFindUniqueArgs>(args: SelectSubset<T, JobExecutionFindUniqueArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one JobExecution that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {JobExecutionFindUniqueOrThrowArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends JobExecutionFindUniqueOrThrowArgs>(args: SelectSubset<T, JobExecutionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first JobExecution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindFirstArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends JobExecutionFindFirstArgs>(args?: SelectSubset<T, JobExecutionFindFirstArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first JobExecution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindFirstOrThrowArgs} args - Arguments to find a JobExecution
+     * @example
+     * // Get one JobExecution
+     * const jobExecution = await prisma.jobExecution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends JobExecutionFindFirstOrThrowArgs>(args?: SelectSubset<T, JobExecutionFindFirstOrThrowArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more JobExecutions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all JobExecutions
+     * const jobExecutions = await prisma.jobExecution.findMany()
+     * 
+     * // Get first 10 JobExecutions
+     * const jobExecutions = await prisma.jobExecution.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends JobExecutionFindManyArgs>(args?: SelectSubset<T, JobExecutionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a JobExecution.
+     * @param {JobExecutionCreateArgs} args - Arguments to create a JobExecution.
+     * @example
+     * // Create one JobExecution
+     * const JobExecution = await prisma.jobExecution.create({
+     *   data: {
+     *     // ... data to create a JobExecution
+     *   }
+     * })
+     * 
+     */
+    create<T extends JobExecutionCreateArgs>(args: SelectSubset<T, JobExecutionCreateArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many JobExecutions.
+     * @param {JobExecutionCreateManyArgs} args - Arguments to create many JobExecutions.
+     * @example
+     * // Create many JobExecutions
+     * const jobExecution = await prisma.jobExecution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends JobExecutionCreateManyArgs>(args?: SelectSubset<T, JobExecutionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many JobExecutions and returns the data saved in the database.
+     * @param {JobExecutionCreateManyAndReturnArgs} args - Arguments to create many JobExecutions.
+     * @example
+     * // Create many JobExecutions
+     * const jobExecution = await prisma.jobExecution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many JobExecutions and only return the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends JobExecutionCreateManyAndReturnArgs>(args?: SelectSubset<T, JobExecutionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a JobExecution.
+     * @param {JobExecutionDeleteArgs} args - Arguments to delete one JobExecution.
+     * @example
+     * // Delete one JobExecution
+     * const JobExecution = await prisma.jobExecution.delete({
+     *   where: {
+     *     // ... filter to delete one JobExecution
+     *   }
+     * })
+     * 
+     */
+    delete<T extends JobExecutionDeleteArgs>(args: SelectSubset<T, JobExecutionDeleteArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one JobExecution.
+     * @param {JobExecutionUpdateArgs} args - Arguments to update one JobExecution.
+     * @example
+     * // Update one JobExecution
+     * const jobExecution = await prisma.jobExecution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends JobExecutionUpdateArgs>(args: SelectSubset<T, JobExecutionUpdateArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more JobExecutions.
+     * @param {JobExecutionDeleteManyArgs} args - Arguments to filter JobExecutions to delete.
+     * @example
+     * // Delete a few JobExecutions
+     * const { count } = await prisma.jobExecution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends JobExecutionDeleteManyArgs>(args?: SelectSubset<T, JobExecutionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more JobExecutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many JobExecutions
+     * const jobExecution = await prisma.jobExecution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends JobExecutionUpdateManyArgs>(args: SelectSubset<T, JobExecutionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more JobExecutions and returns the data updated in the database.
+     * @param {JobExecutionUpdateManyAndReturnArgs} args - Arguments to update many JobExecutions.
+     * @example
+     * // Update many JobExecutions
+     * const jobExecution = await prisma.jobExecution.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more JobExecutions and only return the `id`
+     * const jobExecutionWithIdOnly = await prisma.jobExecution.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends JobExecutionUpdateManyAndReturnArgs>(args: SelectSubset<T, JobExecutionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one JobExecution.
+     * @param {JobExecutionUpsertArgs} args - Arguments to update or create a JobExecution.
+     * @example
+     * // Update or create a JobExecution
+     * const jobExecution = await prisma.jobExecution.upsert({
+     *   create: {
+     *     // ... data to create a JobExecution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the JobExecution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends JobExecutionUpsertArgs>(args: SelectSubset<T, JobExecutionUpsertArgs<ExtArgs>>): Prisma__JobExecutionClient<$Result.GetResult<Prisma.$JobExecutionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of JobExecutions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionCountArgs} args - Arguments to filter JobExecutions to count.
+     * @example
+     * // Count the number of JobExecutions
+     * const count = await prisma.jobExecution.count({
+     *   where: {
+     *     // ... the filter for the JobExecutions we want to count
+     *   }
+     * })
+    **/
+    count<T extends JobExecutionCountArgs>(
+      args?: Subset<T, JobExecutionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], JobExecutionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a JobExecution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends JobExecutionAggregateArgs>(args: Subset<T, JobExecutionAggregateArgs>): Prisma.PrismaPromise<GetJobExecutionAggregateType<T>>
+
+    /**
+     * Group by JobExecution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {JobExecutionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends JobExecutionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: JobExecutionGroupByArgs['orderBy'] }
+        : { orderBy?: JobExecutionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, JobExecutionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJobExecutionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the JobExecution model
+   */
+  readonly fields: JobExecutionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for JobExecution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__JobExecutionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the JobExecution model
+   */
+  interface JobExecutionFieldRefs {
+    readonly id: FieldRef<"JobExecution", 'String'>
+    readonly jobName: FieldRef<"JobExecution", 'String'>
+    readonly status: FieldRef<"JobExecution", 'String'>
+    readonly error: FieldRef<"JobExecution", 'String'>
+    readonly durationMs: FieldRef<"JobExecution", 'Int'>
+    readonly startedAt: FieldRef<"JobExecution", 'DateTime'>
+    readonly completedAt: FieldRef<"JobExecution", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * JobExecution findUnique
+   */
+  export type JobExecutionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution findUniqueOrThrow
+   */
+  export type JobExecutionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution findFirst
+   */
+  export type JobExecutionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JobExecutions.
+     */
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution findFirstOrThrow
+   */
+  export type JobExecutionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter, which JobExecution to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JobExecutions.
+     */
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution findMany
+   */
+  export type JobExecutionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter, which JobExecutions to fetch.
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of JobExecutions to fetch.
+     */
+    orderBy?: JobExecutionOrderByWithRelationInput | JobExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing JobExecutions.
+     */
+    cursor?: JobExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` JobExecutions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` JobExecutions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of JobExecutions.
+     */
+    distinct?: JobExecutionScalarFieldEnum | JobExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * JobExecution create
+   */
+  export type JobExecutionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data needed to create a JobExecution.
+     */
+    data: XOR<JobExecutionCreateInput, JobExecutionUncheckedCreateInput>
+  }
+
+  /**
+   * JobExecution createMany
+   */
+  export type JobExecutionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many JobExecutions.
+     */
+    data: JobExecutionCreateManyInput | JobExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * JobExecution createManyAndReturn
+   */
+  export type JobExecutionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to create many JobExecutions.
+     */
+    data: JobExecutionCreateManyInput | JobExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * JobExecution update
+   */
+  export type JobExecutionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data needed to update a JobExecution.
+     */
+    data: XOR<JobExecutionUpdateInput, JobExecutionUncheckedUpdateInput>
+    /**
+     * Choose, which JobExecution to update.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution updateMany
+   */
+  export type JobExecutionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update JobExecutions.
+     */
+    data: XOR<JobExecutionUpdateManyMutationInput, JobExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which JobExecutions to update
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * JobExecution updateManyAndReturn
+   */
+  export type JobExecutionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to update JobExecutions.
+     */
+    data: XOR<JobExecutionUpdateManyMutationInput, JobExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which JobExecutions to update
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * JobExecution upsert
+   */
+  export type JobExecutionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * The filter to search for the JobExecution to update in case it exists.
+     */
+    where: JobExecutionWhereUniqueInput
+    /**
+     * In case the JobExecution found by the `where` argument doesn't exist, create a new JobExecution with this data.
+     */
+    create: XOR<JobExecutionCreateInput, JobExecutionUncheckedCreateInput>
+    /**
+     * In case the JobExecution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<JobExecutionUpdateInput, JobExecutionUncheckedUpdateInput>
+  }
+
+  /**
+   * JobExecution delete
+   */
+  export type JobExecutionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+    /**
+     * Filter which JobExecution to delete.
+     */
+    where: JobExecutionWhereUniqueInput
+  }
+
+  /**
+   * JobExecution deleteMany
+   */
+  export type JobExecutionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which JobExecutions to delete
+     */
+    where?: JobExecutionWhereInput
+    /**
+     * Limit how many JobExecutions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * JobExecution without action
+   */
+  export type JobExecutionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the JobExecution
+     */
+    select?: JobExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the JobExecution
+     */
+    omit?: JobExecutionOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PredictionHistory
+   */
+
+  export type AggregatePredictionHistory = {
+    _count: PredictionHistoryCountAggregateOutputType | null
+    _avg: PredictionHistoryAvgAggregateOutputType | null
+    _sum: PredictionHistorySumAggregateOutputType | null
+    _min: PredictionHistoryMinAggregateOutputType | null
+    _max: PredictionHistoryMaxAggregateOutputType | null
+  }
+
+  export type PredictionHistoryAvgAggregateOutputType = {
+    winProbFighter1: number | null
+    winProbFighter2: number | null
+    confidence: number | null
+  }
+
+  export type PredictionHistorySumAggregateOutputType = {
+    winProbFighter1: number | null
+    winProbFighter2: number | null
+    confidence: number | null
+  }
+
+  export type PredictionHistoryMinAggregateOutputType = {
+    id: string | null
+    fightId: string | null
+    winProbFighter1: number | null
+    winProbFighter2: number | null
+    confidence: number | null
+    explanation: string | null
+    createdAt: Date | null
+  }
+
+  export type PredictionHistoryMaxAggregateOutputType = {
+    id: string | null
+    fightId: string | null
+    winProbFighter1: number | null
+    winProbFighter2: number | null
+    confidence: number | null
+    explanation: string | null
+    createdAt: Date | null
+  }
+
+  export type PredictionHistoryCountAggregateOutputType = {
+    id: number
+    fightId: number
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PredictionHistoryAvgAggregateInputType = {
+    winProbFighter1?: true
+    winProbFighter2?: true
+    confidence?: true
+  }
+
+  export type PredictionHistorySumAggregateInputType = {
+    winProbFighter1?: true
+    winProbFighter2?: true
+    confidence?: true
+  }
+
+  export type PredictionHistoryMinAggregateInputType = {
+    id?: true
+    fightId?: true
+    winProbFighter1?: true
+    winProbFighter2?: true
+    confidence?: true
+    explanation?: true
+    createdAt?: true
+  }
+
+  export type PredictionHistoryMaxAggregateInputType = {
+    id?: true
+    fightId?: true
+    winProbFighter1?: true
+    winProbFighter2?: true
+    confidence?: true
+    explanation?: true
+    createdAt?: true
+  }
+
+  export type PredictionHistoryCountAggregateInputType = {
+    id?: true
+    fightId?: true
+    winProbFighter1?: true
+    winProbFighter2?: true
+    confidence?: true
+    explanation?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PredictionHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PredictionHistory to aggregate.
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PredictionHistories to fetch.
+     */
+    orderBy?: PredictionHistoryOrderByWithRelationInput | PredictionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PredictionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PredictionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PredictionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PredictionHistories
+    **/
+    _count?: true | PredictionHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PredictionHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PredictionHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PredictionHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PredictionHistoryMaxAggregateInputType
+  }
+
+  export type GetPredictionHistoryAggregateType<T extends PredictionHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregatePredictionHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePredictionHistory[P]>
+      : GetScalarType<T[P], AggregatePredictionHistory[P]>
+  }
+
+
+
+
+  export type PredictionHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PredictionHistoryWhereInput
+    orderBy?: PredictionHistoryOrderByWithAggregationInput | PredictionHistoryOrderByWithAggregationInput[]
+    by: PredictionHistoryScalarFieldEnum[] | PredictionHistoryScalarFieldEnum
+    having?: PredictionHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PredictionHistoryCountAggregateInputType | true
+    _avg?: PredictionHistoryAvgAggregateInputType
+    _sum?: PredictionHistorySumAggregateInputType
+    _min?: PredictionHistoryMinAggregateInputType
+    _max?: PredictionHistoryMaxAggregateInputType
+  }
+
+  export type PredictionHistoryGroupByOutputType = {
+    id: string
+    fightId: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt: Date
+    _count: PredictionHistoryCountAggregateOutputType | null
+    _avg: PredictionHistoryAvgAggregateOutputType | null
+    _sum: PredictionHistorySumAggregateOutputType | null
+    _min: PredictionHistoryMinAggregateOutputType | null
+    _max: PredictionHistoryMaxAggregateOutputType | null
+  }
+
+  type GetPredictionHistoryGroupByPayload<T extends PredictionHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PredictionHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PredictionHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PredictionHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], PredictionHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PredictionHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fightId?: boolean
+    winProbFighter1?: boolean
+    winProbFighter2?: boolean
+    confidence?: boolean
+    explanation?: boolean
+    createdAt?: boolean
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["predictionHistory"]>
+
+  export type PredictionHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fightId?: boolean
+    winProbFighter1?: boolean
+    winProbFighter2?: boolean
+    confidence?: boolean
+    explanation?: boolean
+    createdAt?: boolean
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["predictionHistory"]>
+
+  export type PredictionHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fightId?: boolean
+    winProbFighter1?: boolean
+    winProbFighter2?: boolean
+    confidence?: boolean
+    explanation?: boolean
+    createdAt?: boolean
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["predictionHistory"]>
+
+  export type PredictionHistorySelectScalar = {
+    id?: boolean
+    fightId?: boolean
+    winProbFighter1?: boolean
+    winProbFighter2?: boolean
+    confidence?: boolean
+    explanation?: boolean
+    createdAt?: boolean
+  }
+
+  export type PredictionHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fightId" | "winProbFighter1" | "winProbFighter2" | "confidence" | "explanation" | "createdAt", ExtArgs["result"]["predictionHistory"]>
+  export type PredictionHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }
+  export type PredictionHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }
+  export type PredictionHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    fight?: boolean | FightDefaultArgs<ExtArgs>
+  }
+
+  export type $PredictionHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PredictionHistory"
+    objects: {
+      fight: Prisma.$FightPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      fightId: string
+      winProbFighter1: number
+      winProbFighter2: number
+      confidence: number
+      explanation: string
+      createdAt: Date
+    }, ExtArgs["result"]["predictionHistory"]>
+    composites: {}
+  }
+
+  type PredictionHistoryGetPayload<S extends boolean | null | undefined | PredictionHistoryDefaultArgs> = $Result.GetResult<Prisma.$PredictionHistoryPayload, S>
+
+  type PredictionHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PredictionHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PredictionHistoryCountAggregateInputType | true
+    }
+
+  export interface PredictionHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PredictionHistory'], meta: { name: 'PredictionHistory' } }
+    /**
+     * Find zero or one PredictionHistory that matches the filter.
+     * @param {PredictionHistoryFindUniqueArgs} args - Arguments to find a PredictionHistory
+     * @example
+     * // Get one PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PredictionHistoryFindUniqueArgs>(args: SelectSubset<T, PredictionHistoryFindUniqueArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PredictionHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PredictionHistoryFindUniqueOrThrowArgs} args - Arguments to find a PredictionHistory
+     * @example
+     * // Get one PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PredictionHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, PredictionHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PredictionHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryFindFirstArgs} args - Arguments to find a PredictionHistory
+     * @example
+     * // Get one PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PredictionHistoryFindFirstArgs>(args?: SelectSubset<T, PredictionHistoryFindFirstArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PredictionHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryFindFirstOrThrowArgs} args - Arguments to find a PredictionHistory
+     * @example
+     * // Get one PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PredictionHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, PredictionHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PredictionHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PredictionHistories
+     * const predictionHistories = await prisma.predictionHistory.findMany()
+     * 
+     * // Get first 10 PredictionHistories
+     * const predictionHistories = await prisma.predictionHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const predictionHistoryWithIdOnly = await prisma.predictionHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PredictionHistoryFindManyArgs>(args?: SelectSubset<T, PredictionHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PredictionHistory.
+     * @param {PredictionHistoryCreateArgs} args - Arguments to create a PredictionHistory.
+     * @example
+     * // Create one PredictionHistory
+     * const PredictionHistory = await prisma.predictionHistory.create({
+     *   data: {
+     *     // ... data to create a PredictionHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends PredictionHistoryCreateArgs>(args: SelectSubset<T, PredictionHistoryCreateArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PredictionHistories.
+     * @param {PredictionHistoryCreateManyArgs} args - Arguments to create many PredictionHistories.
+     * @example
+     * // Create many PredictionHistories
+     * const predictionHistory = await prisma.predictionHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PredictionHistoryCreateManyArgs>(args?: SelectSubset<T, PredictionHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PredictionHistories and returns the data saved in the database.
+     * @param {PredictionHistoryCreateManyAndReturnArgs} args - Arguments to create many PredictionHistories.
+     * @example
+     * // Create many PredictionHistories
+     * const predictionHistory = await prisma.predictionHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PredictionHistories and only return the `id`
+     * const predictionHistoryWithIdOnly = await prisma.predictionHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PredictionHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, PredictionHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PredictionHistory.
+     * @param {PredictionHistoryDeleteArgs} args - Arguments to delete one PredictionHistory.
+     * @example
+     * // Delete one PredictionHistory
+     * const PredictionHistory = await prisma.predictionHistory.delete({
+     *   where: {
+     *     // ... filter to delete one PredictionHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PredictionHistoryDeleteArgs>(args: SelectSubset<T, PredictionHistoryDeleteArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PredictionHistory.
+     * @param {PredictionHistoryUpdateArgs} args - Arguments to update one PredictionHistory.
+     * @example
+     * // Update one PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PredictionHistoryUpdateArgs>(args: SelectSubset<T, PredictionHistoryUpdateArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PredictionHistories.
+     * @param {PredictionHistoryDeleteManyArgs} args - Arguments to filter PredictionHistories to delete.
+     * @example
+     * // Delete a few PredictionHistories
+     * const { count } = await prisma.predictionHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PredictionHistoryDeleteManyArgs>(args?: SelectSubset<T, PredictionHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PredictionHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PredictionHistories
+     * const predictionHistory = await prisma.predictionHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PredictionHistoryUpdateManyArgs>(args: SelectSubset<T, PredictionHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PredictionHistories and returns the data updated in the database.
+     * @param {PredictionHistoryUpdateManyAndReturnArgs} args - Arguments to update many PredictionHistories.
+     * @example
+     * // Update many PredictionHistories
+     * const predictionHistory = await prisma.predictionHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PredictionHistories and only return the `id`
+     * const predictionHistoryWithIdOnly = await prisma.predictionHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PredictionHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, PredictionHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PredictionHistory.
+     * @param {PredictionHistoryUpsertArgs} args - Arguments to update or create a PredictionHistory.
+     * @example
+     * // Update or create a PredictionHistory
+     * const predictionHistory = await prisma.predictionHistory.upsert({
+     *   create: {
+     *     // ... data to create a PredictionHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PredictionHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PredictionHistoryUpsertArgs>(args: SelectSubset<T, PredictionHistoryUpsertArgs<ExtArgs>>): Prisma__PredictionHistoryClient<$Result.GetResult<Prisma.$PredictionHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PredictionHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryCountArgs} args - Arguments to filter PredictionHistories to count.
+     * @example
+     * // Count the number of PredictionHistories
+     * const count = await prisma.predictionHistory.count({
+     *   where: {
+     *     // ... the filter for the PredictionHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends PredictionHistoryCountArgs>(
+      args?: Subset<T, PredictionHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PredictionHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PredictionHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PredictionHistoryAggregateArgs>(args: Subset<T, PredictionHistoryAggregateArgs>): Prisma.PrismaPromise<GetPredictionHistoryAggregateType<T>>
+
+    /**
+     * Group by PredictionHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PredictionHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PredictionHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PredictionHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: PredictionHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PredictionHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPredictionHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PredictionHistory model
+   */
+  readonly fields: PredictionHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PredictionHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PredictionHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    fight<T extends FightDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FightDefaultArgs<ExtArgs>>): Prisma__FightClient<$Result.GetResult<Prisma.$FightPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PredictionHistory model
+   */
+  interface PredictionHistoryFieldRefs {
+    readonly id: FieldRef<"PredictionHistory", 'String'>
+    readonly fightId: FieldRef<"PredictionHistory", 'String'>
+    readonly winProbFighter1: FieldRef<"PredictionHistory", 'Float'>
+    readonly winProbFighter2: FieldRef<"PredictionHistory", 'Float'>
+    readonly confidence: FieldRef<"PredictionHistory", 'Float'>
+    readonly explanation: FieldRef<"PredictionHistory", 'String'>
+    readonly createdAt: FieldRef<"PredictionHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PredictionHistory findUnique
+   */
+  export type PredictionHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PredictionHistory to fetch.
+     */
+    where: PredictionHistoryWhereUniqueInput
+  }
+
+  /**
+   * PredictionHistory findUniqueOrThrow
+   */
+  export type PredictionHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PredictionHistory to fetch.
+     */
+    where: PredictionHistoryWhereUniqueInput
+  }
+
+  /**
+   * PredictionHistory findFirst
+   */
+  export type PredictionHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PredictionHistory to fetch.
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PredictionHistories to fetch.
+     */
+    orderBy?: PredictionHistoryOrderByWithRelationInput | PredictionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PredictionHistories.
+     */
+    cursor?: PredictionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PredictionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PredictionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PredictionHistories.
+     */
+    distinct?: PredictionHistoryScalarFieldEnum | PredictionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PredictionHistory findFirstOrThrow
+   */
+  export type PredictionHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PredictionHistory to fetch.
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PredictionHistories to fetch.
+     */
+    orderBy?: PredictionHistoryOrderByWithRelationInput | PredictionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PredictionHistories.
+     */
+    cursor?: PredictionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PredictionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PredictionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PredictionHistories.
+     */
+    distinct?: PredictionHistoryScalarFieldEnum | PredictionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PredictionHistory findMany
+   */
+  export type PredictionHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PredictionHistories to fetch.
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PredictionHistories to fetch.
+     */
+    orderBy?: PredictionHistoryOrderByWithRelationInput | PredictionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PredictionHistories.
+     */
+    cursor?: PredictionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PredictionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PredictionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PredictionHistories.
+     */
+    distinct?: PredictionHistoryScalarFieldEnum | PredictionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PredictionHistory create
+   */
+  export type PredictionHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PredictionHistory.
+     */
+    data: XOR<PredictionHistoryCreateInput, PredictionHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * PredictionHistory createMany
+   */
+  export type PredictionHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PredictionHistories.
+     */
+    data: PredictionHistoryCreateManyInput | PredictionHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PredictionHistory createManyAndReturn
+   */
+  export type PredictionHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many PredictionHistories.
+     */
+    data: PredictionHistoryCreateManyInput | PredictionHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PredictionHistory update
+   */
+  export type PredictionHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PredictionHistory.
+     */
+    data: XOR<PredictionHistoryUpdateInput, PredictionHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which PredictionHistory to update.
+     */
+    where: PredictionHistoryWhereUniqueInput
+  }
+
+  /**
+   * PredictionHistory updateMany
+   */
+  export type PredictionHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PredictionHistories.
+     */
+    data: XOR<PredictionHistoryUpdateManyMutationInput, PredictionHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which PredictionHistories to update
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * Limit how many PredictionHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PredictionHistory updateManyAndReturn
+   */
+  export type PredictionHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update PredictionHistories.
+     */
+    data: XOR<PredictionHistoryUpdateManyMutationInput, PredictionHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which PredictionHistories to update
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * Limit how many PredictionHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PredictionHistory upsert
+   */
+  export type PredictionHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PredictionHistory to update in case it exists.
+     */
+    where: PredictionHistoryWhereUniqueInput
+    /**
+     * In case the PredictionHistory found by the `where` argument doesn't exist, create a new PredictionHistory with this data.
+     */
+    create: XOR<PredictionHistoryCreateInput, PredictionHistoryUncheckedCreateInput>
+    /**
+     * In case the PredictionHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PredictionHistoryUpdateInput, PredictionHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * PredictionHistory delete
+   */
+  export type PredictionHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which PredictionHistory to delete.
+     */
+    where: PredictionHistoryWhereUniqueInput
+  }
+
+  /**
+   * PredictionHistory deleteMany
+   */
+  export type PredictionHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PredictionHistories to delete
+     */
+    where?: PredictionHistoryWhereInput
+    /**
+     * Limit how many PredictionHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PredictionHistory without action
+   */
+  export type PredictionHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PredictionHistory
+     */
+    select?: PredictionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PredictionHistory
+     */
+    omit?: PredictionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PredictionHistoryInclude<ExtArgs> | null
   }
 
 
@@ -7272,6 +10810,7 @@ export namespace Prisma {
     koWins: 'koWins',
     subWins: 'subWins',
     eloRating: 'eloRating',
+    isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7285,6 +10824,7 @@ export namespace Prisma {
     date: 'date',
     location: 'location',
     isUpcoming: 'isUpcoming',
+    isProcessed: 'isProcessed',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7313,6 +10853,42 @@ export namespace Prisma {
   };
 
   export type FightScalarFieldEnum = (typeof FightScalarFieldEnum)[keyof typeof FightScalarFieldEnum]
+
+
+  export const AuditLogScalarFieldEnum: {
+    id: 'id',
+    action: 'action',
+    details: 'details',
+    createdAt: 'createdAt'
+  };
+
+  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const JobExecutionScalarFieldEnum: {
+    id: 'id',
+    jobName: 'jobName',
+    status: 'status',
+    error: 'error',
+    durationMs: 'durationMs',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt'
+  };
+
+  export type JobExecutionScalarFieldEnum = (typeof JobExecutionScalarFieldEnum)[keyof typeof JobExecutionScalarFieldEnum]
+
+
+  export const PredictionHistoryScalarFieldEnum: {
+    id: 'id',
+    fightId: 'fightId',
+    winProbFighter1: 'winProbFighter1',
+    winProbFighter2: 'winProbFighter2',
+    confidence: 'confidence',
+    explanation: 'explanation',
+    createdAt: 'createdAt'
+  };
+
+  export type PredictionHistoryScalarFieldEnum = (typeof PredictionHistoryScalarFieldEnum)[keyof typeof PredictionHistoryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7556,6 +11132,7 @@ export namespace Prisma {
     koWins?: IntFilter<"Fighter"> | number
     subWins?: IntFilter<"Fighter"> | number
     eloRating?: IntFilter<"Fighter"> | number
+    isActive?: BoolFilter<"Fighter"> | boolean
     createdAt?: DateTimeFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeFilter<"Fighter"> | Date | string
     fightsAsFighter1?: FightListRelationFilter
@@ -7576,6 +11153,7 @@ export namespace Prisma {
     koWins?: SortOrder
     subWins?: SortOrder
     eloRating?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fightsAsFighter1?: FightOrderByRelationAggregateInput
@@ -7599,6 +11177,7 @@ export namespace Prisma {
     koWins?: IntFilter<"Fighter"> | number
     subWins?: IntFilter<"Fighter"> | number
     eloRating?: IntFilter<"Fighter"> | number
+    isActive?: BoolFilter<"Fighter"> | boolean
     createdAt?: DateTimeFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeFilter<"Fighter"> | Date | string
     fightsAsFighter1?: FightListRelationFilter
@@ -7619,6 +11198,7 @@ export namespace Prisma {
     koWins?: SortOrder
     subWins?: SortOrder
     eloRating?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: FighterCountOrderByAggregateInput
@@ -7644,6 +11224,7 @@ export namespace Prisma {
     koWins?: IntWithAggregatesFilter<"Fighter"> | number
     subWins?: IntWithAggregatesFilter<"Fighter"> | number
     eloRating?: IntWithAggregatesFilter<"Fighter"> | number
+    isActive?: BoolWithAggregatesFilter<"Fighter"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Fighter"> | Date | string
   }
@@ -7657,6 +11238,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Event"> | Date | string
     location?: StringNullableFilter<"Event"> | string | null
     isUpcoming?: BoolFilter<"Event"> | boolean
+    isProcessed?: BoolFilter<"Event"> | boolean
     createdAt?: DateTimeFilter<"Event"> | Date | string
     updatedAt?: DateTimeFilter<"Event"> | Date | string
     fights?: FightListRelationFilter
@@ -7668,6 +11250,7 @@ export namespace Prisma {
     date?: SortOrder
     location?: SortOrderInput | SortOrder
     isUpcoming?: SortOrder
+    isProcessed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fights?: FightOrderByRelationAggregateInput
@@ -7682,6 +11265,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Event"> | Date | string
     location?: StringNullableFilter<"Event"> | string | null
     isUpcoming?: BoolFilter<"Event"> | boolean
+    isProcessed?: BoolFilter<"Event"> | boolean
     createdAt?: DateTimeFilter<"Event"> | Date | string
     updatedAt?: DateTimeFilter<"Event"> | Date | string
     fights?: FightListRelationFilter
@@ -7693,6 +11277,7 @@ export namespace Prisma {
     date?: SortOrder
     location?: SortOrderInput | SortOrder
     isUpcoming?: SortOrder
+    isProcessed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: EventCountOrderByAggregateInput
@@ -7709,6 +11294,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     location?: StringNullableWithAggregatesFilter<"Event"> | string | null
     isUpcoming?: BoolWithAggregatesFilter<"Event"> | boolean
+    isProcessed?: BoolWithAggregatesFilter<"Event"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
   }
@@ -7738,6 +11324,7 @@ export namespace Prisma {
     fighter1?: XOR<FighterScalarRelationFilter, FighterWhereInput>
     fighter2?: XOR<FighterScalarRelationFilter, FighterWhereInput>
     winner?: XOR<FighterNullableScalarRelationFilter, FighterWhereInput> | null
+    predictionHistory?: PredictionHistoryListRelationFilter
   }
 
   export type FightOrderByWithRelationInput = {
@@ -7762,6 +11349,7 @@ export namespace Prisma {
     fighter1?: FighterOrderByWithRelationInput
     fighter2?: FighterOrderByWithRelationInput
     winner?: FighterOrderByWithRelationInput
+    predictionHistory?: PredictionHistoryOrderByRelationAggregateInput
   }
 
   export type FightWhereUniqueInput = Prisma.AtLeast<{
@@ -7790,6 +11378,7 @@ export namespace Prisma {
     fighter1?: XOR<FighterScalarRelationFilter, FighterWhereInput>
     fighter2?: XOR<FighterScalarRelationFilter, FighterWhereInput>
     winner?: XOR<FighterNullableScalarRelationFilter, FighterWhereInput> | null
+    predictionHistory?: PredictionHistoryListRelationFilter
   }, "id" | "eventId_fighter1Id_fighter2Id">
 
   export type FightOrderByWithAggregationInput = {
@@ -7838,6 +11427,184 @@ export namespace Prisma {
     endingTime?: StringNullableWithAggregatesFilter<"Fight"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Fight"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Fight"> | Date | string
+  }
+
+  export type AuditLogWhereInput = {
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    action?: StringFilter<"AuditLog"> | string
+    details?: StringFilter<"AuditLog"> | string
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
+  export type AuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    action?: StringFilter<"AuditLog"> | string
+    details?: StringFilter<"AuditLog"> | string
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }, "id">
+
+  export type AuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+    _count?: AuditLogCountOrderByAggregateInput
+    _max?: AuditLogMaxOrderByAggregateInput
+    _min?: AuditLogMinOrderByAggregateInput
+  }
+
+  export type AuditLogScalarWhereWithAggregatesInput = {
+    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    OR?: AuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuditLog"> | string
+    action?: StringWithAggregatesFilter<"AuditLog"> | string
+    details?: StringWithAggregatesFilter<"AuditLog"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type JobExecutionWhereInput = {
+    AND?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    OR?: JobExecutionWhereInput[]
+    NOT?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    id?: StringFilter<"JobExecution"> | string
+    jobName?: StringFilter<"JobExecution"> | string
+    status?: StringFilter<"JobExecution"> | string
+    error?: StringNullableFilter<"JobExecution"> | string | null
+    durationMs?: IntNullableFilter<"JobExecution"> | number | null
+    startedAt?: DateTimeFilter<"JobExecution"> | Date | string
+    completedAt?: DateTimeNullableFilter<"JobExecution"> | Date | string | null
+  }
+
+  export type JobExecutionOrderByWithRelationInput = {
+    id?: SortOrder
+    jobName?: SortOrder
+    status?: SortOrder
+    error?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+  }
+
+  export type JobExecutionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    OR?: JobExecutionWhereInput[]
+    NOT?: JobExecutionWhereInput | JobExecutionWhereInput[]
+    jobName?: StringFilter<"JobExecution"> | string
+    status?: StringFilter<"JobExecution"> | string
+    error?: StringNullableFilter<"JobExecution"> | string | null
+    durationMs?: IntNullableFilter<"JobExecution"> | number | null
+    startedAt?: DateTimeFilter<"JobExecution"> | Date | string
+    completedAt?: DateTimeNullableFilter<"JobExecution"> | Date | string | null
+  }, "id">
+
+  export type JobExecutionOrderByWithAggregationInput = {
+    id?: SortOrder
+    jobName?: SortOrder
+    status?: SortOrder
+    error?: SortOrderInput | SortOrder
+    durationMs?: SortOrderInput | SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    _count?: JobExecutionCountOrderByAggregateInput
+    _avg?: JobExecutionAvgOrderByAggregateInput
+    _max?: JobExecutionMaxOrderByAggregateInput
+    _min?: JobExecutionMinOrderByAggregateInput
+    _sum?: JobExecutionSumOrderByAggregateInput
+  }
+
+  export type JobExecutionScalarWhereWithAggregatesInput = {
+    AND?: JobExecutionScalarWhereWithAggregatesInput | JobExecutionScalarWhereWithAggregatesInput[]
+    OR?: JobExecutionScalarWhereWithAggregatesInput[]
+    NOT?: JobExecutionScalarWhereWithAggregatesInput | JobExecutionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"JobExecution"> | string
+    jobName?: StringWithAggregatesFilter<"JobExecution"> | string
+    status?: StringWithAggregatesFilter<"JobExecution"> | string
+    error?: StringNullableWithAggregatesFilter<"JobExecution"> | string | null
+    durationMs?: IntNullableWithAggregatesFilter<"JobExecution"> | number | null
+    startedAt?: DateTimeWithAggregatesFilter<"JobExecution"> | Date | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"JobExecution"> | Date | string | null
+  }
+
+  export type PredictionHistoryWhereInput = {
+    AND?: PredictionHistoryWhereInput | PredictionHistoryWhereInput[]
+    OR?: PredictionHistoryWhereInput[]
+    NOT?: PredictionHistoryWhereInput | PredictionHistoryWhereInput[]
+    id?: StringFilter<"PredictionHistory"> | string
+    fightId?: StringFilter<"PredictionHistory"> | string
+    winProbFighter1?: FloatFilter<"PredictionHistory"> | number
+    winProbFighter2?: FloatFilter<"PredictionHistory"> | number
+    confidence?: FloatFilter<"PredictionHistory"> | number
+    explanation?: StringFilter<"PredictionHistory"> | string
+    createdAt?: DateTimeFilter<"PredictionHistory"> | Date | string
+    fight?: XOR<FightScalarRelationFilter, FightWhereInput>
+  }
+
+  export type PredictionHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    fightId?: SortOrder
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+    explanation?: SortOrder
+    createdAt?: SortOrder
+    fight?: FightOrderByWithRelationInput
+  }
+
+  export type PredictionHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PredictionHistoryWhereInput | PredictionHistoryWhereInput[]
+    OR?: PredictionHistoryWhereInput[]
+    NOT?: PredictionHistoryWhereInput | PredictionHistoryWhereInput[]
+    fightId?: StringFilter<"PredictionHistory"> | string
+    winProbFighter1?: FloatFilter<"PredictionHistory"> | number
+    winProbFighter2?: FloatFilter<"PredictionHistory"> | number
+    confidence?: FloatFilter<"PredictionHistory"> | number
+    explanation?: StringFilter<"PredictionHistory"> | string
+    createdAt?: DateTimeFilter<"PredictionHistory"> | Date | string
+    fight?: XOR<FightScalarRelationFilter, FightWhereInput>
+  }, "id">
+
+  export type PredictionHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    fightId?: SortOrder
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+    explanation?: SortOrder
+    createdAt?: SortOrder
+    _count?: PredictionHistoryCountOrderByAggregateInput
+    _avg?: PredictionHistoryAvgOrderByAggregateInput
+    _max?: PredictionHistoryMaxOrderByAggregateInput
+    _min?: PredictionHistoryMinOrderByAggregateInput
+    _sum?: PredictionHistorySumOrderByAggregateInput
+  }
+
+  export type PredictionHistoryScalarWhereWithAggregatesInput = {
+    AND?: PredictionHistoryScalarWhereWithAggregatesInput | PredictionHistoryScalarWhereWithAggregatesInput[]
+    OR?: PredictionHistoryScalarWhereWithAggregatesInput[]
+    NOT?: PredictionHistoryScalarWhereWithAggregatesInput | PredictionHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PredictionHistory"> | string
+    fightId?: StringWithAggregatesFilter<"PredictionHistory"> | string
+    winProbFighter1?: FloatWithAggregatesFilter<"PredictionHistory"> | number
+    winProbFighter2?: FloatWithAggregatesFilter<"PredictionHistory"> | number
+    confidence?: FloatWithAggregatesFilter<"PredictionHistory"> | number
+    explanation?: StringWithAggregatesFilter<"PredictionHistory"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PredictionHistory"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -7996,6 +11763,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -8016,6 +11784,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -8036,6 +11805,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -8056,6 +11826,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput
@@ -8076,6 +11847,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8093,6 +11865,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8110,6 +11883,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8120,6 +11894,7 @@ export namespace Prisma {
     date: Date | string
     location?: string | null
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fights?: FightCreateNestedManyWithoutEventInput
@@ -8131,6 +11906,7 @@ export namespace Prisma {
     date: Date | string
     location?: string | null
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fights?: FightUncheckedCreateNestedManyWithoutEventInput
@@ -8142,6 +11918,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fights?: FightUpdateManyWithoutEventNestedInput
@@ -8153,6 +11930,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fights?: FightUncheckedUpdateManyWithoutEventNestedInput
@@ -8164,6 +11942,7 @@ export namespace Prisma {
     date: Date | string
     location?: string | null
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8174,6 +11953,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8184,6 +11964,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8206,6 +11987,7 @@ export namespace Prisma {
     fighter1: FighterCreateNestedOneWithoutFightsAsFighter1Input
     fighter2: FighterCreateNestedOneWithoutFightsAsFighter2Input
     winner?: FighterCreateNestedOneWithoutFightsWonInput
+    predictionHistory?: PredictionHistoryCreateNestedManyWithoutFightInput
   }
 
   export type FightUncheckedCreateInput = {
@@ -8226,6 +12008,7 @@ export namespace Prisma {
     endingTime?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    predictionHistory?: PredictionHistoryUncheckedCreateNestedManyWithoutFightInput
   }
 
   export type FightUpdateInput = {
@@ -8246,6 +12029,7 @@ export namespace Prisma {
     fighter1?: FighterUpdateOneRequiredWithoutFightsAsFighter1NestedInput
     fighter2?: FighterUpdateOneRequiredWithoutFightsAsFighter2NestedInput
     winner?: FighterUpdateOneWithoutFightsWonNestedInput
+    predictionHistory?: PredictionHistoryUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateInput = {
@@ -8266,6 +12050,7 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    predictionHistory?: PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput
   }
 
   export type FightCreateManyInput = {
@@ -8322,6 +12107,194 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateInput = {
+    id?: string
+    action: string
+    details: string
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUncheckedCreateInput = {
+    id?: string
+    action: string
+    details: string
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    details?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    details?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogCreateManyInput = {
+    id?: string
+    action: string
+    details: string
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    details?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    details?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type JobExecutionCreateInput = {
+    id?: string
+    jobName: string
+    status: string
+    error?: string | null
+    durationMs?: number | null
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+  }
+
+  export type JobExecutionUncheckedCreateInput = {
+    id?: string
+    jobName: string
+    status: string
+    error?: string | null
+    durationMs?: number | null
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+  }
+
+  export type JobExecutionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jobName?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type JobExecutionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jobName?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type JobExecutionCreateManyInput = {
+    id?: string
+    jobName: string
+    status: string
+    error?: string | null
+    durationMs?: number | null
+    startedAt?: Date | string
+    completedAt?: Date | string | null
+  }
+
+  export type JobExecutionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jobName?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type JobExecutionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jobName?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    durationMs?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PredictionHistoryCreateInput = {
+    id?: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+    fight: FightCreateNestedOneWithoutPredictionHistoryInput
+  }
+
+  export type PredictionHistoryUncheckedCreateInput = {
+    id?: string
+    fightId: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+  }
+
+  export type PredictionHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fight?: FightUpdateOneRequiredWithoutPredictionHistoryNestedInput
+  }
+
+  export type PredictionHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fightId?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PredictionHistoryCreateManyInput = {
+    id?: string
+    fightId: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+  }
+
+  export type PredictionHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PredictionHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fightId?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -8548,6 +12521,11 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type FightListRelationFilter = {
     every?: FightWhereInput
     some?: FightWhereInput
@@ -8571,6 +12549,7 @@ export namespace Prisma {
     koWins?: SortOrder
     subWins?: SortOrder
     eloRating?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8600,6 +12579,7 @@ export namespace Prisma {
     koWins?: SortOrder
     subWins?: SortOrder
     eloRating?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8617,6 +12597,7 @@ export namespace Prisma {
     koWins?: SortOrder
     subWins?: SortOrder
     eloRating?: SortOrder
+    isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8681,9 +12662,12 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type EventCountOrderByAggregateInput = {
@@ -8692,6 +12676,7 @@ export namespace Prisma {
     date?: SortOrder
     location?: SortOrder
     isUpcoming?: SortOrder
+    isProcessed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8702,6 +12687,7 @@ export namespace Prisma {
     date?: SortOrder
     location?: SortOrder
     isUpcoming?: SortOrder
+    isProcessed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8712,16 +12698,9 @@ export namespace Prisma {
     date?: SortOrder
     location?: SortOrder
     isUpcoming?: SortOrder
+    isProcessed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type EventScalarRelationFilter = {
@@ -8737,6 +12716,16 @@ export namespace Prisma {
   export type FighterNullableScalarRelationFilter = {
     is?: FighterWhereInput | null
     isNot?: FighterWhereInput | null
+  }
+
+  export type PredictionHistoryListRelationFilter = {
+    every?: PredictionHistoryWhereInput
+    some?: PredictionHistoryWhereInput
+    none?: PredictionHistoryWhereInput
+  }
+
+  export type PredictionHistoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type FightEventIdFighter1IdFighter2IdCompoundUniqueInput = {
@@ -8819,6 +12808,139 @@ export namespace Prisma {
     oddsFighter2?: SortOrder
     aiConfidence?: SortOrder
     endingRound?: SortOrder
+  }
+
+  export type AuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type JobExecutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    jobName?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    durationMs?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionAvgOrderByAggregateInput = {
+    durationMs?: SortOrder
+  }
+
+  export type JobExecutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    jobName?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    durationMs?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    jobName?: SortOrder
+    status?: SortOrder
+    error?: SortOrder
+    durationMs?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type JobExecutionSumOrderByAggregateInput = {
+    durationMs?: SortOrder
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type FightScalarRelationFilter = {
+    is?: FightWhereInput
+    isNot?: FightWhereInput
+  }
+
+  export type PredictionHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    fightId?: SortOrder
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+    explanation?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PredictionHistoryAvgOrderByAggregateInput = {
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+  }
+
+  export type PredictionHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    fightId?: SortOrder
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+    explanation?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PredictionHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    fightId?: SortOrder
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+    explanation?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PredictionHistorySumOrderByAggregateInput = {
+    winProbFighter1?: SortOrder
+    winProbFighter2?: SortOrder
+    confidence?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateNestedOneWithoutUserInput = {
@@ -8949,6 +13071,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type FightUpdateManyWithoutFighter1NestedInput = {
     create?: XOR<FightCreateWithoutFighter1Input, FightUncheckedCreateWithoutFighter1Input> | FightCreateWithoutFighter1Input[] | FightUncheckedCreateWithoutFighter1Input[]
     connectOrCreate?: FightCreateOrConnectWithoutFighter1Input | FightCreateOrConnectWithoutFighter1Input[]
@@ -9047,10 +13173,6 @@ export namespace Prisma {
     connect?: FightWhereUniqueInput | FightWhereUniqueInput[]
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type FightUpdateManyWithoutEventNestedInput = {
     create?: XOR<FightCreateWithoutEventInput, FightUncheckedCreateWithoutEventInput> | FightCreateWithoutEventInput[] | FightUncheckedCreateWithoutEventInput[]
     connectOrCreate?: FightCreateOrConnectWithoutEventInput | FightCreateOrConnectWithoutEventInput[]
@@ -9103,6 +13225,20 @@ export namespace Prisma {
     connect?: FighterWhereUniqueInput
   }
 
+  export type PredictionHistoryCreateNestedManyWithoutFightInput = {
+    create?: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput> | PredictionHistoryCreateWithoutFightInput[] | PredictionHistoryUncheckedCreateWithoutFightInput[]
+    connectOrCreate?: PredictionHistoryCreateOrConnectWithoutFightInput | PredictionHistoryCreateOrConnectWithoutFightInput[]
+    createMany?: PredictionHistoryCreateManyFightInputEnvelope
+    connect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+  }
+
+  export type PredictionHistoryUncheckedCreateNestedManyWithoutFightInput = {
+    create?: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput> | PredictionHistoryCreateWithoutFightInput[] | PredictionHistoryUncheckedCreateWithoutFightInput[]
+    connectOrCreate?: PredictionHistoryCreateOrConnectWithoutFightInput | PredictionHistoryCreateOrConnectWithoutFightInput[]
+    createMany?: PredictionHistoryCreateManyFightInputEnvelope
+    connect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+  }
+
   export type EventUpdateOneRequiredWithoutFightsNestedInput = {
     create?: XOR<EventCreateWithoutFightsInput, EventUncheckedCreateWithoutFightsInput>
     connectOrCreate?: EventCreateOrConnectWithoutFightsInput
@@ -9135,6 +13271,56 @@ export namespace Prisma {
     delete?: FighterWhereInput | boolean
     connect?: FighterWhereUniqueInput
     update?: XOR<XOR<FighterUpdateToOneWithWhereWithoutFightsWonInput, FighterUpdateWithoutFightsWonInput>, FighterUncheckedUpdateWithoutFightsWonInput>
+  }
+
+  export type PredictionHistoryUpdateManyWithoutFightNestedInput = {
+    create?: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput> | PredictionHistoryCreateWithoutFightInput[] | PredictionHistoryUncheckedCreateWithoutFightInput[]
+    connectOrCreate?: PredictionHistoryCreateOrConnectWithoutFightInput | PredictionHistoryCreateOrConnectWithoutFightInput[]
+    upsert?: PredictionHistoryUpsertWithWhereUniqueWithoutFightInput | PredictionHistoryUpsertWithWhereUniqueWithoutFightInput[]
+    createMany?: PredictionHistoryCreateManyFightInputEnvelope
+    set?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    disconnect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    delete?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    connect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    update?: PredictionHistoryUpdateWithWhereUniqueWithoutFightInput | PredictionHistoryUpdateWithWhereUniqueWithoutFightInput[]
+    updateMany?: PredictionHistoryUpdateManyWithWhereWithoutFightInput | PredictionHistoryUpdateManyWithWhereWithoutFightInput[]
+    deleteMany?: PredictionHistoryScalarWhereInput | PredictionHistoryScalarWhereInput[]
+  }
+
+  export type PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput = {
+    create?: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput> | PredictionHistoryCreateWithoutFightInput[] | PredictionHistoryUncheckedCreateWithoutFightInput[]
+    connectOrCreate?: PredictionHistoryCreateOrConnectWithoutFightInput | PredictionHistoryCreateOrConnectWithoutFightInput[]
+    upsert?: PredictionHistoryUpsertWithWhereUniqueWithoutFightInput | PredictionHistoryUpsertWithWhereUniqueWithoutFightInput[]
+    createMany?: PredictionHistoryCreateManyFightInputEnvelope
+    set?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    disconnect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    delete?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    connect?: PredictionHistoryWhereUniqueInput | PredictionHistoryWhereUniqueInput[]
+    update?: PredictionHistoryUpdateWithWhereUniqueWithoutFightInput | PredictionHistoryUpdateWithWhereUniqueWithoutFightInput[]
+    updateMany?: PredictionHistoryUpdateManyWithWhereWithoutFightInput | PredictionHistoryUpdateManyWithWhereWithoutFightInput[]
+    deleteMany?: PredictionHistoryScalarWhereInput | PredictionHistoryScalarWhereInput[]
+  }
+
+  export type FightCreateNestedOneWithoutPredictionHistoryInput = {
+    create?: XOR<FightCreateWithoutPredictionHistoryInput, FightUncheckedCreateWithoutPredictionHistoryInput>
+    connectOrCreate?: FightCreateOrConnectWithoutPredictionHistoryInput
+    connect?: FightWhereUniqueInput
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type FightUpdateOneRequiredWithoutPredictionHistoryNestedInput = {
+    create?: XOR<FightCreateWithoutPredictionHistoryInput, FightUncheckedCreateWithoutPredictionHistoryInput>
+    connectOrCreate?: FightCreateOrConnectWithoutPredictionHistoryInput
+    upsert?: FightUpsertWithoutPredictionHistoryInput
+    connect?: FightWhereUniqueInput
+    update?: XOR<XOR<FightUpdateToOneWithWhereWithoutPredictionHistoryInput, FightUpdateWithoutPredictionHistoryInput>, FightUncheckedUpdateWithoutPredictionHistoryInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9282,6 +13468,11 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -9341,17 +13532,28 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateWithoutUserInput = {
@@ -9479,6 +13681,7 @@ export namespace Prisma {
     event: EventCreateNestedOneWithoutFightsInput
     fighter2: FighterCreateNestedOneWithoutFightsAsFighter2Input
     winner?: FighterCreateNestedOneWithoutFightsWonInput
+    predictionHistory?: PredictionHistoryCreateNestedManyWithoutFightInput
   }
 
   export type FightUncheckedCreateWithoutFighter1Input = {
@@ -9498,6 +13701,7 @@ export namespace Prisma {
     endingTime?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    predictionHistory?: PredictionHistoryUncheckedCreateNestedManyWithoutFightInput
   }
 
   export type FightCreateOrConnectWithoutFighter1Input = {
@@ -9527,6 +13731,7 @@ export namespace Prisma {
     event: EventCreateNestedOneWithoutFightsInput
     fighter1: FighterCreateNestedOneWithoutFightsAsFighter1Input
     winner?: FighterCreateNestedOneWithoutFightsWonInput
+    predictionHistory?: PredictionHistoryCreateNestedManyWithoutFightInput
   }
 
   export type FightUncheckedCreateWithoutFighter2Input = {
@@ -9546,6 +13751,7 @@ export namespace Prisma {
     endingTime?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    predictionHistory?: PredictionHistoryUncheckedCreateNestedManyWithoutFightInput
   }
 
   export type FightCreateOrConnectWithoutFighter2Input = {
@@ -9575,6 +13781,7 @@ export namespace Prisma {
     event: EventCreateNestedOneWithoutFightsInput
     fighter1: FighterCreateNestedOneWithoutFightsAsFighter1Input
     fighter2: FighterCreateNestedOneWithoutFightsAsFighter2Input
+    predictionHistory?: PredictionHistoryCreateNestedManyWithoutFightInput
   }
 
   export type FightUncheckedCreateWithoutWinnerInput = {
@@ -9594,6 +13801,7 @@ export namespace Prisma {
     endingTime?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    predictionHistory?: PredictionHistoryUncheckedCreateNestedManyWithoutFightInput
   }
 
   export type FightCreateOrConnectWithoutWinnerInput = {
@@ -9694,6 +13902,7 @@ export namespace Prisma {
     fighter1: FighterCreateNestedOneWithoutFightsAsFighter1Input
     fighter2: FighterCreateNestedOneWithoutFightsAsFighter2Input
     winner?: FighterCreateNestedOneWithoutFightsWonInput
+    predictionHistory?: PredictionHistoryCreateNestedManyWithoutFightInput
   }
 
   export type FightUncheckedCreateWithoutEventInput = {
@@ -9713,6 +13922,7 @@ export namespace Prisma {
     endingTime?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    predictionHistory?: PredictionHistoryUncheckedCreateNestedManyWithoutFightInput
   }
 
   export type FightCreateOrConnectWithoutEventInput = {
@@ -9747,6 +13957,7 @@ export namespace Prisma {
     date: Date | string
     location?: string | null
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9757,6 +13968,7 @@ export namespace Prisma {
     date: Date | string
     location?: string | null
     isUpcoming?: boolean
+    isProcessed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9779,6 +13991,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter2?: FightCreateNestedManyWithoutFighter2Input
@@ -9798,6 +14011,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter2?: FightUncheckedCreateNestedManyWithoutFighter2Input
@@ -9822,6 +14036,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -9841,6 +14056,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -9865,6 +14081,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -9884,6 +14101,7 @@ export namespace Prisma {
     koWins?: number
     subWins?: number
     eloRating?: number
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -9893,6 +14111,34 @@ export namespace Prisma {
   export type FighterCreateOrConnectWithoutFightsWonInput = {
     where: FighterWhereUniqueInput
     create: XOR<FighterCreateWithoutFightsWonInput, FighterUncheckedCreateWithoutFightsWonInput>
+  }
+
+  export type PredictionHistoryCreateWithoutFightInput = {
+    id?: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+  }
+
+  export type PredictionHistoryUncheckedCreateWithoutFightInput = {
+    id?: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+  }
+
+  export type PredictionHistoryCreateOrConnectWithoutFightInput = {
+    where: PredictionHistoryWhereUniqueInput
+    create: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput>
+  }
+
+  export type PredictionHistoryCreateManyFightInputEnvelope = {
+    data: PredictionHistoryCreateManyFightInput | PredictionHistoryCreateManyFightInput[]
+    skipDuplicates?: boolean
   }
 
   export type EventUpsertWithoutFightsInput = {
@@ -9912,6 +14158,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9922,6 +14169,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     isUpcoming?: BoolFieldUpdateOperationsInput | boolean
+    isProcessed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9950,6 +14198,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter2?: FightUpdateManyWithoutFighter2NestedInput
@@ -9969,6 +14218,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter2?: FightUncheckedUpdateManyWithoutFighter2NestedInput
@@ -9999,6 +14249,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -10018,6 +14269,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput
@@ -10048,6 +14300,7 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -10067,10 +14320,136 @@ export namespace Prisma {
     koWins?: IntFieldUpdateOperationsInput | number
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput
     fightsAsFighter2?: FightUncheckedUpdateManyWithoutFighter2NestedInput
+  }
+
+  export type PredictionHistoryUpsertWithWhereUniqueWithoutFightInput = {
+    where: PredictionHistoryWhereUniqueInput
+    update: XOR<PredictionHistoryUpdateWithoutFightInput, PredictionHistoryUncheckedUpdateWithoutFightInput>
+    create: XOR<PredictionHistoryCreateWithoutFightInput, PredictionHistoryUncheckedCreateWithoutFightInput>
+  }
+
+  export type PredictionHistoryUpdateWithWhereUniqueWithoutFightInput = {
+    where: PredictionHistoryWhereUniqueInput
+    data: XOR<PredictionHistoryUpdateWithoutFightInput, PredictionHistoryUncheckedUpdateWithoutFightInput>
+  }
+
+  export type PredictionHistoryUpdateManyWithWhereWithoutFightInput = {
+    where: PredictionHistoryScalarWhereInput
+    data: XOR<PredictionHistoryUpdateManyMutationInput, PredictionHistoryUncheckedUpdateManyWithoutFightInput>
+  }
+
+  export type PredictionHistoryScalarWhereInput = {
+    AND?: PredictionHistoryScalarWhereInput | PredictionHistoryScalarWhereInput[]
+    OR?: PredictionHistoryScalarWhereInput[]
+    NOT?: PredictionHistoryScalarWhereInput | PredictionHistoryScalarWhereInput[]
+    id?: StringFilter<"PredictionHistory"> | string
+    fightId?: StringFilter<"PredictionHistory"> | string
+    winProbFighter1?: FloatFilter<"PredictionHistory"> | number
+    winProbFighter2?: FloatFilter<"PredictionHistory"> | number
+    confidence?: FloatFilter<"PredictionHistory"> | number
+    explanation?: StringFilter<"PredictionHistory"> | string
+    createdAt?: DateTimeFilter<"PredictionHistory"> | Date | string
+  }
+
+  export type FightCreateWithoutPredictionHistoryInput = {
+    id?: string
+    weightClass?: string | null
+    rounds?: number
+    isTitleFight?: boolean
+    oddsFighter1?: number | null
+    oddsFighter2?: number | null
+    aiPrediction?: string | null
+    aiConfidence?: number | null
+    method?: string | null
+    endingRound?: number | null
+    endingTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    event: EventCreateNestedOneWithoutFightsInput
+    fighter1: FighterCreateNestedOneWithoutFightsAsFighter1Input
+    fighter2: FighterCreateNestedOneWithoutFightsAsFighter2Input
+    winner?: FighterCreateNestedOneWithoutFightsWonInput
+  }
+
+  export type FightUncheckedCreateWithoutPredictionHistoryInput = {
+    id?: string
+    eventId: string
+    fighter1Id: string
+    fighter2Id: string
+    winnerId?: string | null
+    weightClass?: string | null
+    rounds?: number
+    isTitleFight?: boolean
+    oddsFighter1?: number | null
+    oddsFighter2?: number | null
+    aiPrediction?: string | null
+    aiConfidence?: number | null
+    method?: string | null
+    endingRound?: number | null
+    endingTime?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FightCreateOrConnectWithoutPredictionHistoryInput = {
+    where: FightWhereUniqueInput
+    create: XOR<FightCreateWithoutPredictionHistoryInput, FightUncheckedCreateWithoutPredictionHistoryInput>
+  }
+
+  export type FightUpsertWithoutPredictionHistoryInput = {
+    update: XOR<FightUpdateWithoutPredictionHistoryInput, FightUncheckedUpdateWithoutPredictionHistoryInput>
+    create: XOR<FightCreateWithoutPredictionHistoryInput, FightUncheckedCreateWithoutPredictionHistoryInput>
+    where?: FightWhereInput
+  }
+
+  export type FightUpdateToOneWithWhereWithoutPredictionHistoryInput = {
+    where?: FightWhereInput
+    data: XOR<FightUpdateWithoutPredictionHistoryInput, FightUncheckedUpdateWithoutPredictionHistoryInput>
+  }
+
+  export type FightUpdateWithoutPredictionHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    rounds?: IntFieldUpdateOperationsInput | number
+    isTitleFight?: BoolFieldUpdateOperationsInput | boolean
+    oddsFighter1?: NullableIntFieldUpdateOperationsInput | number | null
+    oddsFighter2?: NullableIntFieldUpdateOperationsInput | number | null
+    aiPrediction?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    method?: NullableStringFieldUpdateOperationsInput | string | null
+    endingRound?: NullableIntFieldUpdateOperationsInput | number | null
+    endingTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    event?: EventUpdateOneRequiredWithoutFightsNestedInput
+    fighter1?: FighterUpdateOneRequiredWithoutFightsAsFighter1NestedInput
+    fighter2?: FighterUpdateOneRequiredWithoutFightsAsFighter2NestedInput
+    winner?: FighterUpdateOneWithoutFightsWonNestedInput
+  }
+
+  export type FightUncheckedUpdateWithoutPredictionHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    fighter1Id?: StringFieldUpdateOperationsInput | string
+    fighter2Id?: StringFieldUpdateOperationsInput | string
+    winnerId?: NullableStringFieldUpdateOperationsInput | string | null
+    weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    rounds?: IntFieldUpdateOperationsInput | number
+    isTitleFight?: BoolFieldUpdateOperationsInput | boolean
+    oddsFighter1?: NullableIntFieldUpdateOperationsInput | number | null
+    oddsFighter2?: NullableIntFieldUpdateOperationsInput | number | null
+    aiPrediction?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableFloatFieldUpdateOperationsInput | number | null
+    method?: NullableStringFieldUpdateOperationsInput | string | null
+    endingRound?: NullableIntFieldUpdateOperationsInput | number | null
+    endingTime?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type FightCreateManyFighter1Input = {
@@ -10147,6 +14526,7 @@ export namespace Prisma {
     event?: EventUpdateOneRequiredWithoutFightsNestedInput
     fighter2?: FighterUpdateOneRequiredWithoutFightsAsFighter2NestedInput
     winner?: FighterUpdateOneWithoutFightsWonNestedInput
+    predictionHistory?: PredictionHistoryUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateWithoutFighter1Input = {
@@ -10166,6 +14546,7 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    predictionHistory?: PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateManyWithoutFighter1Input = {
@@ -10204,6 +14585,7 @@ export namespace Prisma {
     event?: EventUpdateOneRequiredWithoutFightsNestedInput
     fighter1?: FighterUpdateOneRequiredWithoutFightsAsFighter1NestedInput
     winner?: FighterUpdateOneWithoutFightsWonNestedInput
+    predictionHistory?: PredictionHistoryUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateWithoutFighter2Input = {
@@ -10223,6 +14605,7 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    predictionHistory?: PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateManyWithoutFighter2Input = {
@@ -10261,6 +14644,7 @@ export namespace Prisma {
     event?: EventUpdateOneRequiredWithoutFightsNestedInput
     fighter1?: FighterUpdateOneRequiredWithoutFightsAsFighter1NestedInput
     fighter2?: FighterUpdateOneRequiredWithoutFightsAsFighter2NestedInput
+    predictionHistory?: PredictionHistoryUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateWithoutWinnerInput = {
@@ -10280,6 +14664,7 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    predictionHistory?: PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateManyWithoutWinnerInput = {
@@ -10337,6 +14722,7 @@ export namespace Prisma {
     fighter1?: FighterUpdateOneRequiredWithoutFightsAsFighter1NestedInput
     fighter2?: FighterUpdateOneRequiredWithoutFightsAsFighter2NestedInput
     winner?: FighterUpdateOneWithoutFightsWonNestedInput
+    predictionHistory?: PredictionHistoryUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateWithoutEventInput = {
@@ -10356,6 +14742,7 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    predictionHistory?: PredictionHistoryUncheckedUpdateManyWithoutFightNestedInput
   }
 
   export type FightUncheckedUpdateManyWithoutEventInput = {
@@ -10375,6 +14762,42 @@ export namespace Prisma {
     endingTime?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PredictionHistoryCreateManyFightInput = {
+    id?: string
+    winProbFighter1: number
+    winProbFighter2: number
+    confidence: number
+    explanation: string
+    createdAt?: Date | string
+  }
+
+  export type PredictionHistoryUpdateWithoutFightInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PredictionHistoryUncheckedUpdateWithoutFightInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PredictionHistoryUncheckedUpdateManyWithoutFightInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    winProbFighter1?: FloatFieldUpdateOperationsInput | number
+    winProbFighter2?: FloatFieldUpdateOperationsInput | number
+    confidence?: FloatFieldUpdateOperationsInput | number
+    explanation?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

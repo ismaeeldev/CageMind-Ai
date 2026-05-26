@@ -38,9 +38,9 @@ export async function POST(req: Request) {
         return new NextResponse("No subscription", { status: 200 });
       }
 
-      const subscription = await stripe.subscriptions.retrieve(
+      const subscription = (await stripe.subscriptions.retrieve(
         session.subscription as string
-      );
+      )) as Stripe.Subscription;
 
       const userId = session.metadata?.userId || session.client_reference_id;
 
@@ -58,31 +58,31 @@ export async function POST(req: Request) {
           stripeSubscriptionId: subscription.id,
           stripeCustomerId: subscription.customer as string,
           status: subscription.status,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
         },
         update: {
           stripeSubscriptionId: subscription.id,
           stripeCustomerId: subscription.customer as string,
           status: subscription.status,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+          currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
         },
       });
     }
 
     if (event.type === "invoice.payment_succeeded") {
-      const invoice = event.data.object as Stripe.Invoice;
+      const invoice = event.data.object as any;
       
       if (invoice.subscription) {
-        const subscription = await stripe.subscriptions.retrieve(
+        const subscription = (await stripe.subscriptions.retrieve(
           invoice.subscription as string
-        );
+        )) as Stripe.Subscription;
 
         try {
           await prisma.subscription.update({
             where: { stripeSubscriptionId: subscription.id },
             data: {
               status: subscription.status,
-              currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+              currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
             },
           });
           console.log(`Updated subscription ${subscription.id} from invoice`);
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
           where: { stripeSubscriptionId: subscription.id },
           data: {
             status: subscription.status,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
           },
         });
         console.log(`Updated subscription ${subscription.id} from ${event.type}`);

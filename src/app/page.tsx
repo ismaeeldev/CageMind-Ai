@@ -120,7 +120,11 @@ export default function HomePage() {
                 <p className="text-muted-foreground leading-relaxed">Access our comprehensive database of every active UFC fighter, automatically updated with proprietary Elo ratings after every event.</p>
               </CardContent>
               <CardFooter>
-                <Badge variant="secondary" className="w-full justify-center py-1.5 rounded-lg font-bold tracking-wider uppercase text-[10px]">Free Tier</Badge>
+                <Link href="/events" className="w-full">
+                  <Button variant="outline" className="w-full cursor-pointer rounded-xl h-10 border-primary/20 hover:bg-primary/5 text-foreground hover:text-primary transition-colors">
+                    Included in Free Tier
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
 

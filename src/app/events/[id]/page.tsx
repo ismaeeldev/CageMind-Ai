@@ -1,90 +1,130 @@
-import { getEventById } from "@/actions/events";
-import { Container } from "@/components/layout/container";
-import { FightCardRow } from "@/components/events/fight-card-row";
+import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { format } from "date-fns";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const event = await getEventById(id);
-  if (!event) return { title: "Event Not Found" };
-  
-  return {
-    title: `${event.name} | Octagon AI`,
-    description: `Fight card and details for ${event.name}`,
-  };
+interface EventPageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EventPage({ params }: EventPageProps) {
+  // Await the params due to Next.js 15+ dynamic route changes in Turbopack/App router
   const { id } = await params;
-  const event = await getEventById(id);
+
+  const event = await prisma.event.findUnique({
+    where: { id },
+    include: {
+      fights: {
+        include: {
+          fighter1: true,
+          fighter2: true
+        },
+        orderBy: [
+          { isTitleFight: 'desc' }
+        ]
+      }
+    }
+  });
 
   if (!event) {
     notFound();
   }
 
-  const { fights } = event;
-
   return (
-    <Container className="py-12 md:py-20 animate-in fade-in duration-700">
-      <div className="mb-10">
-        <Link href="/events" className="inline-flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-all hover:-translate-x-1 uppercase tracking-wider">
-          <ChevronLeft className="w-4 h-4 mr-1" />
-          Back to Events
-        </Link>
-      </div>
-
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 animate-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
-        <div>
-          <div className="flex items-center gap-3 mb-6">
-            {event.isUpcoming ? (
-              <Badge className="bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_-3px_rgba(210,40,40,0.4)] px-3 py-1 text-xs">Upcoming Event</Badge>
-            ) : (
-              <Badge variant="outline" className="border-border/50 text-muted-foreground bg-black/20 backdrop-blur-md px-3 py-1 text-xs">Past Event</Badge>
-            )}
-          </div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-sm">
-            {event.name}
-          </h1>
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-muted-foreground bg-muted/10 p-4 rounded-xl border border-border/30 backdrop-blur-sm w-fit">
-            <div className="flex items-center">
-              <span className="font-bold text-foreground mr-2 uppercase tracking-wider text-xs opacity-70">Date</span>
-              <span className="font-mono">{new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(event.date))}</span>
-            </div>
-            <div className="hidden sm:block w-px h-6 bg-border/50"></div>
-            <div className="flex items-center">
-              <span className="font-bold text-foreground mr-2 uppercase tracking-wider text-xs opacity-70">Location</span>
-              <span className="font-medium">{event.location || "TBA"}</span>
-            </div>
-          </div>
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 mt-16 max-w-7xl mx-auto">
+      
+      {/* Event Header */}
+      <div className="mb-12 text-center md:text-left">
+        <Badge variant={event.isUpcoming ? "default" : "secondary"} className="mb-4">
+          {event.isUpcoming ? "Upcoming Event" : "Past Event"}
+        </Badge>
+        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 premium-gradient-text">
+          {event.name}
+        </h1>
+        <div className="flex flex-col md:flex-row items-center md:justify-start gap-4 text-muted-foreground text-lg">
+          <span className="flex items-center gap-2">
+            📅 {format(new Date(event.date), "MMMM do, yyyy")}
+          </span>
+          <span className="hidden md:inline">•</span>
+          <span className="flex items-center gap-2">
+            📍 {event.location || "TBD"}
+          </span>
         </div>
       </div>
 
-      <div className="mb-20 animate-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
-        <h2 className="text-3xl font-black tracking-tighter mb-8 flex items-center uppercase">
-          <span className="w-1.5 h-6 bg-primary mr-4 rounded-full shadow-[0_0_10px_rgba(210,40,40,0.6)]"></span>
-          Fight Card
-        </h2>
+      {/* Fight Card */}
+      <div className="space-y-16">
         
-        {fights.length === 0 ? (
-          <div className="text-muted-foreground italic glass-panel p-16 rounded-2xl text-center flex flex-col items-center justify-center">
-            <span className="block text-4xl mb-4 opacity-50">🥊</span>
-            No fights have been announced for this event yet.
+        {event.fights.length > 0 && (
+          <section>
+            <h2 className="text-3xl font-bold uppercase tracking-wider mb-6 border-b border-border pb-2">
+              Fight Card
+            </h2>
+            <div className="grid gap-4">
+              {event.fights.map(fight => (
+                <FightRow key={fight.id} fight={fight} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {event.fights.length === 0 && (
+          <div className="text-center py-20 text-muted-foreground border border-dashed rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">Fight Card Not Yet Available</h3>
+            <p>The fights for this event have not been finalized or scraped yet.</p>
           </div>
-        ) : (
-          <Card className="overflow-hidden border-white/10 shadow-2xl glass-panel p-1 md:p-2 rounded-[20px]">
-             <div className="bg-card/60 backdrop-blur-md rounded-2xl overflow-hidden">
-                {fights.map((fight, index) => (
-                  <FightCardRow key={fight.id} fight={fight} index={index} />
-                ))}
-             </div>
-          </Card>
         )}
       </div>
-    </Container>
+    </div>
+  );
+}
+
+function FightRow({ fight }: { fight: any }) {
+  return (
+    <Card className="hover:border-primary/50 transition-colors group">
+      <CardContent className="p-0">
+        <div className="flex flex-col md:flex-row items-center justify-between p-6">
+          
+          {/* Fighter 1 */}
+          <div className="flex-1 text-center md:text-right w-full">
+            <Link href={`/fighters/${fight.fighter1.id}`} className="block group-hover:text-primary transition-colors">
+              <h3 className="text-2xl font-black uppercase tracking-tight">{fight.fighter1.name}</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {fight.fighter1.wins}-{fight.fighter1.losses}-{fight.fighter1.draws}
+              </p>
+            </Link>
+          </div>
+
+          {/* VS Divider */}
+          <div className="flex-shrink-0 px-8 py-4 md:py-0 flex flex-col items-center justify-center">
+            <span className="text-sm font-bold text-muted-foreground mb-1">VS</span>
+            <div className="h-px w-full md:h-12 md:w-px bg-border"></div>
+          </div>
+
+          {/* Fighter 2 */}
+          <div className="flex-1 text-center md:text-left w-full">
+            <Link href={`/fighters/${fight.fighter2.id}`} className="block group-hover:text-primary transition-colors">
+              <h3 className="text-2xl font-black uppercase tracking-tight">{fight.fighter2.name}</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {fight.fighter2.wins}-{fight.fighter2.losses}-{fight.fighter2.draws}
+              </p>
+            </Link>
+          </div>
+
+        </div>
+
+        {/* Fight Details Footer */}
+        <div className="bg-muted/50 py-3 px-6 text-center border-t text-sm font-medium tracking-wide flex justify-center gap-4 flex-wrap">
+          {fight.isTitleFight && (
+            <span className="text-primary flex items-center gap-1">
+              🏆 Title Bout
+            </span>
+          )}
+          <span>{fight.weightClass || "Catchweight"}</span>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

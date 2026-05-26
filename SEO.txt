@@ -1,0 +1,2 @@
+ Final Sanity Checks
+[ ] SEO Verification: Visit https://octagon.ai/sitemap.xml and https://octagon.ai/robots.txt to ensure they render correctly for Googlebot.
