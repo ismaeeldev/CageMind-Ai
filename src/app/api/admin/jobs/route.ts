@@ -47,6 +47,8 @@ export async function GET() {
 }
 
 // Trigger manual run
+export const maxDuration = 300;
+
 export async function POST(req: Request) {
   try {
     const { jobType } = await req.json(); // 'daily' or 'weekly'
@@ -57,12 +59,9 @@ export async function POST(req: Request) {
 
     const scheduler = new Scheduler();
     
-    // We do NOT await this directly because it could take minutes and Vercel/Next.js would timeout the API.
-    // By triggering it asynchronously, it runs in the background of the Node process.
-    // JobRunner will track its state in DB!
-    scheduler.triggerManual(jobType as 'daily' | 'weekly').catch(e => {
-      logger.error("Manual trigger crashed asynchronously", e);
-    });
+    // In Vercel serverless environments, we MUST await background jobs or they will be terminated.
+    // Ensure this route has export const maxDuration = 300; configured at the top.
+    await scheduler.triggerManual(jobType as 'daily' | 'weekly');
 
     return NextResponse.json({ message: `Triggered ${jobType} jobs successfully in background.` });
   } catch (error: any) {

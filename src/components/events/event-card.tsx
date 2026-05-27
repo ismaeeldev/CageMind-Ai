@@ -6,8 +6,8 @@ import { Event } from "@/generated/prisma";
 
 export function EventCard({ event }: { event: Event }) {
   return (
-    <Link href={`/events/${event.id}`} className="group block">
-      <Card className="h-full bg-card/40 backdrop-blur-sm border-border/50 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(210,40,40,0.15)] hover:-translate-y-1 hover:border-primary/30 relative overflow-hidden">
+    <Link href={`/events/${event.id}`} className="group block h-full">
+      <Card className="h-[250px] flex flex-col justify-between bg-card/40 backdrop-blur-sm border-border/50 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(210,40,40,0.15)] hover:-translate-y-1 hover:border-primary/30 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 z-10">
           {event.isUpcoming ? (
             <Badge variant="default" className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 shadow-[0_0_10px_-2px_rgba(210,40,40,0.3)]">

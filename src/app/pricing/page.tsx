@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { PricingToastHandler } from "@/components/pricing-toast-handler";
 
 export default async function PricingPage() {
   const session = await getServerSession(authOptions);
@@ -20,6 +21,7 @@ export default async function PricingPage() {
 
   return (
     <Container className="py-20 animate-in fade-in duration-700">
+      <PricingToastHandler />
       <div className="text-center mb-16 animate-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
         <Badge variant="premium" className="mb-4">Octagon AI Premium</Badge>
         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40 drop-shadow-sm">

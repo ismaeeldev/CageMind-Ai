@@ -33,6 +33,7 @@ model Fighter {
   id          String   @id @default(uuid())
   name        String   @unique
   weightClass String?
+  imageUrl    String?
   age         Int?
   height      Float?
   reach       Float?

@@ -81,43 +81,53 @@ export class UfcEventScraper extends BaseScraper<ParsedUfcEvent[]> {
   }
 
   private async saveToDatabase(events: ParsedUfcEvent[]): Promise<void> {
-    logger.info(`[${this.scraperName}] Saving ${events.length} events to database...`);
+    logger.info(`[${this.scraperName}] Saving ${events.length} events to database via transaction...`);
     
-    let savedCount = 0;
-    for (const event of events) {
-      try {
-        const existing = await prisma.event.findFirst({
-          where: { name: event.name }
-        });
+    try {
+      const eventNames = events.map(e => e.name);
+      
+      // Fetch all existing events in one query
+      const existingEvents = await prisma.event.findMany({
+        where: { name: { in: eventNames } }
+      });
+      
+      const existingMap = new Map(existingEvents.map(e => [e.name, e.id]));
+      const operations = [];
 
-        if (existing) {
-          await prisma.event.update({
-            where: { id: existing.id },
-            data: {
-              date: event.date,
-              location: event.location,
-              isUpcoming: event.isUpcoming
-            }
-          });
-          logger.debug(`[${this.scraperName}] Updated event: ${event.name}`);
+      for (const event of events) {
+        const existingId = existingMap.get(event.name);
+
+        if (existingId) {
+          operations.push(
+            prisma.event.update({
+              where: { id: existingId },
+              data: {
+                date: event.date,
+                location: event.location,
+                isUpcoming: event.isUpcoming
+              }
+            })
+          );
         } else {
-          await prisma.event.create({
-            data: {
-              name: event.name,
-              date: event.date,
-              location: event.location,
-              isUpcoming: event.isUpcoming
-            }
-          });
-          logger.debug(`[${this.scraperName}] Created new event: ${event.name}`);
+          operations.push(
+            prisma.event.create({
+              data: {
+                name: event.name,
+                date: event.date,
+                location: event.location,
+                isUpcoming: event.isUpcoming
+              }
+            })
+          );
         }
-        savedCount++;
-      } catch (error) {
-        logger.error(`[${this.scraperName}] Failed to save event: ${event.name}`, error);
       }
-    }
 
-    logger.info(`[${this.scraperName}] Successfully saved/updated ${savedCount} events in the database.`);
+      await prisma.$transaction(operations, { timeout: 30000 });
+      logger.info(`[${this.scraperName}] Successfully saved/updated ${events.length} events in the database.`);
+    } catch (error) {
+      logger.error(`[${this.scraperName}] Database save transaction failed completely.`, error);
+      throw error;
+    }
   }
 
   private getMockData(): RawUfcEvent[] {

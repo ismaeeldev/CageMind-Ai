@@ -1,16 +1,22 @@
-import { PrismaClient } from '../generated/prisma'
-import { PrismaNeon } from '@prisma/adapter-neon'
+import { PrismaClient } from '../generated/prisma';
+import { neonConfig } from '@neondatabase/serverless';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import ws from 'ws';
 
-const connectionString = process.env.DATABASE_URL!
+// Required for Neon Serverless Driver in Node.js environments (Next.js SSR/Serverless Functions)
+neonConfig.webSocketConstructor = ws;
 
-const adapter = new PrismaNeon({ connectionString })
+// Create a connection pool to prevent connection exhaustion in serverless environments
+const connectionString = process.env.DATABASE_URL!;
+const adapter = new PrismaNeon({ connectionString });
 
+// Global Prisma singleton to prevent multiple instances during hot-reloads in development
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
+  prisma: PrismaClient | undefined;
+};
 
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient({ adapter })
+  new PrismaClient({ adapter });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

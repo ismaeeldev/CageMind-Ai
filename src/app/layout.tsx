@@ -12,9 +12,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://octagon.ai"),
   title: "Octagon AI | UFC & MMA Analytics Platform",
   description: "Leverage automated data, live fight odds, and AI-driven prediction models to gain an edge.",
   keywords: ["UFC", "MMA", "AI Predictions", "Fight Odds", "Sports Betting", "Octagon AI"],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Octagon AI | Predictive MMA Analytics",
     description: "The world's most advanced AI prediction engine for MMA.",

@@ -144,6 +144,7 @@ exports.Prisma.FighterScalarFieldEnum = {
   id: 'id',
   name: 'name',
   weightClass: 'weightClass',
+  imageUrl: 'imageUrl',
   age: 'age',
   height: 'height',
   reach: 'reach',

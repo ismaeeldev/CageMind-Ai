@@ -33,11 +33,15 @@ export class UfcEventValidator {
       throw new ParsingError(`Event date is out of reasonable bounds: ${parsedDate}`);
     }
 
+    // Determine if upcoming by comparing the event date with the current time
+    // We add a 24-hour buffer so that events currently happening today are still considered upcoming
+    const isUpcoming = parsedDate.getTime() > Date.now() - 24 * 60 * 60 * 1000;
+
     return {
       name,
       date: parsedDate,
       location: raw.venue ? raw.venue.trim().replace(/\s+/g, ' ') : null,
-      isUpcoming: raw.status.toLowerCase() === "upcoming"
+      isUpcoming
     };
   }
 }

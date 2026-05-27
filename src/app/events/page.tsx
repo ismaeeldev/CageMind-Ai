@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Browse upcoming and past MMA events, view fight cards and results.",
 };
 
+export const revalidate = 3600; // Cache for 1 hour, then regenerate in background
+
 export default async function EventsPage() {
   const [upcomingEvents, pastEvents] = await Promise.all([
     getEvents(true),

@@ -2,6 +2,7 @@ import { Container } from "@/components/layout/container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ManageBillingButton } from "@/components/stripe/manage-billing-button";
+import { ChangePasswordDialog } from "@/components/auth/change-password-dialog";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -32,12 +33,36 @@ export default async function BillingSettingsPage() {
       <div className="max-w-3xl mx-auto">
         <div className="mb-10">
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/40">
-            Billing & Subscription
+            Account Settings
           </h1>
           <p className="text-muted-foreground">
-            Manage your Octagon AI Premium subscription and billing details.
+            Manage your Octagon AI profile, security, and subscription details.
           </p>
         </div>
+
+        <Card className="glass-panel border-border/50 relative overflow-hidden mb-8">
+          <CardHeader className="bg-muted/10 border-b border-border/30 pb-6">
+            <CardTitle className="text-2xl font-black tracking-tight">Account Profile</CardTitle>
+            <CardDescription>Your personal information and security settings.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Name</p>
+                  <p className="text-lg font-bold">{session.user.name}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Email Address</p>
+                  <p className="text-lg font-bold">{session.user.email}</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 min-w-[200px]">
+                <ChangePasswordDialog />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="glass-panel border-border/50 relative overflow-hidden mb-8">
           <CardHeader className="bg-muted/10 border-b border-border/30 pb-6">

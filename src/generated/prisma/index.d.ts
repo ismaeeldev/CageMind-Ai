@@ -3836,6 +3836,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     weightClass: string | null
+    imageUrl: string | null
     age: number | null
     height: number | null
     reach: number | null
@@ -3854,6 +3855,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     weightClass: string | null
+    imageUrl: string | null
     age: number | null
     height: number | null
     reach: number | null
@@ -3872,6 +3874,7 @@ export namespace Prisma {
     id: number
     name: number
     weightClass: number
+    imageUrl: number
     age: number
     height: number
     reach: number
@@ -3916,6 +3919,7 @@ export namespace Prisma {
     id?: true
     name?: true
     weightClass?: true
+    imageUrl?: true
     age?: true
     height?: true
     reach?: true
@@ -3934,6 +3938,7 @@ export namespace Prisma {
     id?: true
     name?: true
     weightClass?: true
+    imageUrl?: true
     age?: true
     height?: true
     reach?: true
@@ -3952,6 +3957,7 @@ export namespace Prisma {
     id?: true
     name?: true
     weightClass?: true
+    imageUrl?: true
     age?: true
     height?: true
     reach?: true
@@ -4057,6 +4063,7 @@ export namespace Prisma {
     id: string
     name: string
     weightClass: string | null
+    imageUrl: string | null
     age: number | null
     height: number | null
     reach: number | null
@@ -4094,6 +4101,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     weightClass?: boolean
+    imageUrl?: boolean
     age?: boolean
     height?: boolean
     reach?: boolean
@@ -4116,6 +4124,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     weightClass?: boolean
+    imageUrl?: boolean
     age?: boolean
     height?: boolean
     reach?: boolean
@@ -4134,6 +4143,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     weightClass?: boolean
+    imageUrl?: boolean
     age?: boolean
     height?: boolean
     reach?: boolean
@@ -4152,6 +4162,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     weightClass?: boolean
+    imageUrl?: boolean
     age?: boolean
     height?: boolean
     reach?: boolean
@@ -4166,7 +4177,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weightClass" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
+  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weightClass" | "imageUrl" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
   export type FighterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
     fightsAsFighter2?: boolean | Fighter$fightsAsFighter2Args<ExtArgs>
@@ -4187,6 +4198,7 @@ export namespace Prisma {
       id: string
       name: string
       weightClass: string | null
+      imageUrl: string | null
       age: number | null
       height: number | null
       reach: number | null
@@ -4628,6 +4640,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Fighter", 'String'>
     readonly name: FieldRef<"Fighter", 'String'>
     readonly weightClass: FieldRef<"Fighter", 'String'>
+    readonly imageUrl: FieldRef<"Fighter", 'String'>
     readonly age: FieldRef<"Fighter", 'Int'>
     readonly height: FieldRef<"Fighter", 'Float'>
     readonly reach: FieldRef<"Fighter", 'Float'>
@@ -10801,6 +10814,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     weightClass: 'weightClass',
+    imageUrl: 'imageUrl',
     age: 'age',
     height: 'height',
     reach: 'reach',
@@ -11123,6 +11137,7 @@ export namespace Prisma {
     id?: StringFilter<"Fighter"> | string
     name?: StringFilter<"Fighter"> | string
     weightClass?: StringNullableFilter<"Fighter"> | string | null
+    imageUrl?: StringNullableFilter<"Fighter"> | string | null
     age?: IntNullableFilter<"Fighter"> | number | null
     height?: FloatNullableFilter<"Fighter"> | number | null
     reach?: FloatNullableFilter<"Fighter"> | number | null
@@ -11144,6 +11159,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     weightClass?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     age?: SortOrderInput | SortOrder
     height?: SortOrderInput | SortOrder
     reach?: SortOrderInput | SortOrder
@@ -11168,6 +11184,7 @@ export namespace Prisma {
     OR?: FighterWhereInput[]
     NOT?: FighterWhereInput | FighterWhereInput[]
     weightClass?: StringNullableFilter<"Fighter"> | string | null
+    imageUrl?: StringNullableFilter<"Fighter"> | string | null
     age?: IntNullableFilter<"Fighter"> | number | null
     height?: FloatNullableFilter<"Fighter"> | number | null
     reach?: FloatNullableFilter<"Fighter"> | number | null
@@ -11189,6 +11206,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     weightClass?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     age?: SortOrderInput | SortOrder
     height?: SortOrderInput | SortOrder
     reach?: SortOrderInput | SortOrder
@@ -11215,6 +11233,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Fighter"> | string
     name?: StringWithAggregatesFilter<"Fighter"> | string
     weightClass?: StringNullableWithAggregatesFilter<"Fighter"> | string | null
+    imageUrl?: StringNullableWithAggregatesFilter<"Fighter"> | string | null
     age?: IntNullableWithAggregatesFilter<"Fighter"> | number | null
     height?: FloatNullableWithAggregatesFilter<"Fighter"> | number | null
     reach?: FloatNullableWithAggregatesFilter<"Fighter"> | number | null
@@ -11754,6 +11773,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -11775,6 +11795,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -11796,6 +11817,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11817,6 +11839,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11838,6 +11861,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -11856,6 +11880,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -11874,6 +11899,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -12540,6 +12566,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
+    imageUrl?: SortOrder
     age?: SortOrder
     height?: SortOrder
     reach?: SortOrder
@@ -12570,6 +12597,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
+    imageUrl?: SortOrder
     age?: SortOrder
     height?: SortOrder
     reach?: SortOrder
@@ -12588,6 +12616,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
+    imageUrl?: SortOrder
     age?: SortOrder
     height?: SortOrder
     reach?: SortOrder
@@ -13982,6 +14011,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14002,6 +14032,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14027,6 +14058,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14047,6 +14079,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14072,6 +14105,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14092,6 +14126,7 @@ export namespace Prisma {
     id?: string
     name: string
     weightClass?: string | null
+    imageUrl?: string | null
     age?: number | null
     height?: number | null
     reach?: number | null
@@ -14189,6 +14224,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14209,6 +14245,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14240,6 +14277,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14260,6 +14298,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14291,6 +14330,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -14311,6 +14351,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     height?: NullableFloatFieldUpdateOperationsInput | number | null
     reach?: NullableFloatFieldUpdateOperationsInput | number | null

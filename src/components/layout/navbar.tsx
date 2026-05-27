@@ -1,3 +1,4 @@
+import { PremiumLink } from "@/components/ui/premium-link"
 import Link from "next/link"
 import { Container } from "./container"
 import { Button } from "@/components/ui/button"
@@ -20,25 +21,37 @@ export function Navbar() {
             </span>
           </Link>
         </div>
-        <nav className="hidden md:flex flex-1 justify-center gap-6">
-            <Link
-              href="/events"
-              className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              Events
-            </Link>
-            <Link
-              href="/fighters"
-              className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              Fighters
-            </Link>
-            <Link
-              href="/pricing"
-              className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-            >
-              Pricing
-            </Link>
+        <nav className="hidden md:flex flex-1 justify-center gap-4 lg:gap-6 md:mr-8 lg:mr-20">
+          <Link
+            href="/events"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Events
+          </Link>
+          <Link
+            href="/fighters"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Fighters
+          </Link>
+          <Link
+            href="/predictions"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Predictions
+          </Link>
+          <PremiumLink
+            href="/matchup"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer whitespace-nowrap"
+          >
+            Matchup Lab
+          </PremiumLink>
+          <Link
+            href="/pricing"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Pricing
+          </Link>
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-2">

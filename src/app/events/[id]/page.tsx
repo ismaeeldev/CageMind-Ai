@@ -9,6 +9,8 @@ interface EventPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const revalidate = 3600; // Cache for 1 hour
+
 export default async function EventPage({ params }: EventPageProps) {
   // Await the params due to Next.js 15+ dynamic route changes in Turbopack/App router
   const { id } = await params;

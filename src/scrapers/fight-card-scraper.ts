@@ -82,66 +82,95 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
   }
 
   private async saveToDatabase(fights: ParsedFight[]): Promise<void> {
-    logger.info(`[${this.scraperName}] Saving ${fights.length} fights to DB using connectOrCreate...`);
-    let savedCount = 0;
-
+    logger.info(`[${this.scraperName}] Saving ${fights.length} fights to DB via transaction...`);
+    
+    // 1. Bulk Upsert All Fighters First
+    const fighterMap = new Map<string, string | null>();
     for (const fight of fights) {
-      try {
-        // connectOrCreate ensures that if the live fighter name doesn't match our 100 mock fighters exactly,
-        // it creates a basic fighter profile so the Foreign Key constraint is satisfied without crashing.
-        
-        // However, Prisma doesn't support nested upserts with composite unique constraints nicely, 
-        // so we'll ensure fighters exist first.
-        
-        const f1 = await prisma.fighter.upsert({
-          where: { name: fight.fighter1Name },
-          update: {},
-          create: { name: fight.fighter1Name, weightClass: fight.weightClass }
-        });
-
-        const f2 = await prisma.fighter.upsert({
-          where: { name: fight.fighter2Name },
-          update: {},
-          create: { name: fight.fighter2Name, weightClass: fight.weightClass }
-        });
-
-        // Now upsert the fight itself safely
-        // Wait, schema has @@unique([eventId, fighter1Id, fighter2Id])
-        // Unfortunately, Prisma upsert requires a unique identifier. We can query first.
-        const existingFight = await prisma.fight.findFirst({
-          where: {
-            eventId: fight.eventId,
-            fighter1Id: f1.id,
-            fighter2Id: f2.id
-          }
-        });
-
-        if (existingFight) {
-          await prisma.fight.update({
-            where: { id: existingFight.id },
-            data: {
-              weightClass: fight.weightClass,
-              isTitleFight: fight.isTitleFight
-            }
-          });
-        } else {
-          await prisma.fight.create({
-            data: {
-              eventId: fight.eventId,
-              fighter1Id: f1.id,
-              fighter2Id: f2.id,
-              weightClass: fight.weightClass,
-              isTitleFight: fight.isTitleFight
-            }
-          });
-        }
-        savedCount++;
-      } catch (error) {
-        logger.error(`[${this.scraperName}] Failed to save fight: ${fight.fighter1Name} vs ${fight.fighter2Name}`, error);
-      }
+      fighterMap.set(fight.fighter1Name, fight.weightClass);
+      fighterMap.set(fight.fighter2Name, fight.weightClass);
     }
 
-    logger.info(`[${this.scraperName}] Successfully saved/updated ${savedCount} fights.`);
+    const fighterUpserts = Array.from(fighterMap.entries()).map(([name, weightClass]) => 
+      prisma.fighter.upsert({
+        where: { name },
+        update: {},
+        create: { name, weightClass }
+      })
+    );
+
+    try {
+      await prisma.$transaction(fighterUpserts);
+    } catch (error) {
+      logger.error(`[${this.scraperName}] Failed to bulk upsert fighters`, error);
+      throw error;
+    }
+
+    // 2. Fetch all fighters to get their IDs
+    const dbFighters = await prisma.fighter.findMany({
+      where: { name: { in: Array.from(fighterMap.keys()) } }
+    });
+    const fighterIdMap = new Map(dbFighters.map(f => [f.name, f.id]));
+
+    // 3. Fetch all existing fights for this event to avoid N sequential findFirst
+    const existingFights = await prisma.fight.findMany({
+      where: { eventId: this.eventId }
+    });
+    
+    // Map by f1_f2 combination
+    const existingFightMap = new Map(
+      existingFights.map(f => [`${f.fighter1Id}_${f.fighter2Id}`, f.id])
+    );
+
+    // 4. Bulk Update/Create Fights
+    const fightOperations = [];
+    let processedCount = 0;
+
+    for (const fight of fights) {
+      const f1Id = fighterIdMap.get(fight.fighter1Name);
+      const f2Id = fighterIdMap.get(fight.fighter2Name);
+
+      if (!f1Id || !f2Id) {
+        logger.warn(`[${this.scraperName}] Missing fighter ID for ${fight.fighter1Name} or ${fight.fighter2Name}`);
+        continue;
+      }
+
+      const key = `${f1Id}_${f2Id}`;
+      const existingFightId = existingFightMap.get(key);
+
+      if (existingFightId) {
+        fightOperations.push(
+          prisma.fight.update({
+            where: { id: existingFightId },
+            data: {
+              weightClass: fight.weightClass,
+              isTitleFight: fight.isTitleFight
+            }
+          })
+        );
+      } else {
+        fightOperations.push(
+          prisma.fight.create({
+            data: {
+              eventId: fight.eventId,
+              fighter1Id: f1Id,
+              fighter2Id: f2Id,
+              weightClass: fight.weightClass,
+              isTitleFight: fight.isTitleFight
+            }
+          })
+        );
+      }
+      processedCount++;
+    }
+
+    try {
+      await prisma.$transaction(fightOperations);
+      logger.info(`[${this.scraperName}] Successfully saved/updated ${processedCount} fights.`);
+    } catch (error) {
+      logger.error(`[${this.scraperName}] Failed to bulk save fights`, error);
+      throw error;
+    }
   }
 
   private getMockData(): RawFight[] {

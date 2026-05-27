@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { Scheduler } from "./src/jobs/scheduler";
-import { logger } from "./src/lib/logger";
+import { Scheduler } from "../jobs/scheduler";
+import { logger } from "../lib/logger";
 
 async function main() {
   logger.info("Booting up Octagon AI Background Scheduler...");

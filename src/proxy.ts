@@ -34,11 +34,11 @@ export default withAuth(
     // 2. Auth & Premium Routing
     const isPremiumRoute = 
       nextUrl.pathname.startsWith('/betting') || 
-      nextUrl.pathname.startsWith('/matchup-lab');
+      nextUrl.pathname.startsWith('/matchup');
 
     if (isPremiumRoute) {
       if (!req.nextauth.token?.isPremium) {
-        return NextResponse.redirect(new URL("/pricing", req.url));
+        return NextResponse.redirect(new URL("/pricing?reason=premium", req.url));
       }
     }
 
@@ -51,7 +51,7 @@ export default withAuth(
         if (
           req.nextUrl.pathname.startsWith('/dashboard') ||
           req.nextUrl.pathname.startsWith('/betting') ||
-          req.nextUrl.pathname.startsWith('/matchup-lab')
+          req.nextUrl.pathname.startsWith('/matchup')
         ) {
           return !!token;
         }
@@ -65,7 +65,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/betting/:path*",
-    "/matchup-lab/:path*",
+    "/matchup/:path*",
     "/api/:path*",
   ],
 };

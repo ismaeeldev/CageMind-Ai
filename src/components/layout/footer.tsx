@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { PremiumLink } from "@/components/ui/premium-link"
 import { Container } from "./container"
 
 export function Footer() {
@@ -36,14 +37,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/betting" className="hover:text-foreground transition-colors cursor-pointer">
+                <PremiumLink href="/betting" className="hover:text-foreground transition-colors cursor-pointer">
                   Betting Edge
-                </Link>
+                </PremiumLink>
               </li>
               <li>
-                <Link href="/matchup-lab" className="hover:text-foreground transition-colors cursor-pointer">
+                <PremiumLink href="/matchup" className="hover:text-foreground transition-colors cursor-pointer">
                   Matchup Lab
-                </Link>
+                </PremiumLink>
               </li>
             </ul>
           </div>
@@ -51,17 +52,17 @@ export function Footer() {
             <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link href="/terms" className="hover:text-foreground transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link href="/privacy" className="hover:text-foreground transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link href="/cookies" className="hover:text-foreground transition-colors">
                   Cookie Policy
                 </Link>
               </li>
