@@ -1,4 +1,5 @@
-export const ELO_K_FACTOR = 32;
+export const ELO_K_FACTOR = 30;
+export const ELO_K_FACTOR_TITLE = 42;
 
 /**
  * Calculates the expected score (win probability) for Fighter A.
@@ -11,20 +12,79 @@ export function getExpectedScore(ratingA: number, ratingB: number): number {
 }
 
 /**
- * Calculates the new Elo rating for a fighter after a bout.
- * @param currentRating The fighter's current Elo rating
- * @param expectedScore The expected score calculated before the bout
- * @param actualScore The actual score (1 for win, 0.5 for draw, 0 for loss)
- * @param kFactor The K-factor determining the maximum rating change (default: 32)
- * @returns The new Elo rating (rounded to nearest integer)
+ * Seeds a fighter's initial Elo rating based on their record and age.
  */
-export function getNewRating(
-  currentRating: number,
-  expectedScore: number,
-  actualScore: number,
-  kFactor: number = ELO_K_FACTOR
+export function seedElo(fighter: { wins: number; losses: number; age: number | null }): number {
+  let e = 1450;
+  const ww = fighter.wins || 0;
+  const ll = fighter.losses || 0;
+  
+  // Career win rate impact
+  e += (ww / ((ww + ll) || 1) - 0.5) * 300;
+  
+  // Experience/volume impact
+  e += Math.min(ww, 28) * 4.5;
+  
+  // Age curve impact
+  if (fighter.age) {
+    if (fighter.age >= 27 && fighter.age <= 32) e += 14;        // athletic prime
+    else if (fighter.age > 35) e -= (fighter.age - 35) * 7;
+    else if (fighter.age < 24) e -= (24 - fighter.age) * 5;
+  }
+  
+  return Math.round(e);
+}
+
+export interface FightOutcomeDetails {
+  isTitleFight?: boolean;
+  method?: string | null; // e.g., 'KO/TKO', 'Submission', 'Decision'
+  round?: number | null;
+  winnerId: string;
+  fighter1Id: string;
+  fighter2Id: string;
+}
+
+/**
+ * Calculates the Elo delta (dA) for Fighter 1 given the bout outcome.
+ * Fighter 2's delta is simply -dA.
+ */
+export function calculateEloDelta(
+  rating1: number,
+  rating2: number,
+  outcome: FightOutcomeDetails
 ): number {
-  return Math.round(currentRating + kFactor * (actualScore - expectedScore));
+  if (!outcome.winnerId) return 0; // Draw or no contest
+  
+  const Ea = getExpectedScore(rating1, rating2);
+  const Sa = outcome.winnerId === outcome.fighter1Id ? 1 : 0;
+  
+  // Identify the winner's expected probability
+  const winnerExp = Sa === 1 ? Ea : 1 - Ea;
+  
+  const finish = outcome.method === 'KO/TKO' || outcome.method === 'Submission';
+  let K = outcome.isTitleFight ? ELO_K_FACTOR_TITLE : ELO_K_FACTOR;
+  let mult = 1;
+
+  if (outcome.method === 'KO/TKO') mult += 0.30;
+  else if (outcome.method === 'Submission') mult += 0.34;
+  else mult -= 0.12; // decision
+
+  if (finish && outcome.round === 1) mult += 0.30;
+  else if (finish && outcome.round === 2) mult += 0.14;
+  
+  if (finish && outcome.isTitleFight) mult += 0.22;
+  
+  // Upset mechanics
+  if (winnerExp < 0.42) mult += 0.14;
+  if (winnerExp < 0.42 && finish) mult += 0.22;
+  
+  // Narrow decision discount
+  if (!finish && winnerExp > 0.44 && winnerExp < 0.58) mult -= 0.10;
+  
+  mult = Math.max(0.6, mult);
+  
+  const dA = Math.round(K * mult * (Sa - Ea));
+  return dA;
 }
 
 export interface PredictionResult {
@@ -37,17 +97,12 @@ export interface PredictionResult {
 
 /**
  * Generates an AI prediction based on Elo ratings.
- * @param rating1 Fighter 1's Elo rating
- * @param rating2 Fighter 2's Elo rating
- * @returns PredictionResult containing probabilities and confidence
  */
 export function generatePrediction(rating1: number, rating2: number): PredictionResult {
   const prob1 = getExpectedScore(rating1, rating2);
   const prob2 = 1 - prob1;
   const eloDiff = Math.abs(rating1 - rating2);
   
-  // Confidence score: how far the probability is from 50/50, scaled to 0-100
-  // e.g., 50% = 0 confidence, 90% = 80 confidence, 100% = 100 confidence
   const maxProb = Math.max(prob1, prob2);
   const confidenceScore = Math.round((maxProb - 0.5) * 200);
 

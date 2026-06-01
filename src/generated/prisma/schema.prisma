@@ -31,7 +31,8 @@ model Subscription {
 
 model Fighter {
   id          String   @id @default(uuid())
-  name        String   @unique
+  ufcId       String?  @unique
+  name        String
   weightClass String?
   imageUrl    String?
   age         Int?

@@ -3834,6 +3834,7 @@ export namespace Prisma {
 
   export type FighterMinAggregateOutputType = {
     id: string | null
+    ufcId: string | null
     name: string | null
     weightClass: string | null
     imageUrl: string | null
@@ -3853,6 +3854,7 @@ export namespace Prisma {
 
   export type FighterMaxAggregateOutputType = {
     id: string | null
+    ufcId: string | null
     name: string | null
     weightClass: string | null
     imageUrl: string | null
@@ -3872,6 +3874,7 @@ export namespace Prisma {
 
   export type FighterCountAggregateOutputType = {
     id: number
+    ufcId: number
     name: number
     weightClass: number
     imageUrl: number
@@ -3917,6 +3920,7 @@ export namespace Prisma {
 
   export type FighterMinAggregateInputType = {
     id?: true
+    ufcId?: true
     name?: true
     weightClass?: true
     imageUrl?: true
@@ -3936,6 +3940,7 @@ export namespace Prisma {
 
   export type FighterMaxAggregateInputType = {
     id?: true
+    ufcId?: true
     name?: true
     weightClass?: true
     imageUrl?: true
@@ -3955,6 +3960,7 @@ export namespace Prisma {
 
   export type FighterCountAggregateInputType = {
     id?: true
+    ufcId?: true
     name?: true
     weightClass?: true
     imageUrl?: true
@@ -4061,6 +4067,7 @@ export namespace Prisma {
 
   export type FighterGroupByOutputType = {
     id: string
+    ufcId: string | null
     name: string
     weightClass: string | null
     imageUrl: string | null
@@ -4099,6 +4106,7 @@ export namespace Prisma {
 
   export type FighterSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    ufcId?: boolean
     name?: boolean
     weightClass?: boolean
     imageUrl?: boolean
@@ -4122,6 +4130,7 @@ export namespace Prisma {
 
   export type FighterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    ufcId?: boolean
     name?: boolean
     weightClass?: boolean
     imageUrl?: boolean
@@ -4141,6 +4150,7 @@ export namespace Prisma {
 
   export type FighterSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    ufcId?: boolean
     name?: boolean
     weightClass?: boolean
     imageUrl?: boolean
@@ -4160,6 +4170,7 @@ export namespace Prisma {
 
   export type FighterSelectScalar = {
     id?: boolean
+    ufcId?: boolean
     name?: boolean
     weightClass?: boolean
     imageUrl?: boolean
@@ -4177,7 +4188,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "weightClass" | "imageUrl" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
+  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ufcId" | "name" | "weightClass" | "imageUrl" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
   export type FighterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
     fightsAsFighter2?: boolean | Fighter$fightsAsFighter2Args<ExtArgs>
@@ -4196,6 +4207,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      ufcId: string | null
       name: string
       weightClass: string | null
       imageUrl: string | null
@@ -4638,6 +4650,7 @@ export namespace Prisma {
    */
   interface FighterFieldRefs {
     readonly id: FieldRef<"Fighter", 'String'>
+    readonly ufcId: FieldRef<"Fighter", 'String'>
     readonly name: FieldRef<"Fighter", 'String'>
     readonly weightClass: FieldRef<"Fighter", 'String'>
     readonly imageUrl: FieldRef<"Fighter", 'String'>
@@ -10812,6 +10825,7 @@ export namespace Prisma {
 
   export const FighterScalarFieldEnum: {
     id: 'id',
+    ufcId: 'ufcId',
     name: 'name',
     weightClass: 'weightClass',
     imageUrl: 'imageUrl',
@@ -11135,6 +11149,7 @@ export namespace Prisma {
     OR?: FighterWhereInput[]
     NOT?: FighterWhereInput | FighterWhereInput[]
     id?: StringFilter<"Fighter"> | string
+    ufcId?: StringNullableFilter<"Fighter"> | string | null
     name?: StringFilter<"Fighter"> | string
     weightClass?: StringNullableFilter<"Fighter"> | string | null
     imageUrl?: StringNullableFilter<"Fighter"> | string | null
@@ -11157,6 +11172,7 @@ export namespace Prisma {
 
   export type FighterOrderByWithRelationInput = {
     id?: SortOrder
+    ufcId?: SortOrderInput | SortOrder
     name?: SortOrder
     weightClass?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
@@ -11179,10 +11195,11 @@ export namespace Prisma {
 
   export type FighterWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    name?: string
+    ufcId?: string
     AND?: FighterWhereInput | FighterWhereInput[]
     OR?: FighterWhereInput[]
     NOT?: FighterWhereInput | FighterWhereInput[]
+    name?: StringFilter<"Fighter"> | string
     weightClass?: StringNullableFilter<"Fighter"> | string | null
     imageUrl?: StringNullableFilter<"Fighter"> | string | null
     age?: IntNullableFilter<"Fighter"> | number | null
@@ -11200,10 +11217,11 @@ export namespace Prisma {
     fightsAsFighter1?: FightListRelationFilter
     fightsAsFighter2?: FightListRelationFilter
     fightsWon?: FightListRelationFilter
-  }, "id" | "name">
+  }, "id" | "ufcId">
 
   export type FighterOrderByWithAggregationInput = {
     id?: SortOrder
+    ufcId?: SortOrderInput | SortOrder
     name?: SortOrder
     weightClass?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
@@ -11231,6 +11249,7 @@ export namespace Prisma {
     OR?: FighterScalarWhereWithAggregatesInput[]
     NOT?: FighterScalarWhereWithAggregatesInput | FighterScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Fighter"> | string
+    ufcId?: StringNullableWithAggregatesFilter<"Fighter"> | string | null
     name?: StringWithAggregatesFilter<"Fighter"> | string
     weightClass?: StringNullableWithAggregatesFilter<"Fighter"> | string | null
     imageUrl?: StringNullableWithAggregatesFilter<"Fighter"> | string | null
@@ -11771,6 +11790,7 @@ export namespace Prisma {
 
   export type FighterCreateInput = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -11793,6 +11813,7 @@ export namespace Prisma {
 
   export type FighterUncheckedCreateInput = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -11815,6 +11836,7 @@ export namespace Prisma {
 
   export type FighterUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11837,6 +11859,7 @@ export namespace Prisma {
 
   export type FighterUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11859,6 +11882,7 @@ export namespace Prisma {
 
   export type FighterCreateManyInput = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -11878,6 +11902,7 @@ export namespace Prisma {
 
   export type FighterUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11897,6 +11922,7 @@ export namespace Prisma {
 
   export type FighterUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12564,6 +12590,7 @@ export namespace Prisma {
 
   export type FighterCountOrderByAggregateInput = {
     id?: SortOrder
+    ufcId?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
     imageUrl?: SortOrder
@@ -12595,6 +12622,7 @@ export namespace Prisma {
 
   export type FighterMaxOrderByAggregateInput = {
     id?: SortOrder
+    ufcId?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
     imageUrl?: SortOrder
@@ -12614,6 +12642,7 @@ export namespace Prisma {
 
   export type FighterMinOrderByAggregateInput = {
     id?: SortOrder
+    ufcId?: SortOrder
     name?: SortOrder
     weightClass?: SortOrder
     imageUrl?: SortOrder
@@ -14009,6 +14038,7 @@ export namespace Prisma {
 
   export type FighterCreateWithoutFightsAsFighter1Input = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14030,6 +14060,7 @@ export namespace Prisma {
 
   export type FighterUncheckedCreateWithoutFightsAsFighter1Input = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14056,6 +14087,7 @@ export namespace Prisma {
 
   export type FighterCreateWithoutFightsAsFighter2Input = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14077,6 +14109,7 @@ export namespace Prisma {
 
   export type FighterUncheckedCreateWithoutFightsAsFighter2Input = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14103,6 +14136,7 @@ export namespace Prisma {
 
   export type FighterCreateWithoutFightsWonInput = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14124,6 +14158,7 @@ export namespace Prisma {
 
   export type FighterUncheckedCreateWithoutFightsWonInput = {
     id?: string
+    ufcId?: string | null
     name: string
     weightClass?: string | null
     imageUrl?: string | null
@@ -14222,6 +14257,7 @@ export namespace Prisma {
 
   export type FighterUpdateWithoutFightsAsFighter1Input = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14243,6 +14279,7 @@ export namespace Prisma {
 
   export type FighterUncheckedUpdateWithoutFightsAsFighter1Input = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14275,6 +14312,7 @@ export namespace Prisma {
 
   export type FighterUpdateWithoutFightsAsFighter2Input = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14296,6 +14334,7 @@ export namespace Prisma {
 
   export type FighterUncheckedUpdateWithoutFightsAsFighter2Input = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14328,6 +14367,7 @@ export namespace Prisma {
 
   export type FighterUpdateWithoutFightsWonInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14349,6 +14389,7 @@ export namespace Prisma {
 
   export type FighterUncheckedUpdateWithoutFightsWonInput = {
     id?: StringFieldUpdateOperationsInput | string
+    ufcId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     weightClass?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null

@@ -139,22 +139,24 @@ export function FighterDetailsSection({
             </CardHeader>
             <CardContent className="p-8">
               <ul className="space-y-6">
-                <li className="flex justify-between items-center border-b pb-4 border-border/20">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Age</span>
-                  <span className="font-mono text-xl font-bold">{activeDetails.age || "N/A"}</span>
-                </li>
-                <li className="flex justify-between items-center border-b pb-4 border-border/20">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Height</span>
-                  <span className="font-mono text-xl font-bold">
-                    {activeDetails.height ? `${activeDetails.height}"` : "N/A"}
-                  </span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Reach</span>
-                  <span className="font-mono text-xl font-bold">
-                    {activeDetails.reach ? `${activeDetails.reach}"` : "N/A"}
-                  </span>
-                </li>
+                {activeDetails.age !== null && (
+                  <li className="flex justify-between items-center border-b pb-4 border-border/20">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Age</span>
+                    <span className="font-mono text-xl font-bold">{activeDetails.age}</span>
+                  </li>
+                )}
+                {activeDetails.height !== null && (
+                  <li className="flex justify-between items-center border-b pb-4 border-border/20">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Height</span>
+                    <span className="font-mono text-xl font-bold">{activeDetails.height}"</span>
+                  </li>
+                )}
+                {activeDetails.reach !== null && (
+                  <li className="flex justify-between items-center">
+                    <span className="text-muted-foreground uppercase tracking-widest text-xs font-bold">Reach</span>
+                    <span className="font-mono text-xl font-bold">{activeDetails.reach}"</span>
+                  </li>
+                )}
               </ul>
             </CardContent>
           </Card>

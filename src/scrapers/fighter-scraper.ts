@@ -6,6 +6,7 @@ import * as cheerio from "cheerio";
 
 // 1. Define Data Structures
 export interface RawFighter {
+  ufcId?: string | null;
   name: string;
   age?: number | string;
   height?: number | string;
@@ -18,6 +19,7 @@ export interface RawFighter {
 }
 
 export interface ParsedFighter {
+  ufcId: string | null;
   name: string;
   age: number | null;
   height: number | null;
@@ -37,19 +39,18 @@ function generateMockFighters(): RawFighter[] {
 
   const fighters: RawFighter[] = [];
 
-  // Generating only 90 instead of 100 so the archiving logic can catch the 10 missing fighters
   for (let i = 0; i < 90; i++) {
     const firstName = firstNames[i % firstNames.length];
     const lastName = lastNames[Math.floor(i / 10) % lastNames.length];
 
-    // Add a suffix to ensure uniqueness for all 100 since there are only 10x10 combinations
     const uniqueName = `${firstName} ${lastName} ${i > 0 ? `Mk${i}` : ''}`.trim();
 
     fighters.push({
+      ufcId: `/athlete/${uniqueName.toLowerCase().replace(/ /g, '-')}`,
       name: uniqueName,
       age: 20 + (i % 20),
-      height: 60 + (i % 20), // inches
-      reach: 65 + (i % 20), // inches
+      height: 60 + (i % 20),
+      reach: 65 + (i % 20),
       weightClass: weightClasses[i % weightClasses.length],
       wins: 10 + (i % 15),
       losses: i % 5,
@@ -72,10 +73,8 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
   protected async execute(): Promise<ParsedFighter[]> {
     logger.info(`[${this.scraperName}] Starting execution. Mock mode: ${this.useMock}`);
 
-    // A. Fetch
     const rawData = await this.fetchData();
 
-    // B. Parse & Validate
     const parsedFighters: ParsedFighter[] = [];
     for (const raw of rawData) {
       try {
@@ -87,7 +86,6 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
       }
     }
 
-    // C. Store in Database with Deduplication & Archiving
     await this.saveToDatabase(parsedFighters);
 
     return parsedFighters;
@@ -96,7 +94,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
   private async fetchData(): Promise<RawFighter[]> {
     if (this.useMock) {
       logger.debug(`[${this.scraperName}] Generating 90 mock fighters (to trigger archiving of 10).`);
-      await this.sleep(500); // Simulate network
+      await this.sleep(500);
       return generateMockFighters();
     }
 
@@ -104,7 +102,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
     const fighters: RawFighter[] = [];
     let page = 0;
     let hasMore = true;
-    const maxPages = 400; // Safeguard to prevent infinite loops
+    const maxPages = 400;
 
     while (hasMore && page < maxPages) {
       const url = `https://www.ufc.com/athletes/all?page=${page}`;
@@ -113,7 +111,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
       try {
         const response = await fetch(url, {
           headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0",
           },
           signal: AbortSignal.timeout(this.timeoutMs),
         });
@@ -127,18 +125,17 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
         const elements = $(".c-listing-athlete-flipcard");
 
         if (elements.length === 0) {
-          logger.info(`[${this.scraperName}] No athletes found on page ${page}. Stopping pagination.`);
           hasMore = false;
           break;
         }
-
-        logger.info(`[${this.scraperName}] Found ${elements.length} athletes on page ${page}`);
 
         elements.each((_, el) => {
           const nameEl = $(el).find(".c-listing-athlete__name").first();
           if (!nameEl.length) return;
 
           const name = nameEl.text().trim().replace(/\s+/g, " ");
+          const ufcId = nameEl.closest("a").attr("href") || null;
+          
           const weightClass = $(el).find(".c-listing-athlete__title .field__item").text().trim() ||
             $(el).find(".c-listing-athlete__title").text().trim();
           const recordText = $(el).find(".c-listing-athlete__record").text().trim();
@@ -168,6 +165,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
           }
 
           fighters.push({
+            ufcId,
             name,
             weightClass: weightClass || undefined,
             wins,
@@ -178,7 +176,6 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
         });
 
         page++;
-        // Polite delay between requests
         await this.sleep(this.delayBetweenRequestsMs);
       } catch (error) {
         logger.error(`[${this.scraperName}] Error scraping page ${page}`, error);
@@ -186,7 +183,6 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
       }
     }
 
-    logger.info(`[${this.scraperName}] Live scraping completed. Total fighters fetched: ${fighters.length}`);
     return fighters;
   }
 
@@ -202,6 +198,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
     };
 
     return {
+      ufcId: raw.ufcId ? raw.ufcId.trim() : null,
       name: raw.name.trim(),
       age: parseNumber(raw.age),
       height: parseNumber(raw.height),
@@ -218,15 +215,12 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
     if (parsed.name.length < 2) {
       throw new ParsingError(`Fighter name too short: ${parsed.name}`);
     }
-    if (parsed.wins < 0 || parsed.losses < 0 || parsed.draws < 0) {
-      throw new ParsingError(`Fighter records cannot be negative: ${parsed.name}`);
-    }
   }
 
   private async saveToDatabase(fighters: ParsedFighter[]): Promise<void> {
     logger.info(`[${this.scraperName}] Upserting ${fighters.length} fighters to database in batches...`);
 
-    const scrapedNames = new Set<string>();
+    const scrapedIds = new Set<string>();
     const batchSize = 10;
 
     for (let i = 0; i < fighters.length; i += batchSize) {
@@ -234,43 +228,45 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
       const upsertOperations = [];
 
       for (const fighter of batch) {
-        scrapedNames.add(fighter.name);
-        upsertOperations.push(
-          prisma.fighter.upsert({
-            where: { name: fighter.name },
-            update: {
-              age: fighter.age,
-              height: fighter.height,
-              reach: fighter.reach,
-              weightClass: fighter.weightClass,
-              wins: fighter.wins,
-              losses: fighter.losses,
-              draws: fighter.draws,
-              imageUrl: fighter.imageUrl,
-              isActive: true,
-            },
-            create: {
-              name: fighter.name,
-              age: fighter.age,
-              height: fighter.height,
-              reach: fighter.reach,
-              weightClass: fighter.weightClass,
-              wins: fighter.wins,
-              losses: fighter.losses,
-              draws: fighter.draws,
-              imageUrl: fighter.imageUrl,
-              isActive: true,
-            }
-          })
-        );
+        if (fighter.ufcId) scrapedIds.add(fighter.ufcId);
+        
+        // We use an async operation per item to handle the fallback logic
+        upsertOperations.push((async () => {
+          const existing = fighter.ufcId 
+            ? await prisma.fighter.findUnique({ where: { ufcId: fighter.ufcId } })
+            : await prisma.fighter.findFirst({ where: { name: fighter.name } });
+
+          const data = {
+            name: fighter.name,
+            ufcId: fighter.ufcId,
+            age: fighter.age,
+            height: fighter.height,
+            reach: fighter.reach,
+            weightClass: fighter.weightClass,
+            wins: fighter.wins,
+            losses: fighter.losses,
+            draws: fighter.draws,
+            imageUrl: fighter.imageUrl,
+            isActive: true,
+          };
+
+          if (existing) {
+            return prisma.fighter.update({
+              where: { id: existing.id },
+              data
+            });
+          } else {
+            return prisma.fighter.create({
+              data
+            });
+          }
+        })());
       }
 
       try {
-        logger.info(`[${this.scraperName}] Saving batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(fighters.length / batchSize)}...`);
         await Promise.all(upsertOperations);
       } catch (error) {
         logger.error(`[${this.scraperName}] Failed to upsert batch starting at index ${i}`, error);
-        throw error;
       }
     }
 
@@ -282,7 +278,7 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
       const result = await prisma.fighter.updateMany({
         where: {
           isActive: true,
-          name: { notIn: Array.from(scrapedNames) }
+          ufcId: { notIn: Array.from(scrapedIds), not: null }
         },
         data: { isActive: false }
       });

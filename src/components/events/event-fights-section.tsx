@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Lock, Activity, TrendingUp, Sparkles, AlertTriangle, Swords, ChevronDown, ChevronUp, User, Ruler } from "lucide-react";
+import { FeaturedFightBreakdown } from "./featured-fight-breakdown";
+import { FighterSpiderChart } from "@/components/ui/fighter-spider-chart";
 
 interface FightRowProps {
   fight: any;
@@ -99,9 +101,24 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
     );
   }
 
+  const featuredFight = fights.length > 0 
+    ? [...fights].sort((a, b) => {
+        // Fallback to title fight or main card if confidence isn't explicit
+        const confDiff = (b.aiConfidence || 0) - (a.aiConfidence || 0);
+        if (confDiff !== 0) return confDiff;
+        if (b.isTitleFight && !a.isTitleFight) return 1;
+        if (!b.isTitleFight && a.isTitleFight) return -1;
+        return 0;
+      })[0] 
+    : null;
+
   return (
     <section className="animate-in fade-in duration-500">
-      <h2 className="text-2xl font-bold uppercase tracking-wider mb-6 border-b border-zinc-800 pb-2 text-zinc-400">
+      {isUpcoming && featuredFight && (
+        <FeaturedFightBreakdown fight={featuredFight} isUpcoming={isUpcoming} />
+      )}
+
+      <h2 className="text-2xl font-bold uppercase tracking-wider mb-6 border-b border-zinc-800 pb-2 text-zinc-400 mt-12">
         Fight Card & Bouts
       </h2>
       <div className="grid gap-6">
@@ -154,11 +171,34 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
   };
 
   const aiProbs = extractProbabilities(fight.aiPrediction, fight.fighter1.name);
+  
+  // Calculate Pick and Quick Stats
+  const isF1Favored = aiProbs.f1Prob >= aiProbs.f2Prob;
+  const aiPick = isF1Favored ? fight.fighter1.name : fight.fighter2.name;
+  const aiPickProb = isF1Favored ? aiProbs.f1Prob : aiProbs.f2Prob;
+  const pickOdds = isF1Favored ? fight.oddsFighter1 : fight.oddsFighter2;
+
+  let predictedMethod = "DEC";
+  const predictionText = (fight.aiPrediction || "").toLowerCase();
+  if (predictionText.includes("ko") || predictionText.includes("knockout") || predictionText.includes("tko")) {
+    predictedMethod = "KO/TKO";
+  } else if (predictionText.includes("sub") || predictionText.includes("submission")) {
+    predictedMethod = "SUB";
+  }
 
   // Calculate Betting Value Edge
   const edgeF1 = aiProbs.f1Prob - impliedProb1;
   const edgeF2 = aiProbs.f2Prob - impliedProb2;
   const bestEdge = edgeF1 > edgeF2 ? { fighter: fight.fighter1.name, val: edgeF1 } : { fighter: fight.fighter2.name, val: edgeF2 };
+
+  // Value Stars logic
+  const renderValueStars = (edge: number) => {
+    if (edge >= 10) return "⭐⭐⭐";
+    if (edge >= 5) return "⭐⭐";
+    if (edge > 0) return "⭐";
+    return null;
+  };
+  const stars = bestEdge.val > 0 ? renderValueStars(bestEdge.val) : null;
 
   return (
     <Card className="hover:border-primary/40 transition-all duration-300 bg-[#1e1e24]/40 backdrop-blur-md border border-zinc-800/60 overflow-hidden rounded-xl shadow-lg group">
@@ -169,17 +209,20 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
         >
           {/* Fighter 1 (Left) */}
           <div className={`flex-1 text-center md:text-right w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f1IsWinner ? 'opacity-40' : 'opacity-100'}`}>
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex items-center md:justify-end gap-2 text-white group-hover:text-primary transition-colors">
+            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-end gap-2 text-white group-hover:text-primary transition-colors">
               {!isUpcoming && f1IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
               {fight.fighter1.name}
+              {isUpcoming && isF1Favored && (
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
+              )}
             </h3>
             <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
               Record: {fight.fighter1.wins}-{fight.fighter1.losses}-{fight.fighter1.draws} | Elo: {fight.fighter1.eloRating}
             </p>
           </div>
 
-          {/* VS Divider or Result Info */}
-          <div className="flex-shrink-0 px-8 py-4 md:py-0 flex flex-col items-center justify-center min-w-[120px]">
+          {/* VS Divider & Badges */}
+          <div className="flex-shrink-0 px-4 md:px-8 py-4 md:py-0 flex flex-col items-center justify-center min-w-[140px] md:min-w-[180px]">
             {!isUpcoming && hasResult ? (
               <div className="text-center bg-zinc-950/40 px-3 py-1.5 rounded-lg border border-zinc-800 shadow-inner">
                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-0.5">Winner</span>
@@ -188,12 +231,31 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
                 </span>
               </div>
             ) : (
-              <div className="flex flex-col items-center">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 font-sans">VS</span>
+              <div className="flex flex-col items-center gap-1.5 w-full">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest font-sans mb-1">VS</span>
                 {isUpcoming && (
-                  <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-zinc-800 bg-zinc-950 text-zinc-400 px-2 py-0.5 rounded mt-1 flex items-center gap-1 font-mono">
-                    {fight.oddsFighter1 ? `${fight.oddsFighter1 > 0 ? '+' : ''}${fight.oddsFighter1}` : 'Odds'} / {fight.oddsFighter2 ? `${fight.oddsFighter2 > 0 ? '+' : ''}${fight.oddsFighter2}` : 'Odds'}
-                  </Badge>
+                  <>
+                    <div className="flex flex-wrap justify-center gap-1.5 w-full">
+                      <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-zinc-800 bg-zinc-950 text-white px-2 py-0.5 rounded flex items-center font-mono" title="AI Win Probability">
+                        <Activity className="w-2.5 h-2.5 text-blue-400 mr-1" />
+                        {aiPickProb.toFixed(1)}%
+                      </Badge>
+                      <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-zinc-800 bg-zinc-950 text-white px-2 py-0.5 rounded flex items-center font-mono" title="Bookmaker Odds">
+                        <TrendingUp className="w-2.5 h-2.5 text-zinc-400 mr-1" />
+                        {pickOdds ? (pickOdds > 0 ? `+${pickOdds}` : pickOdds) : 'N/A'}
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-1.5 w-full">
+                      <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-zinc-800 bg-zinc-950 text-zinc-300 px-2 py-0.5 rounded font-sans" title="Predicted Method">
+                        {predictedMethod}
+                      </Badge>
+                      {stars && (
+                        <Badge variant="outline" className="text-[9px] uppercase tracking-widest border-emerald-500/30 bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded flex items-center" title="Value Edge">
+                          {stars}
+                        </Badge>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             )}
@@ -201,9 +263,12 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
 
           {/* Fighter 2 (Right) */}
           <div className={`flex-1 text-center md:text-left w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f2IsWinner ? 'opacity-40' : 'opacity-100'}`}>
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex items-center md:justify-start gap-2 text-white group-hover:text-primary transition-colors">
+            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-start gap-2 text-white group-hover:text-primary transition-colors">
               {fight.fighter2.name}
               {!isUpcoming && f2IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
+              {isUpcoming && !isF1Favored && (
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
+              )}
             </h3>
             <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
               Record: {fight.fighter2.wins}-{fight.fighter2.losses}-{fight.fighter2.draws} | Elo: {fight.fighter2.eloRating}
@@ -373,6 +438,10 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
                       <div className="w-24 text-center">Attribute</div>
                       <div className="text-right">{fight.fighter2.name}</div>
                     </div>
+                    <div className="p-4 bg-zinc-950/20 border-b border-zinc-850">
+                      <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest text-center mb-4">Style Matchup Comparison</h4>
+                      <FighterSpiderChart fighter1={fight.fighter1} fighter2={fight.fighter2} />
+                    </div>
                     <div className="p-4 space-y-4 text-sm font-semibold">
                       {[
                         { label: "Age", val1: fight.fighter1.age, val2: fight.fighter2.age, suffix: "", invert: true },
@@ -380,7 +449,7 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
                         { label: "Reach", val1: fight.fighter1.reach, val2: fight.fighter2.reach, suffix: '"', invert: false },
                         { label: "Wins", val1: fight.fighter1.wins, val2: fight.fighter2.wins, suffix: "", invert: false },
                         { label: "Losses", val1: fight.fighter1.losses, val2: fight.fighter2.losses, suffix: "", invert: true }
-                      ].map((item, index) => {
+                      ].filter(item => item.val1 !== null && item.val2 !== null).map((item, index) => {
                         const hasVal = item.val1 !== null && item.val2 !== null;
                         const isF1Adv = hasVal && (item.invert ? item.val1! < item.val2! : item.val1! > item.val2!);
                         const isF2Adv = hasVal && (item.invert ? item.val2! < item.val1! : item.val2! > item.val1!);

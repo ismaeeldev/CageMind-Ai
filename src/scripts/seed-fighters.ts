@@ -25,11 +25,17 @@ const fightersData = [
 async function main() {
   console.log("Seeding fighters...");
   for (const f of fightersData) {
-    await prisma.fighter.upsert({
-      where: { name: f.name },
-      update: f,
-      create: f
-    });
+    const existing = await prisma.fighter.findFirst({ where: { name: f.name } });
+    if (existing) {
+      await prisma.fighter.update({
+        where: { id: existing.id },
+        data: f
+      });
+    } else {
+      await prisma.fighter.create({
+        data: f
+      });
+    }
   }
   console.log("Seeded " + fightersData.length + " fighters.");
 }

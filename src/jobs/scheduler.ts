@@ -55,8 +55,14 @@ export class Scheduler {
 
   public async processResults() {
     await JobRunner.run("ProcessResults", async () => {
-      logger.info("[Jobs] Executing Process Results... (Placeholder)");
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      logger.info("[Jobs] Executing Process Results...");
+      
+      // Since this project relies on a standalone script to recalculate Elo history
+      // we dynamically import and run the Elo script here so ratings are updated
+      // after any new results are synced in the future.
+      const { recalculateAllElo } = await import('../scripts/recalculate-elo');
+      await recalculateAllElo();
+      
       logger.info("[Jobs] Process Results completed.");
     });
   }

@@ -41,6 +41,12 @@ export function Navbar() {
             Fighters
           </Link>
           <Link
+            href="/rankings"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Rankings
+          </Link>
+          <Link
             href="/predictions"
             className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
@@ -51,6 +57,12 @@ export function Navbar() {
             className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer whitespace-nowrap"
           >
             Matchup Lab
+          </PremiumLink>
+          <PremiumLink
+            href="/performance"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer whitespace-nowrap"
+          >
+            Performance
           </PremiumLink>
           <Link
             href="/pricing"

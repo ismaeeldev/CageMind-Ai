@@ -58,6 +58,21 @@ export async function GET(
   try {
     const { id } = await props.params;
 
+    // Helper to add mock advanced stats to demonstrate the UI
+    const generateAdvancedStats = () => ({
+      slpm: parseFloat((Math.random() * (6.5 - 2.5) + 2.5).toFixed(2)),
+      strAcc: parseFloat((Math.random() * (65 - 35) + 35).toFixed(1)),
+      td15m: parseFloat((Math.random() * (3.5 - 0.0) + 0.0).toFixed(2)),
+      tdAcc: parseFloat((Math.random() * (60 - 20) + 20).toFixed(1)),
+      sub15m: parseFloat((Math.random() * (1.5 - 0.0) + 0.0).toFixed(2)),
+    });
+
+    const enhanceFightsWithStats = (fights: any[]) => fights.map(fight => ({
+      ...fight,
+      fighter1: fight.fighter1 ? { ...fight.fighter1, ...generateAdvancedStats() } : null,
+      fighter2: fight.fighter2 ? { ...fight.fighter2, ...generateAdvancedStats() } : null,
+    }));
+
     // 1. Fetch event and fights
     const event = await prisma.event.findUnique({
       where: { id },
@@ -94,7 +109,7 @@ export async function GET(
           });
 
           return NextResponse.json({
-            fights: finalEvent?.fights || refreshedEvent.fights,
+            fights: enhanceFightsWithStats(finalEvent?.fights || refreshedEvent.fights),
             isUpcoming: event.isUpcoming
           });
         }
@@ -110,13 +125,13 @@ export async function GET(
               fighter2: fallback.fighter2,
               isTitleFight: event.name.toLowerCase().includes("title") || event.name.toLowerCase().includes("championship"),
               weightClass: "TBD"
-            }],
+            }]),
             isUpcoming: event.isUpcoming
           });
         }
 
         return NextResponse.json({
-          fights: refreshedEvent?.fights || [],
+          fights: enhanceFightsWithStats(refreshedEvent?.fights || []),
           isUpcoming: event.isUpcoming
         });
       } catch (scrapeError) {
@@ -134,32 +149,33 @@ export async function GET(
 
       if (refreshedEvent) {
         return NextResponse.json({
-          fights: refreshedEvent.fights,
+          fights: enhanceFightsWithStats(refreshedEvent.fights),
           isUpcoming: event.isUpcoming
         });
       }
     }
+
 
     // Fallback: Even if DB fights query was not 0, if there are no fights but we can extract them
     if (event.fights.length === 0) {
       const fallback = await getFallbackFightersFromEventName(event.name);
       if (fallback) {
         return NextResponse.json({
-          fights: [{
+          fights: enhanceFightsWithStats([{
             id: "fallback-fight",
             eventId: event.id,
             fighter1: fallback.fighter1,
             fighter2: fallback.fighter2,
             isTitleFight: event.name.toLowerCase().includes("title") || event.name.toLowerCase().includes("championship"),
             weightClass: "TBD"
-          }],
+          }]),
           isUpcoming: event.isUpcoming
         });
       }
     }
 
     return NextResponse.json({
-      fights: event.fights,
+      fights: enhanceFightsWithStats(event.fights),
       isUpcoming: event.isUpcoming
     });
   } catch (error: any) {

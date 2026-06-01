@@ -7,34 +7,36 @@ export class UfcFightParser {
     const $ = cheerio.load(html);
     const fights: RawFight[] = [];
 
-    // On UFC event pages, fights are usually listed inside .c-listing-fight or similar.
-    // We'll search generically for fight listings.
-    const fightCards = $('.c-listing-fight, .fight-card, li.l-listing__item, .c-listing-fight__content');
+    // Broaden search to ensure we catch all prelims and early prelims
+    const fightCards = $('.c-listing-fight, .c-listing-matchup, .fight-card, li.l-listing__item');
     
     logger.debug(`[UfcFightParser] Found ${fightCards.length} potential fights in HTML`);
 
     fightCards.each((i, el) => {
       const $el = $(el);
       
-      const fighter1Name = $el.find('.c-listing-fight__corner-name--red').text().trim().replace(/\s+/g, ' ') || $el.find('.details-content__name--red').text().trim().replace(/\s+/g, ' ');
-      const fighter2Name = $el.find('.c-listing-fight__corner-name--blue').text().trim().replace(/\s+/g, ' ') || $el.find('.details-content__name--blue').text().trim().replace(/\s+/g, ' ');
+      const f1NameEl = $el.find('.c-listing-fight__corner-name--red, .c-listing-matchup__corner-name--red, .details-content__name--red').first();
+      const f2NameEl = $el.find('.c-listing-fight__corner-name--blue, .c-listing-matchup__corner-name--blue, .details-content__name--blue').first();
+      
+      const fighter1Name = f1NameEl.text().trim().replace(/\s+/g, ' ');
+      const fighter2Name = f2NameEl.text().trim().replace(/\s+/g, ' ');
+      
+      const fighter1UfcId = f1NameEl.closest('a').attr('href') || f1NameEl.find('a').attr('href') || null;
+      const fighter2UfcId = f2NameEl.closest('a').attr('href') || f2NameEl.find('a').attr('href') || null;
+
       const weightClass = $el.find('.c-listing-fight__class-text, .c-listing-fight__class, .weight-class').first().text().trim();
       
-      // Heuristic: Is it main card?
-      const isMainCard = $el.closest('.main-card, #main-card, .c-listing-fight--main-card').length > 0;
-      // Heuristic: Is it title fight?
+      const isMainCard = $el.closest('.main-card, #main-card, .c-listing-fight--main-card').length > 0 || i < 5;
       const isTitleFight = $el.find('.c-listing-fight__title-bout, .title-bout').length > 0 || weightClass.toLowerCase().includes('title');
 
       if (fighter1Name && fighter2Name && fighter1Name !== fighter2Name) {
-        // Determine winner
-        const f1Won = $el.find('.c-listing-fight__corner--red .c-listing-fight__outcome--win').length > 0;
-        const f2Won = $el.find('.c-listing-fight__corner--blue .c-listing-fight__outcome--win').length > 0;
+        const f1Won = $el.find('.c-listing-fight__corner--red .c-listing-fight__outcome--win, .c-listing-matchup__corner--red .c-listing-matchup__outcome--win').length > 0;
+        const f2Won = $el.find('.c-listing-fight__corner--blue .c-listing-fight__outcome--win, .c-listing-matchup__corner--blue .c-listing-matchup__outcome--win').length > 0;
         
         let winnerName: string | null = null;
         if (f1Won) winnerName = fighter1Name;
         if (f2Won) winnerName = fighter2Name;
 
-        // Get ending details
         let method: string | null = null;
         let endingRound: number | null = null;
         let endingTime: string | null = null;
@@ -51,6 +53,8 @@ export class UfcFightParser {
           eventId,
           fighter1Name,
           fighter2Name,
+          fighter1UfcId,
+          fighter2UfcId,
           weightClass: weightClass || "Catchweight",
           isMainCard,
           isTitleFight,
@@ -62,11 +66,9 @@ export class UfcFightParser {
       }
     });
 
-    // Fallback: Mock generation if HTML structure drastically changed but we need to demonstrate UI sync
     if (fights.length === 0) {
       logger.warn("[UfcFightParser] Could not find specific fight classes. Attempting fallback text parsing...");
       
-      // Look for " vs " or " vs. " in strong tags or h4s
       $('h4, h3, strong').each((i, el) => {
         const text = $(el).text().trim();
         if (text.toLowerCase().includes(' vs ') || text.toLowerCase().includes(' vs. ')) {
@@ -76,8 +78,10 @@ export class UfcFightParser {
                eventId,
                fighter1Name: parts[0].trim(),
                fighter2Name: parts[1].trim(),
+               fighter1UfcId: null,
+               fighter2UfcId: null,
                weightClass: "TBD",
-               isMainCard: i < 5, // Top 5 fights usually main card
+               isMainCard: i < 5,
                isTitleFight: false,
              });
           }

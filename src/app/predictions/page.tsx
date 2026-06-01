@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { Search, Filter, Lock, ChevronLeft, ChevronRight, Activity, Calendar } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BestBetsSection } from "@/components/predictions/best-bets-section";
 
 interface Fight {
   id: string;
   weightClass: string | null;
   aiPrediction: string | null;
   aiConfidence: number | null;
+  oddsFighter1: number | null;
+  oddsFighter2: number | null;
   fighter1: { name: string; imageUrl?: string | null };
   fighter2: { name: string; imageUrl?: string | null };
   event: { name: string; date: string };
@@ -96,6 +99,9 @@ export default function PredictionsDashboard() {
 
   const [search, setSearch] = useState("");
   const [weightClass, setWeightClass] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "confidence" | "value" | "finish">("date");
+  const [filterBy, setFilterBy] = useState<"all" | "favorites" | "underdogs" | "finishes">("all");
+  
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -213,6 +219,69 @@ export default function PredictionsDashboard() {
     }
   };
 
+  const calculateImpliedProb = (odds: number | null) => {
+    if (!odds) return 50; // Default if no odds
+    if (odds < 0) return (-odds / (-odds + 100)) * 100;
+    return (100 / (odds + 100)) * 100;
+  };
+
+  const getFightMetrics = (fight: Fight) => {
+    if (!fight.aiPrediction || fight.aiPrediction === "LOCKED_PREMIUM") return null;
+    
+    const probs = extractProbabilities(fight.aiPrediction, fight.fighter1.name);
+    if (!probs) return null;
+
+    const isF1Favored = probs.f1Prob > probs.f2Prob;
+    const aiPickProb = isF1Favored ? probs.f1Prob : probs.f2Prob;
+    const aiPickOdds = isF1Favored ? fight.oddsFighter1 : fight.oddsFighter2;
+    
+    const impliedProb1 = calculateImpliedProb(fight.oddsFighter1);
+    const impliedProb2 = calculateImpliedProb(fight.oddsFighter2);
+    
+    const edgeF1 = probs.f1Prob - impliedProb1;
+    const edgeF2 = probs.f2Prob - impliedProb2;
+    const bestEdge = isF1Favored ? edgeF1 : edgeF2;
+
+    const isFinish = aiPickProb > 55;
+    const isUnderdogPick = aiPickOdds !== null && aiPickOdds > 0;
+
+    return {
+      probs,
+      aiPickProb,
+      aiPickOdds,
+      bestEdge,
+      isFinish,
+      isUnderdogPick
+    };
+  };
+
+  // Compute processed list
+  const processedFights = fights
+    .filter(fight => {
+      if (filterBy === "all") return true;
+      const metrics = getFightMetrics(fight);
+      if (!metrics) return false;
+      
+      if (filterBy === "favorites") return !metrics.isUnderdogPick;
+      if (filterBy === "underdogs") return metrics.isUnderdogPick;
+      if (filterBy === "finishes") return metrics.isFinish;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "date") return new Date(a.event.date).getTime() - new Date(b.event.date).getTime();
+      
+      const metricsA = getFightMetrics(a);
+      const metricsB = getFightMetrics(b);
+      
+      if (!metricsA || !metricsB) return 0;
+
+      if (sortBy === "confidence") return (b.aiConfidence || 0) - (a.aiConfidence || 0);
+      if (sortBy === "finish") return metricsB.aiPickProb - metricsA.aiPickProb;
+      if (sortBy === "value") return metricsB.bestEdge - metricsA.bestEdge;
+      
+      return 0;
+    });
+
   if (!isPremium) {
     return (
       <div className="min-h-screen bg-[#18181B] text-zinc-100 flex items-center justify-center">
@@ -233,8 +302,13 @@ export default function PredictionsDashboard() {
           <p className="text-zinc-400">Unlock mathematically precise fight predictions powered by our proprietary heuristic engine.</p>
         </div>
 
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto] gap-4 mb-8">
+        {/* Best Bets / Top Edges Section */}
+        {fights.length > 0 && isPremium && !loading && (
+          <BestBetsSection fights={fights} />
+        )}
+
+        {/* Filters and Sorting Options */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,auto,auto] gap-4 mb-8">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <input
@@ -245,7 +319,8 @@ export default function PredictionsDashboard() {
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             />
           </div>
-          <div className="relative min-w-[200px]">
+          
+          <div className="relative min-w-[160px]">
             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <select
               className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg py-3 pl-12 pr-4 appearance-none focus:outline-none focus:border-[#D22828] transition-colors"
@@ -254,6 +329,32 @@ export default function PredictionsDashboard() {
             >
               <option value="">All Weights</option>
               {WEIGHT_CLASSES.map(w => <option key={w} value={w}>{w}</option>)}
+            </select>
+          </div>
+
+          <div className="relative min-w-[160px]">
+            <select
+              className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg py-3 px-4 appearance-none focus:outline-none focus:border-blue-500 transition-colors"
+              value={filterBy}
+              onChange={(e) => { setFilterBy(e.target.value as any); setPage(1); }}
+            >
+              <option value="all">Filter: All Picks</option>
+              <option value="favorites">Favored Picks</option>
+              <option value="underdogs">Underdog Picks</option>
+              <option value="finishes">Predicted Finishes</option>
+            </select>
+          </div>
+
+          <div className="relative min-w-[160px]">
+            <select
+              className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg py-3 px-4 appearance-none focus:outline-none focus:border-orange-500 transition-colors"
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value as any); setPage(1); }}
+            >
+              <option value="date">Sort by: Date</option>
+              <option value="confidence">Sort by: Confidence</option>
+              <option value="value">Sort by: Value Edge</option>
+              <option value="finish">Sort by: Finish %</option>
             </select>
           </div>
         </div>
@@ -293,9 +394,10 @@ export default function PredictionsDashboard() {
               <p className="text-zinc-400">No predictions found.</p>
             </div>
           ) : (
-            fights.map((fight) => {
+            processedFights.map((fight) => {
               const isLocked = !isPremium || fight.aiPrediction === "LOCKED_PREMIUM";
-              const probs = !isLocked && fight.aiPrediction ? extractProbabilities(fight.aiPrediction, fight.fighter1.name) : null;
+              const metrics = getFightMetrics(fight);
+              const probs = metrics?.probs;
 
               return (
                 <div key={fight.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
@@ -363,12 +465,20 @@ export default function PredictionsDashboard() {
                         )}
                         <div className="flex items-start gap-4">
                           <Activity className="w-5 h-5 text-purple-400 shrink-0 mt-1" />
-                          <div>
-                            <div className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-1 flex items-center gap-2">
-                              AI Summary
-                              {fight.aiConfidence && (
-                                <span className="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded text-[10px]">
-                                  {(fight.aiConfidence * 100).toFixed(0)}% Confidence
+                          <div className="w-full">
+                            <div className="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-1 flex items-center justify-between gap-2 flex-wrap">
+                              <span className="flex items-center gap-2">
+                                AI Summary
+                                {fight.aiConfidence && (
+                                  <span className="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded text-[10px]">
+                                    {(fight.aiConfidence * 100).toFixed(0)}% Confidence
+                                  </span>
+                                )}
+                              </span>
+                              
+                              {metrics && metrics.bestEdge > 0 && (
+                                <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-mono">
+                                  ⭐ {metrics.bestEdge.toFixed(1)}% VALUE EDGE
                                 </span>
                               )}
                             </div>

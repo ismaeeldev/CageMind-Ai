@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "elo:recalculate": "tsx src/scripts/recalculate-elo.ts",
+    "backfill:events": "tsx src/scripts/backfill-events.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -27,6 +29,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "recharts": "^3.8.1",
     "shadcn": "^4.8.0",
     "stripe": "^22.1.1",
     "tailwind-merge": "^3.6.0",

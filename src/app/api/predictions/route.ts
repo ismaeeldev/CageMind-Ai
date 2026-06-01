@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
     const weightClass = searchParams.get("weightClass") || "";
 
-    const take = 10;
+    const take = 50;
     const skip = (page - 1) * take;
 
     // Start of today UTC so past events don't appear in predictions

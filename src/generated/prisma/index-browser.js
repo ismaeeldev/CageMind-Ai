@@ -142,6 +142,7 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
 
 exports.Prisma.FighterScalarFieldEnum = {
   id: 'id',
+  ufcId: 'ufcId',
   name: 'name',
   weightClass: 'weightClass',
   imageUrl: 'imageUrl',

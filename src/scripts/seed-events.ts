@@ -11,14 +11,14 @@ async function main() {
   console.log("Seeding events...");
 
   // Get some fighters
-  const islam = await prisma.fighter.findUnique({ where: { name: "Islam Makhachev" } });
-  const dustin = await prisma.fighter.findUnique({ where: { name: "Dustin Poirier" } });
+  const islam = await prisma.fighter.findFirst({ where: { name: "Islam Makhachev" } });
+  const dustin = await prisma.fighter.findFirst({ where: { name: "Dustin Poirier" } });
   
-  const jon = await prisma.fighter.findUnique({ where: { name: "Jon Jones" } });
-  const tom = await prisma.fighter.findUnique({ where: { name: "Tom Aspinall" } });
+  const jon = await prisma.fighter.findFirst({ where: { name: "Jon Jones" } });
+  const tom = await prisma.fighter.findFirst({ where: { name: "Tom Aspinall" } });
   
-  const max = await prisma.fighter.findUnique({ where: { name: "Max Holloway" } });
-  const justin = await prisma.fighter.findUnique({ where: { name: "Justin Gaethje" } });
+  const max = await prisma.fighter.findFirst({ where: { name: "Max Holloway" } });
+  const justin = await prisma.fighter.findFirst({ where: { name: "Justin Gaethje" } });
 
   if (!islam || !dustin || !jon || !tom || !max || !justin) {
     console.error("Fighters not found! Make sure to run seed-fighters.ts first.");

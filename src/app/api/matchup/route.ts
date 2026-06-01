@@ -85,9 +85,21 @@ export async function POST(req: Request) {
     const engine = new PredictionEngine();
     const prediction = await engine.generateHypotheticalPrediction(f1, f2);
 
+    // Attach mock advanced stats for the Matchup Lab UI demonstration
+    const generateAdvancedStats = () => ({
+      slpm: parseFloat((Math.random() * (6.5 - 2.5) + 2.5).toFixed(2)),
+      strAcc: parseFloat((Math.random() * (65 - 35) + 35).toFixed(1)),
+      td15m: parseFloat((Math.random() * (3.5 - 0.0) + 0.0).toFixed(2)),
+      tdAcc: parseFloat((Math.random() * (60 - 20) + 20).toFixed(1)),
+      sub15m: parseFloat((Math.random() * (1.5 - 0.0) + 0.0).toFixed(2)),
+    });
+
+    const f1Enhanced = { ...f1, ...generateAdvancedStats() };
+    const f2Enhanced = { ...f2, ...generateAdvancedStats() };
+
     return NextResponse.json({
-      fighter1: f1,
-      fighter2: f2,
+      fighter1: f1Enhanced,
+      fighter2: f2Enhanced,
       prediction
     });
   } catch (error: any) {

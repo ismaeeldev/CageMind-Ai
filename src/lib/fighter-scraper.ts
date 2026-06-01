@@ -14,9 +14,12 @@ export async function scrapeAndSaveFighter(id: string) {
     throw new Error("Fighter not found");
   }
 
-  // If fighter already has a valid image, return immediately (DB fallback)
+  // If fighter already has all required data (image + stats), return immediately
   const existingImg = fighter.imageUrl?.trim();
-  if (existingImg && existingImg !== "null" && existingImg !== "undefined") {
+  const hasValidImage = existingImg && existingImg !== "null" && existingImg !== "undefined";
+  const hasPhysicalStats = fighter.age !== null && fighter.height !== null && fighter.reach !== null;
+
+  if (hasValidImage && hasPhysicalStats) {
     return {
       id: fighter.id,
       name: fighter.name,
@@ -34,23 +37,29 @@ export async function scrapeAndSaveFighter(id: string) {
     };
   }
 
-  // Clean name to construct slug for UFC athlete page
-  const words = fighter.name.split(" ");
-  let cleanedName = fighter.name;
-  if (words.length > 1 && words.length % 2 === 0) {
-    const half = words.length / 2;
-    const firstHalf = words.slice(0, half).join(" ");
-    const secondHalf = words.slice(half).join(" ");
-    if (firstHalf === secondHalf) {
-      cleanedName = firstHalf;
+  // Use ufcId from database if available, otherwise fallback to guessing the slug
+  let url = "";
+  if (fighter.ufcId) {
+    url = fighter.ufcId.startsWith("http") ? fighter.ufcId : `https://www.ufc.com${fighter.ufcId}`;
+  } else {
+    // Clean name to construct slug for UFC athlete page
+    const words = fighter.name.split(" ");
+    let cleanedName = fighter.name;
+    if (words.length > 1 && words.length % 2 === 0) {
+      const half = words.length / 2;
+      const firstHalf = words.slice(0, half).join(" ");
+      const secondHalf = words.slice(half).join(" ");
+      if (firstHalf === secondHalf) {
+        cleanedName = firstHalf;
+      }
     }
+
+    const slug = cleanedName.toLowerCase()
+      .replace(/['']/g, "")
+      .replace(/[^a-z0-9]+/g, "-");
+
+    url = `https://www.ufc.com/athlete/${slug}`;
   }
-
-  const slug = cleanedName.toLowerCase()
-    .replace(/['']/g, "")
-    .replace(/[^a-z0-9]+/g, "-");
-
-  const url = `https://www.ufc.com/athlete/${slug}`;
   
   let age = fighter.age;
   let height = fighter.height;

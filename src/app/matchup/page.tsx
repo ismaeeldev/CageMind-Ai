@@ -5,6 +5,7 @@ import { Swords, Activity, User, Ruler, TrendingUp, HelpCircle, Lock } from "luc
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FighterSpiderChart } from "@/components/ui/fighter-spider-chart";
 
 interface FighterBasic {
   id: string;
@@ -21,6 +22,11 @@ interface FighterDetails extends FighterBasic {
   losses: number;
   draws: number;
   eloRating: number;
+  slpm?: number;
+  strAcc?: number;
+  td15m?: number;
+  tdAcc?: number;
+  sub15m?: number;
 }
 
 interface Prediction {
@@ -78,6 +84,8 @@ export default function MatchupPage() {
     }
   }, [isPremium]);
 
+  const [loadingStep, setLoadingStep] = useState(0);
+
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-[#18181B] text-zinc-100 flex items-center justify-center">
@@ -93,8 +101,6 @@ export default function MatchupPage() {
       </div>
     );
   }
-
-  const [loadingStep, setLoadingStep] = useState(0);
 
   const handleCompare = async () => {
     if (!f1Id || !f2Id) return;
@@ -295,14 +301,14 @@ export default function MatchupPage() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 opacity-50"></div>
 
-              <div className="flex justify-between items-end mb-4">
-                <div className="text-left">
-                  <h2 className="text-3xl font-black text-white uppercase">{f1Details.name}</h2>
+              <div className="grid grid-cols-[1fr,auto,1fr] items-end mb-4 gap-4">
+                <div className="text-left min-w-0">
+                  <h2 className="text-2xl md:text-3xl font-black text-white uppercase truncate" title={f1Details.name}>{f1Details.name}</h2>
                   <p className="text-5xl font-black text-blue-400 mt-2">{prediction.winProbabilityFighter1}%</p>
                 </div>
-                <div className="text-zinc-500 font-bold uppercase tracking-widest px-4">VS</div>
-                <div className="text-right">
-                  <h2 className="text-3xl font-black text-white uppercase">{f2Details.name}</h2>
+                <div className="text-zinc-500 font-bold uppercase tracking-widest px-2 md:px-4 text-center pb-2">VS</div>
+                <div className="text-right min-w-0">
+                  <h2 className="text-2xl md:text-3xl font-black text-white uppercase truncate" title={f2Details.name}>{f2Details.name}</h2>
                   <p className="text-5xl font-black text-orange-400 mt-2">{prediction.winProbabilityFighter2}%</p>
                 </div>
               </div>
@@ -324,8 +330,11 @@ export default function MatchupPage() {
               </div>
             </div>
 
-            {/* Stat Matrix */}
-            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+            {/* Stat Matrix & Spider Chart Container */}
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr,450px] gap-8">
+              
+              {/* Stat Matrix */}
+              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl h-fit">
               <div className="grid grid-cols-[1fr,auto,1fr] gap-4 p-4 border-b border-zinc-800 bg-zinc-950/50">
                 <div className="font-bold text-white text-lg">{f1Details.name}</div>
                 <div className="text-zinc-500 font-bold uppercase tracking-widest px-4 text-center text-sm mt-1">Attribute</div>
@@ -338,6 +347,11 @@ export default function MatchupPage() {
                   { label: "Height", icon: <Ruler className="w-4 h-4" />, v1: f1Details.height, v2: f2Details.height, suffix: '"', invert: false },
                   { label: "Reach", icon: <Ruler className="w-4 h-4" />, v1: f1Details.reach, v2: f2Details.reach, suffix: '"', invert: false },
                   { label: "Elo Rating", icon: <TrendingUp className="w-4 h-4" />, v1: f1Details.eloRating, v2: f2Details.eloRating, suffix: "", invert: false },
+                  { label: "SLpM", icon: <Swords className="w-4 h-4" />, v1: f1Details.slpm ?? null, v2: f2Details.slpm ?? null, suffix: "", invert: false },
+                  { label: "Str. Acc", icon: <Activity className="w-4 h-4" />, v1: f1Details.strAcc ?? null, v2: f2Details.strAcc ?? null, suffix: "%", invert: false },
+                  { label: "TD/15m", icon: <TrendingUp className="w-4 h-4" />, v1: f1Details.td15m ?? null, v2: f2Details.td15m ?? null, suffix: "", invert: false },
+                  { label: "TD Acc", icon: <Activity className="w-4 h-4" />, v1: f1Details.tdAcc ?? null, v2: f2Details.tdAcc ?? null, suffix: "%", invert: false },
+                  { label: "Sub/15m", icon: <Swords className="w-4 h-4" />, v1: f1Details.sub15m ?? null, v2: f2Details.sub15m ?? null, suffix: "", invert: false },
                 ].filter(stat => stat.v1 !== null && stat.v2 !== null).map((stat, i) => (
                   <div key={i} className="grid grid-cols-[1fr,auto,1fr] gap-4 py-4 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors rounded-lg px-4">
                     <div className={`text-xl font-bold ${getAdvantageClass(stat.v1, stat.v2, stat.invert)}`}>
@@ -381,6 +395,16 @@ export default function MatchupPage() {
                 </div>
 
               </div>
+            </div>
+
+              {/* Spider Chart */}
+              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl flex flex-col h-fit">
+                <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest text-center mb-6">Style Matchup Comparison</h3>
+                <div className="flex-1 min-h-[350px]">
+                  <FighterSpiderChart fighter1={f1Details} fighter2={f2Details} />
+                </div>
+              </div>
+              
             </div>
 
           </div>

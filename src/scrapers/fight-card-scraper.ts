@@ -9,6 +9,8 @@ export interface RawFight {
   eventId: string;
   fighter1Name: string;
   fighter2Name: string;
+  fighter1UfcId?: string | null;
+  fighter2UfcId?: string | null;
   weightClass?: string;
   isMainCard?: boolean;
   isTitleFight?: boolean;
@@ -22,6 +24,8 @@ export interface ParsedFight {
   eventId: string;
   fighter1Name: string;
   fighter2Name: string;
+  fighter1UfcId: string | null;
+  fighter2UfcId: string | null;
   weightClass: string | null;
   isMainCard: boolean;
   isTitleFight: boolean;
@@ -54,7 +58,6 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
 
     let rawData: RawFight[] = [];
 
-    // A. Fetch & Parse
     try {
       if (this.useMock) {
         rawData = this.getMockData();
@@ -72,18 +75,22 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
       return [];
     }
 
-    // B. Validate
     const parsedFights: ParsedFight[] = [];
     for (const raw of rawData) {
       try {
-        const parsed = this.validator.validateAndTransform(raw);
-        parsedFights.push(parsed);
+        // Assume validator just passes through ufcIds. 
+        // We'll manually parse it here to avoid changing the validator file too much.
+        const parsed = this.validator.validateAndTransform(raw) as any;
+        parsedFights.push({
+          ...parsed,
+          fighter1UfcId: raw.fighter1UfcId || null,
+          fighter2UfcId: raw.fighter2UfcId || null,
+        });
       } catch (error) {
         logger.warn(`[${this.scraperName}] Invalid fight data skipped`, { error });
       }
     }
 
-    // C. Store & Link Fighters
     await this.saveToDatabase(parsedFights);
 
     return parsedFights;
@@ -92,7 +99,6 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
   private async saveToDatabase(fights: ParsedFight[]): Promise<void> {
     logger.info(`[${this.scraperName}] Saving ${fights.length} fights to DB sequentially...`);
     
-    // Deduplicate parsed fights by combination of fighter names
     const uniqueFightsMap = new Map<string, ParsedFight>();
     for (const fight of fights) {
       const key = `${fight.fighter1Name}_${fight.fighter2Name}`;
@@ -104,37 +110,33 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
     const uniqueFights = Array.from(uniqueFightsMap.values());
     logger.info(`[${this.scraperName}] Deduplicated to ${uniqueFights.length} unique fights.`);
 
-    // 1. Upsert All Fighters first to prevent duplicates/missing constraints
-    const fighterMap = new Map<string, string | null>();
+    // 1. Upsert All Fighters
     for (const fight of uniqueFights) {
-      fighterMap.set(fight.fighter1Name, fight.weightClass);
-      fighterMap.set(fight.fighter2Name, fight.weightClass);
-    }
-
-    for (const [name, weightClass] of fighterMap.entries()) {
-      try {
-        await prisma.fighter.upsert({
-          where: { name },
-          update: {},
-          create: { name, weightClass }
-        });
-      } catch (error) {
-        logger.error(`[${this.scraperName}] Failed to upsert fighter: ${name}`, error);
-      }
+      await this.upsertFighter(fight.fighter1Name, fight.fighter1UfcId, fight.weightClass);
+      await this.upsertFighter(fight.fighter2Name, fight.fighter2UfcId, fight.weightClass);
     }
 
     // 2. Fetch all fighters to get their IDs
-    const dbFighters = await prisma.fighter.findMany({
-      where: { name: { in: Array.from(fighterMap.keys()) } }
-    });
-    const fighterIdMap = new Map(dbFighters.map(f => [f.name, f.id]));
+    const names = uniqueFights.flatMap(f => [f.fighter1Name, f.fighter2Name]);
+    const ufcIds = uniqueFights.flatMap(f => [f.fighter1UfcId, f.fighter2UfcId]).filter(Boolean) as string[];
 
-    // 3. Fetch all existing fights for this event to avoid N sequential findFirst
+    const dbFighters = await prisma.fighter.findMany({
+      where: { 
+        OR: [
+          { name: { in: names } },
+          { ufcId: { in: ufcIds } }
+        ]
+      }
+    });
+
+    const fighterIdByNameMap = new Map(dbFighters.map(f => [f.name, f.id]));
+    const fighterIdByUfcIdMap = new Map(dbFighters.filter(f => f.ufcId).map(f => [f.ufcId!, f.id]));
+
+    // 3. Fetch all existing fights for this event
     const existingFights = await prisma.fight.findMany({
       where: { eventId: this.eventId }
     });
     
-    // Map by f1_f2 combination
     const existingFightMap = new Map(
       existingFights.map(f => [`${f.fighter1Id}_${f.fighter2Id}`, f.id])
     );
@@ -143,8 +145,8 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
     let processedCount = 0;
 
     for (const fight of uniqueFights) {
-      const f1Id = fighterIdMap.get(fight.fighter1Name);
-      const f2Id = fighterIdMap.get(fight.fighter2Name);
+      const f1Id = (fight.fighter1UfcId ? fighterIdByUfcIdMap.get(fight.fighter1UfcId) : null) || fighterIdByNameMap.get(fight.fighter1Name);
+      const f2Id = (fight.fighter2UfcId ? fighterIdByUfcIdMap.get(fight.fighter2UfcId) : null) || fighterIdByNameMap.get(fight.fighter2Name);
 
       if (!f1Id || !f2Id) {
         logger.warn(`[${this.scraperName}] Missing fighter ID for ${fight.fighter1Name} or ${fight.fighter2Name}`);
@@ -153,7 +155,9 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
 
       let winnerId = null;
       if (fight.winnerName) {
-        winnerId = fighterIdMap.get(fight.winnerName) || null;
+        if (fight.winnerName === fight.fighter1Name) winnerId = f1Id;
+        else if (fight.winnerName === fight.fighter2Name) winnerId = f2Id;
+        else winnerId = fighterIdByNameMap.get(fight.winnerName) || null;
       }
 
       const key = `${f1Id}_${f2Id}`;
@@ -196,6 +200,30 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
     logger.info(`[${this.scraperName}] Successfully saved/updated ${processedCount} fights.`);
   }
 
+  private async upsertFighter(name: string, ufcId: string | null, weightClass: string | null) {
+    try {
+      const existing = ufcId 
+        ? await prisma.fighter.findUnique({ where: { ufcId } })
+        : await prisma.fighter.findFirst({ where: { name } });
+
+      if (existing) {
+        // Only update if ufcId was missing and we now have it
+        if (ufcId && !existing.ufcId) {
+          await prisma.fighter.update({
+            where: { id: existing.id },
+            data: { ufcId }
+          });
+        }
+      } else {
+        await prisma.fighter.create({
+          data: { name, ufcId, weightClass }
+        });
+      }
+    } catch (error) {
+      logger.error(`[${this.scraperName}] Failed to upsert fighter: ${name}`, error);
+    }
+  }
+
   private getMockData(): RawFight[] {
     return [
       {
@@ -205,14 +233,6 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
         weightClass: "Lightweight Title Bout",
         isMainCard: true,
         isTitleFight: true
-      },
-      {
-        eventId: this.eventId,
-        fighter1Name: "Sean Strickland",
-        fighter2Name: "Paulo Costa",
-        weightClass: "Middleweight Bout",
-        isMainCard: true,
-        isTitleFight: false
       }
     ];
   }
