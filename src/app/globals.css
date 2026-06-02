@@ -101,9 +101,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary;
+    overflow-x: hidden;
   }
+
   html {
     @apply font-sans;
   }
@@ -113,15 +116,24 @@
   .glass-panel {
     @apply bg-background/60 backdrop-blur-xl border border-white/10 shadow-2xl;
   }
+
   .premium-gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-premium via-yellow-500 to-amber-500 drop-shadow-[0_0_15px_rgba(202,138,4,0.3)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-premium via-yellow-500 to-amber-500 drop-shadow-[0_0_15px_rgba(202, 138, 4, 0.3)];
   }
 }
 
 @keyframes scan {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(278px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(278px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .animate-scan {

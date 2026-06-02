@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
-import { User, LayoutDashboard, Settings, LogOut, ChevronDown } from "lucide-react";
+import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
 export function AuthNav() {
   const { data: session, status } = useSession();

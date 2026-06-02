@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { SplashScreen } from "@/components/pwa/SplashScreen";
 import { PWARegister } from "@/components/pwa/PWARegister";
 
 const inter = Inter({
@@ -32,30 +31,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "CageMind AI",
-    startupImage: [
-      // iPhone SE / 5 (320x568)
-      { url: "/icons/splash/splash-640x1136.png", media: "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" },
-      // iPhone 8 / 7 / 6s (375x667)
-      { url: "/icons/splash/splash-750x1334.png", media: "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" },
-      // iPhone 8 Plus (414x736)
-      { url: "/icons/splash/splash-1242x2208.png", media: "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPhone X / XS / 11 Pro (375x812)
-      { url: "/icons/splash/splash-1125x2436.png", media: "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPhone XS Max / 11 Pro Max (414x896)
-      { url: "/icons/splash/splash-1242x2688.png", media: "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPhone 12 / 13 / 14 (390x844)
-      { url: "/icons/splash/splash-1170x2532.png", media: "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPhone 14 Pro / 15 (393x852)
-      { url: "/icons/splash/splash-1179x2556.png", media: "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPhone 14 Pro Max / 15 Plus (430x932)
-      { url: "/icons/splash/splash-1290x2796.png", media: "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" },
-      // iPad Mini (768x1024)
-      { url: "/icons/splash/splash-1536x2048.png", media: "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" },
-      // iPad Pro 11" (834x1194)
-      { url: "/icons/splash/splash-1668x2388.png", media: "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" },
-      // iPad Pro 12.9" (1024x1366)
-      { url: "/icons/splash/splash-2048x2732.png", media: "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" },
-    ],
   },
   alternates: {
     canonical: "/",
@@ -109,7 +84,6 @@ export default function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
-        <SplashScreen />
         <PWARegister />
         <Providers>
           <ThemeProvider

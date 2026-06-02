@@ -2,19 +2,22 @@
 
 import { PremiumLink } from "@/components/ui/premium-link"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Container } from "./container"
 import { Button } from "@/components/ui/button"
 import { AuthNav } from "@/components/auth-nav"
 import { useSession } from "next-auth/react"
+import { MobileNavDrawer } from "@/components/layout/mobile-nav-drawer"
 
 export function Navbar() {
   const { data: session } = useSession();
+  const pathname = usePathname();
   const isPremium = session?.user?.isPremium === true;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <Container className="flex h-16 items-center">
-        <div className="flex flex-1 items-center">
+      <Container className="flex h-16 items-center justify-between gap-3">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-premium/10 border border-premium/30 group-hover:bg-premium/20 transition-colors">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-premium">
@@ -71,8 +74,8 @@ export function Navbar() {
             Pricing
           </Link>
         </nav>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-2">
+        <div className="flex items-center justify-end gap-2 md:gap-4">
+          <nav className="hidden md:flex items-center space-x-2">
             <AuthNav />
             {isPremium ? (
               <Link href="/dashboard">
@@ -84,6 +87,7 @@ export function Navbar() {
               </Link>
             )}
           </nav>
+          <MobileNavDrawer key={pathname} />
         </div>
       </Container>
     </header>
