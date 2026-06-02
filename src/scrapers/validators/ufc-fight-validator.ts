@@ -40,6 +40,8 @@ export class UfcFightValidator {
       eventId: raw.eventId,
       fighter1Name: fighter1,
       fighter2Name: fighter2,
+      fighter1UfcId: raw.fighter1UfcId ?? null,
+      fighter2UfcId: raw.fighter2UfcId ?? null,
       weightClass: raw.weightClass ? raw.weightClass.trim() : null,
       isMainCard: raw.isMainCard || false,
       isTitleFight: raw.isTitleFight || false,

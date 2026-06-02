@@ -125,10 +125,11 @@ export async function GET(
               fighter2: fallback.fighter2,
               isTitleFight: event.name.toLowerCase().includes("title") || event.name.toLowerCase().includes("championship"),
               weightClass: "TBD"
-            }]),
+            }],
             isUpcoming: event.isUpcoming
           });
         }
+
 
         return NextResponse.json({
           fights: enhanceFightsWithStats(refreshedEvent?.fights || []),

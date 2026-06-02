@@ -12,26 +12,43 @@ export function getExpectedScore(ratingA: number, ratingB: number): number {
 }
 
 /**
+ * Calculates a fighter's new Elo rating after a bout.
+ * @param currentRating Fighter's current Elo rating
+ * @param expectedScore Expected score (from getExpectedScore)
+ * @param actualScore Actual score: 1 = win, 0 = loss, 0.5 = draw
+ * @param kFactor Optional K-factor override (default: ELO_K_FACTOR)
+ * @returns New Elo rating (rounded to nearest integer)
+ */
+export function getNewRating(
+  currentRating: number,
+  expectedScore: number,
+  actualScore: number,
+  kFactor: number = ELO_K_FACTOR
+): number {
+  return Math.round(currentRating + kFactor * (actualScore - expectedScore));
+}
+
+/**
  * Seeds a fighter's initial Elo rating based on their record and age.
  */
 export function seedElo(fighter: { wins: number; losses: number; age: number | null }): number {
   let e = 1450;
   const ww = fighter.wins || 0;
   const ll = fighter.losses || 0;
-  
+
   // Career win rate impact
   e += (ww / ((ww + ll) || 1) - 0.5) * 300;
-  
+
   // Experience/volume impact
   e += Math.min(ww, 28) * 4.5;
-  
+
   // Age curve impact
   if (fighter.age) {
     if (fighter.age >= 27 && fighter.age <= 32) e += 14;        // athletic prime
     else if (fighter.age > 35) e -= (fighter.age - 35) * 7;
     else if (fighter.age < 24) e -= (24 - fighter.age) * 5;
   }
-  
+
   return Math.round(e);
 }
 
@@ -54,13 +71,13 @@ export function calculateEloDelta(
   outcome: FightOutcomeDetails
 ): number {
   if (!outcome.winnerId) return 0; // Draw or no contest
-  
+
   const Ea = getExpectedScore(rating1, rating2);
   const Sa = outcome.winnerId === outcome.fighter1Id ? 1 : 0;
-  
+
   // Identify the winner's expected probability
   const winnerExp = Sa === 1 ? Ea : 1 - Ea;
-  
+
   const finish = outcome.method === 'KO/TKO' || outcome.method === 'Submission';
   let K = outcome.isTitleFight ? ELO_K_FACTOR_TITLE : ELO_K_FACTOR;
   let mult = 1;
@@ -71,18 +88,18 @@ export function calculateEloDelta(
 
   if (finish && outcome.round === 1) mult += 0.30;
   else if (finish && outcome.round === 2) mult += 0.14;
-  
+
   if (finish && outcome.isTitleFight) mult += 0.22;
-  
+
   // Upset mechanics
   if (winnerExp < 0.42) mult += 0.14;
   if (winnerExp < 0.42 && finish) mult += 0.22;
-  
+
   // Narrow decision discount
   if (!finish && winnerExp > 0.44 && winnerExp < 0.58) mult -= 0.10;
-  
+
   mult = Math.max(0.6, mult);
-  
+
   const dA = Math.round(K * mult * (Sa - Ea));
   return dA;
 }
@@ -102,7 +119,7 @@ export function generatePrediction(rating1: number, rating2: number): Prediction
   const prob1 = getExpectedScore(rating1, rating2);
   const prob2 = 1 - prob1;
   const eloDiff = Math.abs(rating1 - rating2);
-  
+
   const maxProb = Math.max(prob1, prob2);
   const confidenceScore = Math.round((maxProb - 0.5) * 200);
 

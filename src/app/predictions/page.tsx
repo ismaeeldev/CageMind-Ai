@@ -30,6 +30,8 @@ const MOCK_PREDICTIONS: Fight[] = [
     weightClass: "Light Heavyweight Bout",
     aiPrediction: "Alex Pereira is favored to win with a 58.4% probability. This prediction is primarily driven by a significant Elo advantage (+84 points), and notable physical advantages for Alex Pereira.",
     aiConfidence: 0.72,
+    oddsFighter1: null,
+    oddsFighter2: null,
     fighter1: { name: "Alex Pereira", imageUrl: null },
     fighter2: { name: "Jamahal Hill", imageUrl: null },
     event: { name: "UFC 300: Pereira vs. Hill", date: "2026-04-13T22:00:00.000Z" }
@@ -39,6 +41,8 @@ const MOCK_PREDICTIONS: Fight[] = [
     weightClass: "Women's Strawweight Title Bout",
     aiPrediction: "Zhang Weili is favored to win with a 65.2% probability. This prediction is primarily driven by stronger recent momentum by Zhang Weili, and higher career win percentage.",
     aiConfidence: 0.81,
+    oddsFighter1: null,
+    oddsFighter2: null,
     fighter1: { name: "Zhang Weili", imageUrl: null },
     fighter2: { name: "Yan Xiaonan", imageUrl: null },
     event: { name: "UFC 300: Pereira vs. Hill", date: "2026-04-13T22:00:00.000Z" }
@@ -48,11 +52,14 @@ const MOCK_PREDICTIONS: Fight[] = [
     weightClass: "Lightweight Bout",
     aiPrediction: "Max Holloway is favored to win with a 52.1% probability. The metrics are incredibly close across the board, making this a highly competitive matchup.",
     aiConfidence: 0.58,
+    oddsFighter1: null,
+    oddsFighter2: null,
     fighter1: { name: "Justin Gaethje", imageUrl: null },
     fighter2: { name: "Max Holloway", imageUrl: null },
     event: { name: "UFC 300: Pereira vs. Hill", date: "2026-04-13T22:00:00.000Z" }
   }
 ];
+
 
 function FighterAvatar({ src, name }: { src?: string | null; name: string }) {
   const [loaded, setLoaded] = useState(false);

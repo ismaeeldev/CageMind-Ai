@@ -67,12 +67,12 @@ export async function GET() {
         profit, // net profit on $100 bet
         odds: aiOdds,
       };
-    }).filter(Boolean) as NonNullable<ReturnType<typeof gradedFights[0]["predictionHistory"]>[0] & {
+    }).filter(Boolean) as {
       fightId: string; eventId: string; eventName: string; eventDate: Date;
       fighter1Name: string; fighter2Name: string; aiPickedFighter: string;
       actualWinner: string; isCorrect: boolean; confidence: number;
       isHighConfidence: boolean; profit: number; odds: number | null;
-    }>[];
+    }[];
 
     // ── Helper: compute aggregate stats ──────────────────────────────────
     const computeStats = (picks: typeof gradedPicks) => {
