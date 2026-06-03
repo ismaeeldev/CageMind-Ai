@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="border-t bg-muted/40 py-12">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
               <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-premium/10 border border-premium/30 transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-premium">
@@ -23,7 +23,7 @@ export function Footer() {
               The premier UFC & MMA Analytics Platform. Leverage automated data, live fight odds, and AI-driven prediction models to find your betting edge.
             </p>
           </div>
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="font-semibold mb-4 text-foreground">Features</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
@@ -48,7 +48,7 @@ export function Footer() {
               </li>
             </ul>
           </div>
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
@@ -69,7 +69,7 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
+        <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4 text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} CageMind AI. All rights reserved.</p>
           <p>
             Data sources: roster.watch, Tapology, ESPN, UFC, FanDuel.

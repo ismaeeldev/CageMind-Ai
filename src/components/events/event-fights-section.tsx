@@ -283,10 +283,10 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
 
         {/* Expandable Premium details section */}
         {isExpanded && (
-          <div className="border-t border-zinc-800 bg-zinc-950/40 backdrop-blur-sm p-6 animate-in slide-in-from-top-2 duration-300">
+          <div className="border-t border-zinc-800 bg-zinc-950/80 p-4 md:p-6 animate-in slide-in-from-top-2 duration-200">
             {!isPremium ? (
               // LOCKED PREMIUM VIEW
-              <div className="relative h-64 rounded-xl overflow-hidden bg-zinc-950/70 border border-zinc-850 flex flex-col items-center justify-center p-8 text-center group/lock">
+              <div className="relative h-64 rounded-xl overflow-hidden bg-zinc-950/70 border border-zinc-850 flex flex-col items-center justify-center p-6 md:p-8 text-center group/lock">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40"></div>
                 <div className="absolute inset-0 flex flex-col justify-center gap-4 px-12 blur-md opacity-25 select-none pointer-events-none">
                   <div className="h-6 w-full bg-zinc-800 rounded"></div>
@@ -311,7 +311,7 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
               // UNLOCKED PREMIUM TABS
               <div className="space-y-6">
                 {/* Tab selector */}
-                <div className="flex border-b border-zinc-850 gap-6 text-sm font-bold uppercase tracking-wider mb-6">
+                <div className="flex flex-wrap border-b border-zinc-850 gap-4 md:gap-6 text-xs md:text-sm font-bold uppercase tracking-wider mb-6">
                   <button 
                     onClick={() => setActiveTab("edge")}
                     className={`pb-3 px-1 border-b-2 transition-all ${activeTab === "edge" ? "border-primary text-primary" : "border-transparent text-zinc-500 hover:text-zinc-300"}`}
