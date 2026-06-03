@@ -76,7 +76,7 @@ export default async function PricingPage() {
         </Card>
 
         {/* Premium Tier */}
-        <Card className="glass-panel border-premium/50 relative overflow-hidden flex flex-col shadow-[0_0_30px_rgba(202,138,4,0.1)] hover:shadow-[0_0_40px_rgba(202,138,4,0.2)] transition-shadow duration-500 scale-105">
+        <Card className="glass-panel border-premium/50 relative overflow-hidden flex flex-col shadow-[0_0_30px_rgba(202,138,4,0.1)] hover:shadow-[0_0_40px_rgba(202,138,4,0.2)] transition-shadow duration-500 md:scale-105 mt-6 md:mt-0">
           <div className="absolute top-0 right-0 bg-premium text-premium-foreground text-xs font-bold px-4 py-1.5 rounded-bl-xl uppercase tracking-widest shadow-[0_0_10px_rgba(202,138,4,0.5)] z-10">Most Popular</div>
           <div className="absolute inset-0 bg-gradient-to-br from-premium/5 via-transparent to-transparent pointer-events-none"></div>
           

@@ -286,23 +286,23 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
           <div className="border-t border-zinc-800 bg-zinc-950/80 p-4 md:p-6 animate-in slide-in-from-top-2 duration-200">
             {!isPremium ? (
               // LOCKED PREMIUM VIEW
-              <div className="relative h-64 rounded-xl overflow-hidden bg-zinc-950/70 border border-zinc-850 flex flex-col items-center justify-center p-6 md:p-8 text-center group/lock">
+              <div className="relative min-h-[16rem] h-auto rounded-xl overflow-hidden bg-zinc-950/70 border border-zinc-850 flex flex-col items-center justify-center py-8 px-4 md:p-8 text-center group/lock">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40"></div>
-                <div className="absolute inset-0 flex flex-col justify-center gap-4 px-12 blur-md opacity-25 select-none pointer-events-none">
+                <div className="absolute inset-0 flex flex-col justify-center gap-4 px-8 md:px-12 blur-md opacity-25 select-none pointer-events-none">
                   <div className="h-6 w-full bg-zinc-800 rounded"></div>
                   <div className="h-4 w-3/4 bg-zinc-850 rounded"></div>
                   <div className="h-4 w-1/2 bg-zinc-850 rounded"></div>
                 </div>
 
                 <div className="relative z-10 flex flex-col items-center">
-                  <div className="w-14 h-14 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mb-4 text-primary animate-pulse">
-                    <Lock className="w-6 h-6 shadow-[0_0_15px_rgba(210,40,40,0.4)]" />
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mb-3 md:mb-4 text-primary animate-pulse">
+                    <Lock className="w-5 h-5 md:w-6 md:h-6 shadow-[0_0_15px_rgba(210,40,40,0.4)]" />
                   </div>
-                  <h4 className="text-white font-black uppercase tracking-wider text-lg mb-2">Premium Analytics Locked</h4>
-                  <p className="text-zinc-400 text-sm max-w-md mb-6 leading-relaxed">
+                  <h4 className="text-white font-black uppercase tracking-wider text-base md:text-lg mb-1.5 md:mb-2">Premium Analytics Locked</h4>
+                  <p className="text-zinc-400 text-xs md:text-sm max-w-md mb-5 md:mb-6 leading-relaxed">
                     Subscribe to premium to unlock the **AI Betting Edge Finder**, dynamic **Elo rating curves**, and **detailed physical matchup attributes** for this event.
                   </p>
-                  <Link href="/pricing" className="bg-primary hover:bg-red-700 text-white font-black uppercase tracking-wider text-xs px-8 py-3 rounded-xl transition-all shadow-lg shadow-primary/25 hover:scale-105 active:scale-95">
+                  <Link href="/pricing" className="bg-primary hover:bg-red-700 text-white font-black uppercase tracking-wider text-[10px] md:text-xs px-6 py-2.5 md:px-8 md:py-3 rounded-xl transition-all shadow-lg shadow-primary/25 hover:scale-105 active:scale-95">
                     Unlock Premium Now
                   </Link>
                 </div>

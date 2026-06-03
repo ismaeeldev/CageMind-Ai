@@ -105,7 +105,7 @@ export function FeaturedFightBreakdown({ fight, isUpcoming }: FeaturedFightProps
         <div className="p-6 md:p-8 grid md:grid-cols-3 gap-8">
           
           {/* Main Pick Column */}
-          <div className="md:col-span-1 flex flex-col justify-center border-r border-zinc-800/60 pr-4">
+          <div className="md:col-span-1 flex flex-col justify-center border-b border-zinc-800/60 pb-6 mb-4 md:border-b-0 md:border-r md:pb-0 md:mb-0 md:pr-4">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Most Confident Pick</span>
             <div className="text-3xl font-black uppercase text-white mb-1 drop-shadow-md">
               {aiPick}
