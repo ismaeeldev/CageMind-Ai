@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Menu, X, ChevronRight, Home, CalendarDays, Dumbbell, Trophy, Sparkles, CreditCard, LogIn, UserRound } from "lucide-react";
+import { Menu, X, ChevronRight, Home, CalendarDays, Dumbbell, Trophy, Sparkles, CreditCard, LogIn, UserRound, Activity } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { PremiumLink } from "@/components/ui/premium-link";
 
 const primaryLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -14,6 +15,8 @@ const primaryLinks = [
   { href: "/fighters", label: "Fighters", icon: Dumbbell },
   { href: "/rankings", label: "Rankings", icon: Trophy },
   { href: "/predictions", label: "Predictions", icon: Sparkles },
+  { href: "/matchup", label: "Matchup Lab", icon: Dumbbell },
+  { href: "/past-events", label: "Past Event Results", icon: Activity },
   { href: "/pricing", label: "Pricing", icon: CreditCard },
 ];
 
@@ -59,20 +62,32 @@ export function MobileNavDrawer() {
 
           <nav className="flex-1 px-3 py-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
             <div className="space-y-1.5">
-              {primaryLinks.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-foreground/90 transition-colors hover:bg-muted/60 active:bg-muted"
-                >
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-muted/70 text-muted-foreground">
-                    <Icon className="size-4" />
-                  </span>
-                  <span className="flex-1">{label}</span>
-                  <ChevronRight className="size-4 text-muted-foreground" />
-                </Link>
-              ))}
+              {primaryLinks.map(({ href, label, icon: Icon }) => {
+                const isPremiumFeature = href === "/matchup" || href === "/past-events" || href === "/predictions";
+                const LinkComponent = isPremiumFeature ? PremiumLink : Link;
+
+                return (
+                  <LinkComponent
+                    key={href}
+                    href={href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-foreground/90 transition-colors hover:bg-muted/60 active:bg-muted"
+                  >
+                    <span className="flex size-9 items-center justify-center rounded-xl bg-muted/70 text-muted-foreground">
+                      <Icon className="size-4" />
+                    </span>
+                    <span className="flex-1 flex items-center gap-1.5">
+                      {label}
+                      {isPremiumFeature && (
+                        <span className="text-[9px] bg-amber-500/20 text-amber-500 border border-amber-500/30 px-1.5 py-0.5 rounded font-black uppercase tracking-wider scale-90">
+                          PRO
+                        </span>
+                      )}
+                    </span>
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  </LinkComponent>
+                );
+              })}
             </div>
 
             <div className="mt-6 rounded-3xl border border-border/60 bg-muted/25 p-3">

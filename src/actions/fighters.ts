@@ -7,23 +7,32 @@ export async function getFighters({
   query = "",
   page = 1,
   limit = 8,
+  status = "active",
 }: {
   query?: string;
   page?: number;
   limit?: number;
+  status?: string;
 }) {
+  const statusFilter: Prisma.FighterWhereInput = {};
+  if (status === "active") {
+    statusFilter.isActive = true;
+  } else if (status === "retired") {
+    statusFilter.isActive = false;
+  }
+
   if (!query) {
     const [withImages, withoutImages] = await Promise.all([
       prisma.fighter.findMany({
         where: {
-          isActive: true,
+          ...statusFilter,
           imageUrl: { not: null, notIn: ["null", "undefined", ""] }
         },
         orderBy: { eloRating: "desc" }
       }),
       prisma.fighter.findMany({
         where: {
-          isActive: true,
+          ...statusFilter,
           OR: [
             { imageUrl: null },
             { imageUrl: { in: ["null", "undefined", ""] } }
@@ -65,6 +74,7 @@ export async function getFighters({
   const skip = (page - 1) * limit;
 
   const where: Prisma.FighterWhereInput = {
+    ...statusFilter,
     name: {
       contains: query,
       mode: "insensitive",

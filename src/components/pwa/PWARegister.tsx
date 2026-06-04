@@ -6,6 +6,19 @@ export function PWARegister() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
+    if (process.env.NODE_ENV === "development") {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister().then((success) => {
+            if (success) {
+              console.log("[PWA] Unregistered active service worker for development.");
+            }
+          });
+        }
+      });
+      return;
+    }
+
     // Register service worker after page load (non-blocking)
     const registerSW = async () => {
       try {

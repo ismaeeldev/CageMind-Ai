@@ -37,6 +37,7 @@ export function BestBetsSection({ fights }: BestBetsSectionProps) {
 
   const bets = fights.map(fight => {
     if (!fight.aiPrediction || fight.aiPrediction === "LOCKED_PREMIUM") return null;
+    if (fight.oddsFighter1 === null || fight.oddsFighter2 === null) return null;
     
     const probs = extractProbabilities(fight.aiPrediction, fight.fighter1.name);
     if (!probs) return null;

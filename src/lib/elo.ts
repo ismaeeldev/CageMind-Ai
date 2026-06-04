@@ -93,10 +93,17 @@ export function calculateEloDelta(
 
   if (finish && outcome.isTitleFight) mult += 0.22;
 
-  // Upset mechanics (Now factored more heavily)
-  if (winnerExp < 0.42) mult += 0.25; // Base upset bonus
-  if (winnerExp < 0.30) mult += 0.35; // Major upset bonus
-  if (winnerExp < 0.42 && finish) mult += 0.25; // Finish in an upset
+  // Upset mechanics (Dynamically scaled based on pre-fight probability)
+  if (winnerExp < 0.5) {
+    // Greater upsets yield a larger ELO shift. Scale bonus up to +1.0 for huge upsets.
+    const upsetBonus = (0.5 - winnerExp) * 2.0;
+    mult += upsetBonus;
+    
+    // Extra bonus if the underdog finishes the fight
+    if (finish) {
+      mult += 0.30;
+    }
+  }
 
   // Narrow decision discount
   if (!finish && winnerExp > 0.44 && winnerExp < 0.58) mult -= 0.10;
@@ -108,12 +115,12 @@ export function calculateEloDelta(
 
   let dA = Math.round(K * mult * (Sa - Ea));
 
-  // Promotion Weight (Favor UFC fights)
+  // Promotion Weight (Favor UFC fights at exactly 2x the weight of non-UFC fights)
   if (outcome.isUFCFight) {
-    dA = Math.round(dA * 1.5);
+    dA = Math.round(dA * 2.0);
   } else {
-    // Non-UFC fights have less impact
-    dA = Math.round(dA * 0.7);
+    // Non-UFC fights have 1.0x impact
+    dA = Math.round(dA * 1.0);
   }
 
   return dA;

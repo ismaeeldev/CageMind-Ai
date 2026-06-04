@@ -57,9 +57,16 @@ export class Scheduler {
     await JobRunner.run("ProcessResults", async () => {
       logger.info("[Jobs] Executing Process Results...");
       
-      // Since this project relies on a standalone script to recalculate Elo history
-      // we dynamically import and run the Elo script here so ratings are updated
-      // after any new results are synced in the future.
+      // 1. Process any completed but unprocessed events (generate AI predictions, record winners, etc.)
+      try {
+        const { PostEventProcessor } = await import("./post-event-processor");
+        const processor = new PostEventProcessor();
+        await processor.processCompletedEvents();
+      } catch (err) {
+        logger.error("[Jobs] Failed to run PostEventProcessor", err);
+      }
+
+      // 2. Recalculate Elo chronologically for all completed fights
       const { recalculateAllElo } = await import('../scripts/recalculate-elo');
       await recalculateAllElo();
       

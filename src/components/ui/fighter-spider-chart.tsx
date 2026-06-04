@@ -103,7 +103,7 @@ export function FighterSpiderChart({ fighter1, fighter2 }: FighterSpiderChartPro
       f2Label: `${(fighter2.wins || 0) + (fighter2.losses || 0)} fights`,
     },
     {
-      subject: "Reach Adv",
+      subject: "Reach",
       f1: norm(fighter1.reach, 90),
       f2: norm(fighter2.reach, 90),
       fullMark: 100,

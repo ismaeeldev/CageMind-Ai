@@ -39,12 +39,18 @@ export default function PerformancePage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-[#18181B] text-zinc-100 flex items-center justify-center">
-        <div className="animate-pulse text-zinc-500 font-mono">Loading Past Event Results...</div>
+        <div className="animate-pulse text-zinc-500 font-mono">Verifying authorization credentials...</div>
       </div>
     );
   }
 
-  if (!isPremium) return null;
+  if (!isPremium) {
+    return (
+      <div className="min-h-screen bg-[#18181B] text-zinc-100 flex items-center justify-center">
+        <div className="animate-pulse text-zinc-500 font-mono">Verifying authorization credentials...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 p-6 md:p-10">

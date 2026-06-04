@@ -2,71 +2,47 @@
 
 This document outlines the client's latest feedback points and the proposed technical solutions for each.
 
-## 1. Rankings & Elo Engine Enhancements
-**Feedback:** Change the Elo engine to favor UFC fights over non-UFC fights. Factor in major upsets and undefeated status more heavily. On the Rankings tab, fix broken photos, make fighters clickable to their profile, and add a sort/filter for retired vs. current fighters.
-**Solution:**
-- **Elo Engine:** Update `src/lib/elo.ts` to include a `promotionWeight` multiplier (e.g., 1.5x for UFC). Introduce an `upsetMultiplier` based on pre-fight odds/Elo diff, and an `undefeatedBonus` for fighters with 0 losses.
-- **Rankings UI:** Fix the image rendering logic in the Rankings table. Wrap each row in a `<Link href="/fighters/[id]">`. Add a state toggle to filter by `status === "active"` or `"retired"`.
+## 1. Active vs. Retired Fighters Sorting
+- **Problem:** Retired fighters are still appearing as "Active" in the application and sorting/filtering by active/retired status is either incorrect or not working properly.
+- **Solution:** 
+  - Update the scraper/updater logic to pull fighter active/retired status from either `ufc.com` or `roster.watch` (or via fallback parsing of tapology/ufc api).
+  - Add/ensure the `isActive` boolean field in the database `Fighter` model matches the current status.
+  - Implement a sorting and filtering toggle in the Frontend (e.g. Fighters directory page) to allow filtering by "Active", "Retired", or "All", and sort them accordingly.
 
-## 2. Fighter Duplication Sweep
-**Feedback:** Fix duplicates of fighters (e.g., Belal Muhammad, Ilia Topuria, Alex Pereira) that cause the wrong card to appear in events and predictions.
-**Solution:** 
-- Write a database migration/deduplication script (`scripts/dedupe-fighters.ts`).
-- The script will identify duplicate names (using fuzzy matching/normalization), merge their `Fight` relations to the canonical ID (the one with the most data or highest Elo), and delete the duplicates.
+## 2. Elo Engine UFC Win Multiplier & Upsets Scaling
+- **Problem:** The Elo engine does not value UFC wins highly enough compared to regional/non-UFC wins, and does not reward underdog upsets with sufficient Elo rating shifts.
+- **Solution:**
+  - Modify the ELO calculation engine so that fights flagged as UFC events scale the win/loss rating impact (`K` factor or actual change) by **2x** compared to non-UFC fights.
+  - Scale ELO rating change for upset wins based on the pre-fight probability (implied by odds or ELO difference) so that greater upsets yield a larger ELO reward for the winner and greater penalty for the loser.
 
-## 3. Full Event Card Scraping
-**Feedback:** Upcoming events only show the main event (except UFC Freedom 250). Need full prelims, early prelims, and main card.
-**Solution:** 
-- Update the `FightCardScraper` logic. Currently, it might be halting after the featured bout or failing to parse the HTML structure of the lower card. Ensure it iterates through the entire fight list on the source page (UFC.com or Tapology) and saves all bouts.
+## 3. Tapology Scraper for Full Fight Cards
+- **Problem:** Only the main events of cards are loading into the application. Prelims and early prelims are missing, preventing the display and prediction of full fight cards.
+- **Solution:**
+  - Implement/refactor the event scraper to target `tapology.com` (or parse its fight cards) to extract the complete card structure including: Main Card, Preliminary Card, and Early Preliminary Card.
+  - Map and store all card segments and fights to the database.
 
-## 4. Prediction Engine Logic Adjustments
-**Feedback:** Decisions should not predict a round. The engine needs to know that main events and title fights are 5 rounds, not 3.
-**Solution:** 
-- Update the prediction parsing logic: if `predictedMethod === "DEC"`, strip out any predicted round data.
-- Update the prompt or the frontend calculation to pass `isTitleFight` and `isMainEvent` flags to the AI, explicitly stating a 5-round maximum.
+## 4. Incorrect Fighter Matching / Name Mapping
+- **Problem:** Certain fighters are incorrectly mapped in fight records. For example, Ismael Bonfim is shown instead of Gabriel Bonfim, and Ronys Torres instead of Manuel Torres.
+- **Solution:**
+  - Enhance the fighter fuzzy matching and alias mapping logic in the scraper.
+  - Implement a lookup/alias dictionary or check against exact UFC roster profiles/Tapology URLs to distinguish fighters with similar names (e.g., matching using full name, division, and/or unique source ID).
+  - Correct the existing mismatched data in the database.
 
-## 5. Incorrect Fighter Names & Scraper Duplicates
-**Feedback:** Manuel Torres is listed as Eduardo Matias Torres. Make sure the AI/scraper checks things and doesn't create duplicates.
-**Solution:** 
-- Manually update the existing incorrect record in the database.
-- Improve the scraper's upsert logic. Instead of just matching by exact string, normalize names (remove accents, lowercase) or use a unique source ID (like a Tapology ID) to prevent creating new records for slight name variations.
+## 5. Spider Chart Reach Advantage Loading
+- **Problem:** The reach advantage metric is not loading/rendering on the spider chart component when viewed in the events tab.
+- **Solution:**
+  - Verify if reach data is correctly fetched from the database and passed to the spider chart component.
+  - Fix the key mapping (e.g., mapping `reachAdvantage` vs `reach` difference) and handle null or missing values gracefully so the spider chart renders the reach metric correctly.
 
-## 6. Live Odds Integration
-**Feedback:** Odds show as N/A. Pull real odds from FanDuel/major sportsbooks and add them to the Edge Finder and Parlay Builder.
-**Solution:** 
-- Integrate an external odds API (like The-Odds-API) into a daily cron job.
-- Map the odds to the corresponding `eventId` and `fighterId` in our database.
-- Feed these live odds into the prediction engine, edge finder, and parlay builder.
+## 6. Performance (Past Event Results) Tab Restoration & Backtesting
+- **Problem:** The Performance tab is not visible or available, and we need to back-test the last event (Song vs Figueiredo) for the full card (main, prelims, early prelims), show predictions, and automatically update statistics going forward when events end.
+- **Solution:**
+  - Restore/add the Performance tab (renamed to "Past Event Results" or similar) in the navigation and UI layout.
+  - Run/back-test predictions for all fights (main, prelims, early prelims) of the Song vs Figueiredo card.
+  - Update the ELO engine and AI prediction pipeline to process completed events post-fight, inserting them into `Past Event Results` database tables, and dynamically updating charts and statistics (ROI, accuracy, etc.).
 
-## 7. Relocate Parlay Builder
-**Feedback:** Move the parlay builder into the predictions tab as a clickable tab.
-**Solution:** 
-- Extract the `ParlayBuilder` component and integrate it into `/predictions/page.tsx` using a tabbed layout (e.g., "AI Predictions" | "Parlay Builder").
-
-## 8. Reset Back-Tested Results & Rename Tab
-**Feedback:** Remove back-tested results, reset statistics, rename the tab to "Past Event Results". Add new events automatically.
-**Solution:** 
-- Clear the `PerformanceRecord` table in the database to wipe old backtests.
-- Rename the `/performance` route/UI to "Past Event Results".
-- Set up a post-event cron job that evaluates the AI's picks against the actual results, calculates ROI and accuracy, and inserts a new record into the database.
-
-## 9. Parlay Builder "Copy to Sportsbook"
-**Feedback:** The copy button does nothing. Make it copy to a sportsbook.
-**Solution:** 
-- Since deep-linking directly into a specific bet slip (like FanDuel) can be complex and fragile, the most robust solution is to generate a formatted text summary of the parlay to the user's clipboard, or use a universal affiliate link generator if available.
-
-## 10. Fix Spider Charts on Events Tab
-**Feedback:** The spider charts for fights do not work.
-**Solution:** 
-- Debug the `FighterSpiderChart` component. Ensure that the radar chart library (likely Recharts) isn't crashing due to `null` or `undefined` physical attributes (reach, height, etc.). Add fallback values or conditional rendering.
-
-## 11. Paywall the Full Events Tab
-**Feedback:** Make the full events tab fall under the paywall.
-**Solution:** 
-- In `/events/page.tsx` and `/events/[id]/page.tsx`, use `getServerSession` to check if the user is premium.
-- If not premium, only show a limited view (e.g., past events only, or just the main event) and render a premium locked overlay for the rest of the page.
-
-## 12. PWA/Web App Top Bar Clickability
-**Feedback:** The menu button in the top right is not clickable because it sits behind the iOS/Android device status bar (time and battery).
-**Solution:** 
-- Add CSS safe-area-inset padding to the top navbar. In Tailwind, this can be achieved by adding `pt-[env(safe-area-inset-top)]` to the main header container, ensuring the menu button is pushed down into the interactive safe zone.
+## 7. Fighter Photos on Events Tab
+- **Problem:** The events card/tab only displays fighter names, which looks plain and lacks a premium visual aesthetic.
+- **Solution:**
+  - Integrate fighter profile images next to their names on the Events page.
+  - Use a high-quality fallback profile icon/placeholder if the image is missing, and ensure clean image loading and styling to match the CageMind AI theme.

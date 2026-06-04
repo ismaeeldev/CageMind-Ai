@@ -22,8 +22,15 @@ export function PremiumLink({ href, children, className = "" }: PremiumLinkProps
     const isPremium = session?.user?.isPremium === true;
 
     if (!isPremium) {
-      const featureName = href.includes("matchup") ? "Matchup Lab" : "AI Betting Edge";
-      toast(`First upgrade to Premium to access the ${featureName}!`, "error");
+      let featureName = "AI Betting Edge";
+      if (href.includes("matchup")) {
+        featureName = "Matchup Lab";
+      } else if (href.includes("predictions")) {
+        featureName = "Predictions";
+      } else if (href.includes("past-events") || href.includes("performance")) {
+        featureName = "Past Event Results";
+      }
+      toast(`First upgrade to Premium to access ${featureName}!`, "error");
       
       // Delay navigation slightly so the user sees the toast
       setTimeout(() => {

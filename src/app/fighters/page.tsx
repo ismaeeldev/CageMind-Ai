@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Search } from "@/components/fighters/search";
 import { Pagination } from "@/components/fighters/pagination";
+import { FighterFilters } from "@/components/fighters/fighter-filters";
 
 function FighterListSkeleton() {
   return (
@@ -37,8 +38,8 @@ function FighterListSkeleton() {
   );
 }
 
-async function FighterList({ query, page }: { query: string; page: number }) {
-  const { fighters, totalPages } = await getFighters({ query, page, limit: 20 });
+async function FighterList({ query, page, status }: { query: string; page: number; status: string }) {
+  const { fighters, totalPages } = await getFighters({ query, page, limit: 20, status });
 
   if (fighters.length === 0) {
     return (
@@ -84,7 +85,7 @@ async function FighterList({ query, page }: { query: string; page: number }) {
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground/20 group-hover:text-primary/10 transition-colors duration-300 pb-2 z-10">
-                      <div className="relative flex items-center justify-center w-20 h-20 bg-gradient-to-b from-zinc-800/10 to-zinc-900/30 rounded-full border border-zinc-850 shadow-[inset_0_0_12px_rgba(0,0,0,0.5)]">
+                      <div className="relative flex items-center justify-center w-20 h-20 bg-gradient-to-b from-zinc-800/10 to-zinc-900/30 rounded-full border border-zinc-855 shadow-[inset_0_0_12px_rgba(0,0,0,0.5)]">
                         <div className="absolute inset-0 bg-primary/5 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <span className="text-xl font-black tracking-tighter uppercase text-zinc-500 group-hover:text-primary transition-colors duration-300 font-sans z-10 select-none">
                           {displayName.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -93,10 +94,15 @@ async function FighterList({ query, page }: { query: string; page: number }) {
                     </div>
                   )}
                   {/* Badge Overlay */}
-                  <div className="absolute top-3 right-3 z-20">
+                  <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5 items-end">
                     <Badge variant="outline" className="text-[10px] font-mono tracking-widest uppercase bg-zinc-950/80 text-zinc-400 border-zinc-800 backdrop-blur-md px-2 py-0.5 shadow-sm">
                       {fighter.weightClass ? fighter.weightClass.replace('weight', '') : 'UFC'}
                     </Badge>
+                    {!fighter.isActive && (
+                      <Badge className="text-[10px] font-mono tracking-widest uppercase bg-red-950/80 text-red-400 border-red-900/40 backdrop-blur-md px-2 py-0.5 shadow-sm">
+                        Retired
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
@@ -139,11 +145,13 @@ export default async function FightersPage(props: {
   searchParams?: Promise<{
     q?: string;
     page?: string;
+    status?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams?.q || "";
   const page = Number(searchParams?.page) || 1;
+  const status = searchParams?.status || "active";
 
   return (
     <Container className="py-20">
@@ -152,11 +160,14 @@ export default async function FightersPage(props: {
           <h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-4 premium-gradient-text uppercase">Fighter Directory</h1>
           <p className="text-lg text-muted-foreground">Browse all fighters, analyze physical attributes, and track Elo ratings.</p>
         </div>
-        <Search />
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+          <FighterFilters />
+          <Search />
+        </div>
       </div>
 
-      <Suspense key={query + page} fallback={<FighterListSkeleton />}>
-        <FighterList query={query} page={page} />
+      <Suspense key={query + page + status} fallback={<FighterListSkeleton />}>
+        <FighterList query={query} page={page} status={status} />
       </Suspense>
     </Container>
   );

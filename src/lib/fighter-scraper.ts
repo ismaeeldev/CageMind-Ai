@@ -116,16 +116,20 @@ export async function scrapeAndSaveFighter(id: string) {
         }
       });
 
-      // Parse premium cutout image
-      const heroImgUrl = $(".hero-profile__image").attr("src");
-      if (heroImgUrl) {
-        imageUrl = heroImgUrl;
+      // Parse active status
+      let isActive = fighter.isActive;
+      const heroStatus = $(".hero-profile__division-body, .c-hero--fighter__status, .hero-profile__division, .hero-profile__tag, .c-bio__label").text().toLowerCase();
+      const bodyText = $("body").text().toLowerCase();
+      if (heroStatus.includes("retired") || bodyText.includes("status: retired") || bodyText.includes("retired fighter") || heroStatus.includes("former fighter")) {
+        isActive = false;
+      } else {
+        isActive = true;
       }
 
       // Update database with freshly scraped attributes
       await prisma.fighter.update({
         where: { id: fighter.id },
-        data: { age, height, reach, koWins, subWins, imageUrl },
+        data: { age, height, reach, koWins, subWins, imageUrl, isActive },
       });
     }
   } catch (scrapeError) {

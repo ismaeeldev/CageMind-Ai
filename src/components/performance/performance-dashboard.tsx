@@ -214,25 +214,27 @@ function StatsPanel({ stats }: { stats: Stats }) {
         </div>
         <div className="divide-y divide-zinc-800/50">
           {stats.timeline.map((evt, i) => (
-            <div key={i} className="grid grid-cols-[1fr,auto,auto,auto] items-center gap-4 px-6 py-4 hover:bg-zinc-800/20 transition-colors">
-              <div>
+            <div key={i} className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,auto,auto] items-start sm:items-center gap-4 px-4 sm:px-6 py-4 hover:bg-zinc-800/20 transition-colors">
+              <div className="w-full">
                 <div className="text-sm font-bold text-zinc-200">{evt.eventName}</div>
                 <div className="text-xs text-zinc-600 font-mono">{evt.date}</div>
               </div>
-              <div className="text-center">
-                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-0.5">Picks</div>
-                <div className="font-mono font-bold text-white">{evt.correct}/{evt.total}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-zinc-500 uppercase tracking-widest mb-0.5">ROI</div>
-                <div className={`font-mono font-bold ${evt.roi >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                  {evt.roi >= 0 ? "+" : ""}{evt.roi}%
+              <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-2 sm:pt-0 border-t border-zinc-800/40 sm:border-0">
+                <div className="text-center">
+                  <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-0.5">Picks</div>
+                  <div className="font-mono font-bold text-white text-xs sm:text-sm">{evt.correct}/{evt.total}</div>
                 </div>
-              </div>
-              <div className="flex items-center justify-center">
-                {evt.correct / evt.total >= 0.5
-                  ? <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  : <XCircle className="w-5 h-5 text-red-400" />}
+                <div className="text-center">
+                  <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-0.5">ROI</div>
+                  <div className={`font-mono font-bold text-xs sm:text-sm ${evt.roi >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                    {evt.roi >= 0 ? "+" : ""}{evt.roi}%
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">
+                  {evt.correct / evt.total >= 0.5
+                    ? <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    : <XCircle className="w-5 h-5 text-red-400" />}
+                </div>
               </div>
             </div>
           ))}

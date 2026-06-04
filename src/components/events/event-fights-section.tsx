@@ -133,6 +133,54 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
 function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"edge" | "elo" | "performance">("edge");
+  const [fighter1Details, setFighter1Details] = useState(fight.fighter1);
+  const [fighter2Details, setFighter2Details] = useState(fight.fighter2);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const hasF1Stats = fighter1Details && fighter1Details.reach !== null && fighter1Details.height !== null && fighter1Details.age !== null;
+    const hasF2Stats = fighter2Details && fighter2Details.reach !== null && fighter2Details.height !== null && fighter2Details.age !== null;
+
+    if (hasF1Stats && hasF2Stats) return;
+
+    async function fetchDetails() {
+      setIsLoadingDetails(true);
+      try {
+        const promises = [];
+        if (!hasF1Stats) {
+          promises.push(
+            fetch(`/api/fighters/${fight.fighter1.id}/details`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && !data.error) {
+                  setFighter1Details((prev: any) => ({ ...prev, ...data }));
+                }
+              })
+          );
+        }
+        if (!hasF2Stats) {
+          promises.push(
+            fetch(`/api/fighters/${fight.fighter2.id}/details`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && !data.error) {
+                  setFighter2Details((prev: any) => ({ ...prev, ...data }));
+                }
+              })
+          );
+        }
+        await Promise.all(promises);
+      } catch (err) {
+        console.error("Failed to load fighter details on expand:", err);
+      } finally {
+        setIsLoadingDetails(false);
+      }
+    }
+
+    fetchDetails();
+  }, [isExpanded, fight.fighter1.id, fight.fighter2.id]);
 
   const f1IsWinner = fight.winnerId === fight.fighter1Id;
   const f2IsWinner = fight.winnerId === fight.fighter2Id;
@@ -208,17 +256,30 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
           className="flex flex-col md:flex-row items-center justify-between p-6 gap-4 relative cursor-pointer hover:bg-white/[0.01] transition-all"
         >
           {/* Fighter 1 (Left) */}
-          <div className={`flex-1 text-center md:text-right w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f1IsWinner ? 'opacity-40' : 'opacity-100'}`}>
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-end gap-2 text-white group-hover:text-primary transition-colors">
-              {!isUpcoming && f1IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
-              {fight.fighter1.name}
-              {isUpcoming && isF1Favored && (
-                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
-              )}
-            </h3>
-            <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
-              Record: {fight.fighter1.wins}-{fight.fighter1.losses}-{fight.fighter1.draws} | Elo: {fight.fighter1.eloRating}
-            </p>
+          <div className={`flex-1 w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f1IsWinner ? 'opacity-40' : 'opacity-100'}`}>
+            <div className="flex flex-col md:flex-row items-center md:justify-end gap-3">
+              <div className="text-center md:text-right order-2 md:order-1">
+                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-end gap-2 text-white group-hover:text-primary transition-colors">
+                  {!isUpcoming && f1IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
+                  {fight.fighter1.name}
+                  {isUpcoming && isF1Favored && (
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
+                  )}
+                </h3>
+                <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
+                  Record: {fight.fighter1.wins}-{fight.fighter1.losses}-{fight.fighter1.draws} | Elo: {fight.fighter1.eloRating}
+                </p>
+              </div>
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center shadow-lg shrink-0 order-1 md:order-2 ring-2 ring-zinc-800/50">
+                {fight.fighter1.imageUrl ? (
+                  <img src={fight.fighter1.imageUrl} alt={fight.fighter1.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-400 font-black text-xs">
+                    {fight.fighter1.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* VS Divider & Badges */}
@@ -262,17 +323,30 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
           </div>
 
           {/* Fighter 2 (Right) */}
-          <div className={`flex-1 text-center md:text-left w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f2IsWinner ? 'opacity-40' : 'opacity-100'}`}>
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-start gap-2 text-white group-hover:text-primary transition-colors">
-              {fight.fighter2.name}
-              {!isUpcoming && f2IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
-              {isUpcoming && !isF1Favored && (
-                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
-              )}
-            </h3>
-            <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
-              Record: {fight.fighter2.wins}-{fight.fighter2.losses}-{fight.fighter2.draws} | Elo: {fight.fighter2.eloRating}
-            </p>
+          <div className={`flex-1 w-full transition-opacity duration-300 ${!isUpcoming && hasResult && !f2IsWinner ? 'opacity-40' : 'opacity-100'}`}>
+            <div className="flex flex-col md:flex-row items-center md:justify-start gap-3">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center shadow-lg shrink-0 ring-2 ring-zinc-800/50">
+                {fight.fighter2.imageUrl ? (
+                  <img src={fight.fighter2.imageUrl} alt={fight.fighter2.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-400 font-black text-xs">
+                    {fight.fighter2.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tight flex flex-col md:flex-row items-center md:justify-start gap-2 text-white group-hover:text-primary transition-colors">
+                  {fight.fighter2.name}
+                  {!isUpcoming && f2IsWinner && <span className="text-emerald-500 text-lg md:text-xl">🏆</span>}
+                  {isUpcoming && !isF1Favored && (
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-[10px] uppercase font-black px-1.5 py-0">Pick</Badge>
+                  )}
+                </h3>
+                <p className="text-xs md:text-sm text-zinc-400 mt-1 font-mono">
+                  Record: {fight.fighter2.wins}-{fight.fighter2.losses}-{fight.fighter2.draws} | Elo: {fight.fighter2.eloRating}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Accordion toggle indicator */}
@@ -433,42 +507,50 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
                 {/* Tab 3: Performance & Physical Stats */}
                 {activeTab === "performance" && (
                   <div className="bg-zinc-950/80 rounded-xl border border-zinc-850 overflow-hidden">
-                    <div className="grid grid-cols-[1fr,auto,1fr] gap-4 p-4 border-b border-zinc-850 bg-zinc-950/50 text-xs font-bold uppercase tracking-wider text-zinc-400">
-                      <div>{fight.fighter1.name}</div>
+                    <div className="grid grid-cols-[1fr,auto,1fr] gap-4 p-4 border-b border-zinc-855 bg-zinc-950/50 text-xs font-bold uppercase tracking-wider text-zinc-400">
+                      <div>{fighter1Details.name}</div>
                       <div className="w-24 text-center">Attribute</div>
-                      <div className="text-right">{fight.fighter2.name}</div>
+                      <div className="text-right">{fighter2Details.name}</div>
                     </div>
-                    <div className="p-4 bg-zinc-950/20 border-b border-zinc-850">
-                      <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest text-center mb-4">Style Matchup Comparison</h4>
-                      <FighterSpiderChart fighter1={fight.fighter1} fighter2={fight.fighter2} />
-                    </div>
-                    <div className="p-4 space-y-4 text-sm font-semibold">
-                      {[
-                        { label: "Age", val1: fight.fighter1.age, val2: fight.fighter2.age, suffix: "", invert: true },
-                        { label: "Height", val1: fight.fighter1.height, val2: fight.fighter2.height, suffix: '"', invert: false },
-                        { label: "Reach", val1: fight.fighter1.reach, val2: fight.fighter2.reach, suffix: '"', invert: false },
-                        { label: "Wins", val1: fight.fighter1.wins, val2: fight.fighter2.wins, suffix: "", invert: false },
-                        { label: "Losses", val1: fight.fighter1.losses, val2: fight.fighter2.losses, suffix: "", invert: true }
-                      ].filter(item => item.val1 !== null && item.val2 !== null).map((item, index) => {
-                        const hasVal = item.val1 !== null && item.val2 !== null;
-                        const isF1Adv = hasVal && (item.invert ? item.val1! < item.val2! : item.val1! > item.val2!);
-                        const isF2Adv = hasVal && (item.invert ? item.val2! < item.val1! : item.val2! > item.val1!);
+                    {isLoadingDetails ? (
+                      <div className="p-12 text-center text-zinc-500 font-mono text-xs">
+                        Loading detailed fighter metrics...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="p-4 bg-zinc-950/20 border-b border-zinc-850">
+                          <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest text-center mb-4">Style Matchup Comparison</h4>
+                          <FighterSpiderChart fighter1={fighter1Details} fighter2={fighter2Details} />
+                        </div>
+                        <div className="p-4 space-y-4 text-sm font-semibold">
+                          {[
+                            { label: "Age", val1: fighter1Details.age, val2: fighter2Details.age, suffix: "", invert: true },
+                            { label: "Height", val1: fighter1Details.height, val2: fighter2Details.height, suffix: '"', invert: false },
+                            { label: "Reach", val1: fighter1Details.reach, val2: fighter2Details.reach, suffix: '"', invert: false },
+                            { label: "Wins", val1: fighter1Details.wins, val2: fighter2Details.wins, suffix: "", invert: false },
+                            { label: "Losses", val1: fighter1Details.losses, val2: fighter2Details.losses, suffix: "", invert: true }
+                          ].filter(item => item.val1 !== null && item.val2 !== null).map((item, index) => {
+                            const hasVal = item.val1 !== null && item.val2 !== null;
+                            const isF1Adv = hasVal && (item.invert ? item.val1! < item.val2! : item.val1! > item.val2!);
+                            const isF2Adv = hasVal && (item.invert ? item.val2! < item.val1! : item.val2! > item.val1!);
 
-                        return (
-                          <div key={index} className="grid grid-cols-[1fr,auto,1fr] gap-4 py-2 border-b border-zinc-900/60 last:border-0">
-                            <div className={`${isF1Adv ? "text-emerald-400 font-bold" : "text-zinc-400 font-mono"}`}>
-                              {item.val1 !== null ? `${item.val1}${item.suffix}` : 'N/A'}
-                            </div>
-                            <div className="text-zinc-500 uppercase tracking-widest text-[10px] w-24 text-center font-bold">
-                              {item.label}
-                            </div>
-                            <div className={`text-right ${isF2Adv ? "text-emerald-400 font-bold" : "text-zinc-400 font-mono"}`}>
-                              {item.val2 !== null ? `${item.val2}${item.suffix}` : 'N/A'}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                            return (
+                              <div key={index} className="grid grid-cols-[1fr,auto,1fr] gap-4 py-2 border-b border-zinc-900/60 last:border-0">
+                                <div className={`${isF1Adv ? "text-emerald-400 font-bold" : "text-zinc-400 font-mono"}`}>
+                                  {item.val1 !== null ? `${item.val1}${item.suffix}` : 'N/A'}
+                                </div>
+                                <div className="text-zinc-500 uppercase tracking-widest text-[10px] w-24 text-center font-bold">
+                                  {item.label}
+                                </div>
+                                <div className={`text-right ${isF2Adv ? "text-emerald-400 font-bold" : "text-zinc-400 font-mono"}`}>
+                                  {item.val2 !== null ? `${item.val2}${item.suffix}` : 'N/A'}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
