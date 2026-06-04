@@ -59,6 +59,8 @@ export interface FightOutcomeDetails {
   winnerId: string;
   fighter1Id: string;
   fighter2Id: string;
+  isUFCFight?: boolean;
+  winnerIsUndefeated?: boolean;
 }
 
 /**
@@ -91,16 +93,29 @@ export function calculateEloDelta(
 
   if (finish && outcome.isTitleFight) mult += 0.22;
 
-  // Upset mechanics
-  if (winnerExp < 0.42) mult += 0.14;
-  if (winnerExp < 0.42 && finish) mult += 0.22;
+  // Upset mechanics (Now factored more heavily)
+  if (winnerExp < 0.42) mult += 0.25; // Base upset bonus
+  if (winnerExp < 0.30) mult += 0.35; // Major upset bonus
+  if (winnerExp < 0.42 && finish) mult += 0.25; // Finish in an upset
 
   // Narrow decision discount
   if (!finish && winnerExp > 0.44 && winnerExp < 0.58) mult -= 0.10;
 
+  // Undefeated Bonus
+  if (outcome.winnerIsUndefeated) mult += 0.15;
+
   mult = Math.max(0.6, mult);
 
-  const dA = Math.round(K * mult * (Sa - Ea));
+  let dA = Math.round(K * mult * (Sa - Ea));
+
+  // Promotion Weight (Favor UFC fights)
+  if (outcome.isUFCFight) {
+    dA = Math.round(dA * 1.5);
+  } else {
+    // Non-UFC fights have less impact
+    dA = Math.round(dA * 0.7);
+  }
+
   return dA;
 }
 

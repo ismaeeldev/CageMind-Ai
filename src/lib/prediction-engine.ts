@@ -29,7 +29,7 @@ export class PredictionEngine {
     return this.generateHypotheticalPrediction(fight.fighter1, fight.fighter2, fight.event?.date);
   }
 
-  public async generateHypotheticalPrediction(f1: Fighter, f2: Fighter, date?: Date): Promise<PredictionResult> {
+  public async generateHypotheticalPrediction(f1: Fighter, f2: Fighter, date?: Date, isFiveRounds: boolean = false): Promise<PredictionResult> {
 
     // 1. Elo Delta Calculation (Scale: -1 to 1)
     // 400 points difference roughly represents a 10x skill gap (normalized)
@@ -94,7 +94,7 @@ export class PredictionEngine {
     }
 
     // --- Generate Narrative Summary ---
-    const summary = this.generateSummary(f1, f2, winProbF1, eloDiff, momentumScore, physicalScore, missingPhysicalData);
+    const summary = this.generateSummary(f1, f2, winProbF1, eloDiff, momentumScore, physicalScore, missingPhysicalData, isFiveRounds, confidence);
 
     return {
       winProbabilityFighter1: Number((winProbF1 * 100).toFixed(1)),
@@ -144,7 +144,9 @@ export class PredictionEngine {
     eloDiff: number, 
     momentumScore: number, 
     physicalScore: number,
-    missingPhysical: boolean
+    missingPhysical: boolean,
+    isFiveRounds: boolean,
+    confidence: number
   ): string {
     const favored = winProbF1 > 0.5 ? f1 : f2;
     const underdog = winProbF1 > 0.5 ? f2 : f1;
@@ -176,6 +178,30 @@ export class PredictionEngine {
       narrative += `This prediction is primarily driven by ${reasons.join(", and ")}. `;
     } else {
       narrative += `The metrics are incredibly close across the board, making this a highly competitive matchup. `;
+    }
+
+    // Add Method & Round Prediction
+    let method = "Decision";
+    let round = isFiveRounds ? 5 : 3;
+
+    if (confidence > 0.75) {
+       method = "KO/TKO";
+       round = isFiveRounds ? 2 : 1;
+    } else if (confidence > 0.60) {
+       // if fighter has lots of submissions, guess SUB
+       if (favored.subWins > favored.koWins) {
+          method = "Submission";
+          round = isFiveRounds ? 3 : 2;
+       } else {
+          method = "KO/TKO";
+          round = isFiveRounds ? 4 : 2;
+       }
+    }
+
+    if (method === "Decision") {
+       narrative += ` We predict this ${isFiveRounds ? "five-round" : "three-round"} fight will go the distance, resulting in a Decision victory for ${favored.name}.`;
+    } else {
+       narrative += ` We predict a finish by ${method} in Round ${round}.`;
     }
 
     return narrative;

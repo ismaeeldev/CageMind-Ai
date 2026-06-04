@@ -75,14 +75,32 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
       return [];
     }
 
+    const ALIASES: Record<string, string> = {
+      "eduardo matias torres": "Manuel Torres",
+      "belal muhamed": "Belal Muhammad",
+      "alex pereria": "Alex Pereira",
+      "illia topuria": "Ilia Topuria",
+      "elizeu zaleski dos santos": "Elizeu Zaleski dos Santos"
+    };
+
     const parsedFights: ParsedFight[] = [];
     for (const raw of rawData) {
       try {
-        // Assume validator just passes through ufcIds. 
-        // We'll manually parse it here to avoid changing the validator file too much.
         const parsed = this.validator.validateAndTransform(raw) as any;
+        
+        let f1Name = raw.fighter1Name;
+        let f2Name = raw.fighter2Name;
+        let wName = raw.winnerName;
+
+        if (f1Name && ALIASES[f1Name.toLowerCase()]) f1Name = ALIASES[f1Name.toLowerCase()];
+        if (f2Name && ALIASES[f2Name.toLowerCase()]) f2Name = ALIASES[f2Name.toLowerCase()];
+        if (wName && ALIASES[wName.toLowerCase()]) wName = ALIASES[wName.toLowerCase()];
+
         parsedFights.push({
           ...parsed,
+          fighter1Name: f1Name,
+          fighter2Name: f2Name,
+          winnerName: wName,
           fighter1UfcId: raw.fighter1UfcId || null,
           fighter2UfcId: raw.fighter2UfcId || null,
         });

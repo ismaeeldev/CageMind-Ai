@@ -15,7 +15,7 @@ export function Navbar() {
   const isPremium = session?.user?.isPremium === true;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <Container className="flex h-16 items-center justify-between gap-3">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">

@@ -1,95 +1,72 @@
-# Octagon AI - Client Feedback & Solution Roadmap
+# Client Feedback & Roadmap
 
-This document outlines the issues reported by the client and provides a technical roadmap for implementing the necessary corrections.
+This document outlines the client's latest feedback points and the proposed technical solutions for each.
 
-## 1. Elo Ratings Engine
-**Problem:** All fighters currently have the same Elo rating.
-**Solution Roadmap:**
-- **Integration:** Integrate the provided Elo engine script into the data pipeline.
-- **Recalculation:** Create a script or batch job to process all historical fight data chronologically and calculate accurate, dynamic Elo ratings for each fighter.
-- **Database Update:** Ensure the database schema stores these dynamic Elo ratings and updates them after each event.
-- **Frontend Display:** Ensure the frontend fetches and displays the correctly calculated Elo per fighter rather than a hardcoded default value.
+## 1. Rankings & Elo Engine Enhancements
+**Feedback:** Change the Elo engine to favor UFC fights over non-UFC fights. Factor in major upsets and undefeated status more heavily. On the Rankings tab, fix broken photos, make fighters clickable to their profile, and add a sort/filter for retired vs. current fighters.
+**Solution:**
+- **Elo Engine:** Update `src/lib/elo.ts` to include a `promotionWeight` multiplier (e.g., 1.5x for UFC). Introduce an `upsetMultiplier` based on pre-fight odds/Elo diff, and an `undefeatedBonus` for fighters with 0 losses.
+- **Rankings UI:** Fix the image rendering logic in the Rankings table. Wrap each row in a `<Link href="/fighters/[id]">`. Add a state toggle to filter by `status === "active"` or `"retired"`.
 
-## 2. Event Data and Fighter Accuracy
-**Problem:** Incorrect fighters are showing up on events (e.g., wrong Manuel Torres, wrong Burns). Also, most upcoming and past fight cards only show the main event instead of the full card.
-**Solution Roadmap:**
-- **Fighter Disambiguation:** Update the scraper and database insertion logic (`src/scrapers/ufc-event-scraper.ts`) to match fighters using unique identifiers (like Sherdog/Tapology URLs or an ID) rather than just their names.
-- **Full Card Scraping:** Modify the event scraper to ensure it traverses and saves all bouts on a given card, rather than stopping at or only targeting the main event.
-- **Data Backfill:** Run a data backfill script to populate missing fights for both past and currently announced events.
+## 2. Fighter Duplication Sweep
+**Feedback:** Fix duplicates of fighters (e.g., Belal Muhammad, Ilia Topuria, Alex Pereira) that cause the wrong card to appear in events and predictions.
+**Solution:** 
+- Write a database migration/deduplication script (`scripts/dedupe-fighters.ts`).
+- The script will identify duplicate names (using fuzzy matching/normalization), merge their `Fight` relations to the canonical ID (the one with the most data or highest Elo), and delete the duplicates.
 
-## 3. Featured Fight AI Breakdown
-**Problem:** Missing a featured fight breakdown when clicking an event, which should include an AI blurb for the most confident pick, confidence level, predicted method, round, and upset risk.
-**Solution Roadmap:**
-- **Logic:** Implement backend logic to automatically identify the fight with the highest prediction confidence on a given card.
-- **AI Integration:** Use an LLM or predefined heuristics to generate a short "blurb" incorporating the confidence, predicted method, round, and upset risk metrics.
-- **UI Component:** Create a new `FeaturedFightBreakdown` component and place it prominently at the top of the event detail page.
+## 3. Full Event Card Scraping
+**Feedback:** Upcoming events only show the main event (except UFC Freedom 250). Need full prelims, early prelims, and main card.
+**Solution:** 
+- Update the `FightCardScraper` logic. Currently, it might be halting after the featured bout or failing to parse the HTML structure of the lower card. Ensure it iterates through the entire fight list on the source page (UFC.com or Tapology) and saves all bouts.
 
-## 4. Event Tab Quick Stats
-**Problem:** The events tab requires un-collapsing individual fights to see pick percentage, odds, method, and value (star rating).
-**Solution Roadmap:**
-- **UI Update:** Redesign the collapsed state of the fight list items on the events page.
-- **Data Badges:** Add small data badges (Pick %, Odds, Method, Value Stars) to the top-level visible row of each fight so the information is accessible at a glance.
+## 4. Prediction Engine Logic Adjustments
+**Feedback:** Decisions should not predict a round. The engine needs to know that main events and title fights are 5 rounds, not 3.
+**Solution:** 
+- Update the prediction parsing logic: if `predictedMethod === "DEC"`, strip out any predicted round data.
+- Update the prompt or the frontend calculation to pass `isTitleFight` and `isMainEvent` flags to the AI, explicitly stating a 5-round maximum.
 
-## 5. Individual Fight UI and Missing Data
-**Problem:** Text is squished on one side of the individual fight view, and many stats are showing as "N/A".
-**Solution Roadmap:**
-- **UI Fix:** Adjust the CSS/Tailwind classes on the individual fight view. Utilize proper flexbox or grid layouts with `flex-grow` or defined widths to prevent text from being squished.
-- **Data Audit:** Audit the fighter stats fetching logic (`src/actions/fighters.ts`) to investigate why data is missing. Implement fallback scraping or ensure "N/A" states are handled gracefully if the data truly does not exist.
+## 5. Incorrect Fighter Names & Scraper Duplicates
+**Feedback:** Manuel Torres is listed as Eduardo Matias Torres. Make sure the AI/scraper checks things and doesn't create duplicates.
+**Solution:** 
+- Manually update the existing incorrect record in the database.
+- Improve the scraper's upsert logic. Instead of just matching by exact string, normalize names (remove accents, lowercase) or use a unique source ID (like a Tapology ID) to prevent creating new records for slight name variations.
 
-## 6. Prediction Tab Sorting & Filtering
-**Problem:** The prediction tab is missing sorting (by confidence, value, finish %) and filtering (all, favorites, underdogs, finishes).
-**Solution Roadmap:**
-- **State Management:** Add local state for sorting and filtering to the Predictions tab.
-- **Sorting Logic:** Implement sorting functions that order the displayed array based on confidence, value, and finish %.
-- **Filtering Logic:** Implement toggle filters that subset the array for favorites, underdogs, or fights predicted to end in a finish.
+## 6. Live Odds Integration
+**Feedback:** Odds show as N/A. Pull real odds from FanDuel/major sportsbooks and add them to the Edge Finder and Parlay Builder.
+**Solution:** 
+- Integrate an external odds API (like The-Odds-API) into a daily cron job.
+- Map the odds to the corresponding `eventId` and `fighterId` in our database.
+- Feed these live odds into the prediction engine, edge finder, and parlay builder.
 
-## 7. Best Bets & Edges
-**Problem:** The predictions tab is missing a "Best Bets and Edges" area listing edges from best to worst.
-**Solution Roadmap:**
-- **Calculation:** Calculate the "Edge" (e.g., the difference between the model's implied probability and the sportsbook's implied probability).
-- **Component:** Create a `BestBetsSection` component that sorts all predicted fights by this calculated Edge value in descending order.
-- **Placement:** Add this section to the Predictions tab.
+## 7. Relocate Parlay Builder
+**Feedback:** Move the parlay builder into the predictions tab as a clickable tab.
+**Solution:** 
+- Extract the `ParlayBuilder` component and integrate it into `/predictions/page.tsx` using a tabbed layout (e.g., "AI Predictions" | "Parlay Builder").
 
-## 8. Misplaced Past Event (Song vs. Figueiredo)
-**Problem:** "Song vs Figueriedo" is still in the upcoming tab and is missing all of its fights and predictions.
-**Solution Roadmap:**
-- **Status Update:** Correct the date and status of the "Song vs Figueriedo" event in the database so it correctly maps to the Past Events tab.
-- **Scrape & Predict:** Trigger the scraper to fetch the full card and results for this event, and run the historical prediction models on it.
+## 8. Reset Back-Tested Results & Rename Tab
+**Feedback:** Remove back-tested results, reset statistics, rename the tab to "Past Event Results". Add new events automatically.
+**Solution:** 
+- Clear the `PerformanceRecord` table in the database to wipe old backtests.
+- Rename the `/performance` route/UI to "Past Event Results".
+- Set up a post-event cron job that evaluates the AI's picks against the actual results, calculates ROI and accuracy, and inserts a new record into the database.
 
-## 9. Parlay Builder
-**Problem:** The Performance tab is missing a Parlay Builder (AI generated safe, value, longshot, method prop parlays, and custom builder).
-**Solution Roadmap:**
-- **AI Parlays Logic:** Create backend functions to generate specific parlays based on defined criteria (e.g., "Safe" = top 3 highest confidence favorites, "Longshot" = highest EV underdogs).
-- **Custom Builder UI:** Create an interactive UI where users can select multiple predictions, automatically calculating combined odds and implied probability.
-- **Integration:** Embed these features in a new `ParlayBuilder` module on the Performance tab.
+## 9. Parlay Builder "Copy to Sportsbook"
+**Feedback:** The copy button does nothing. Make it copy to a sportsbook.
+**Solution:** 
+- Since deep-linking directly into a specific bet slip (like FanDuel) can be complex and fragile, the most robust solution is to generate a formatted text summary of the parlay to the user's clipboard, or use a universal affiliate link generator if available.
 
-## 10. Matchup Lab Detailed Stats
-**Problem:** Matchup lab predictions do not show the full stat-by-stat list (age, reach, wins, SLpM, Str. Acc, TD/15m, TD acc, Sub/15m).
-**Solution Roadmap:**
-- **Component Update:** Update the `MatchupLab` component to fetch and display a comprehensive, side-by-side comparison table of these exact statistics for both fighters.
+## 10. Fix Spider Charts on Events Tab
+**Feedback:** The spider charts for fights do not work.
+**Solution:** 
+- Debug the `FighterSpiderChart` component. Ensure that the radar chart library (likely Recharts) isn't crashing due to `null` or `undefined` physical attributes (reach, height, etc.). Add fallback values or conditional rendering.
 
-## 11. Spider Charts for Predictions
-**Problem:** All predictions (including the Matchup Lab) are missing a spider chart comparing fighter statistics.
-**Solution Roadmap:**
-- **Charting Library:** Integrate a charting library like `recharts` or `chart.js`.
-- **Data Normalization:** Normalize the key fighter stats to a consistent scale (e.g., 0-100 percentile rankings) for visual comparison.
-- **Component Creation:** Create a `FighterSpiderChart` component and embed it into the UI for all individual predictions and the Matchup Lab.
+## 11. Paywall the Full Events Tab
+**Feedback:** Make the full events tab fall under the paywall.
+**Solution:** 
+- In `/events/page.tsx` and `/events/[id]/page.tsx`, use `getServerSession` to check if the user is premium.
+- If not premium, only show a limited view (e.g., past events only, or just the main event) and render a premium locked overlay for the rest of the page.
 
-## 12. Elo Ranking Tab
-**Problem:** Completely missing an Elo ranking tab with full rankings of everyone in the database, sortable by division.
-**Solution Roadmap:**
-- **Routing:** Create a new page route `/rankings`.
-- **Data Fetching:** Fetch all fighters ordered by their recalculated Elo rating (from Step 1).
-- **UI:** Build a datatable with a tab or dropdown system to filter the rankings by individual weight class divisions.
-
-## 13. Performance Tracking Tab
-**Problem:** Completely missing a Performance tab displaying backtested fights, results from Song vs Figueiredo, pick accuracy, simulated ROI, events graded, and sample size. Also missing a "High Confidence" (>60%) sub-tab with extensive tracking metrics and charts (bankroll progression, rolling win rate, event-by-event ROI).
-**Solution Roadmap:**
-- **Data Aggregation:** Create aggregation queries on the backend to compile historical performance metrics for both "All Picks" and picks with ">60% Confidence".
-- **Dashboard Construction:** Build the main Performance tab UI with top-level summary cards (Accuracy, ROI, P/L, Bankroll).
-- **Sub-tabs:** Implement UI tabs to switch between the overall dataset and the high-confidence subset.
-- **Data Visualization:** Use charting libraries to build:
-  - A line chart for Bankroll Progression over time.
-  - A line chart for Rolling Win Rate.
-  - A bar chart for Event-by-Event ROI.
-- **Data Verification:** Ensure the backtested data from the provided model, including the Song vs Figueiredo event, is fully imported and reflected in these metrics.
+## 12. PWA/Web App Top Bar Clickability
+**Feedback:** The menu button in the top right is not clickable because it sits behind the iOS/Android device status bar (time and battery).
+**Solution:** 
+- Add CSS safe-area-inset padding to the top navbar. In Tailwind, this can be achieved by adding `pt-[env(safe-area-inset-top)]` to the main header container, ensuring the menu button is pushed down into the interactive safe zone.

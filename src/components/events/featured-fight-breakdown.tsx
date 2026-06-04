@@ -135,19 +135,21 @@ export function FeaturedFightBreakdown({ fight, isUpcoming }: FeaturedFightProps
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className={`grid gap-4 ${predictedMethod === "DEC" ? "grid-cols-1" : "grid-cols-2"}`}>
               <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/60">
                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Predicted Method</span>
                 <span className="text-lg font-black text-white flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-yellow-400" /> {predictedMethod}
+                  <Zap className="w-4 h-4 text-yellow-400" /> {predictedMethod === "DEC" ? "Decision" : predictedMethod}
                 </span>
               </div>
-              <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/60">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Predicted Round</span>
-                <span className="text-lg font-black text-white">
-                  Round {predictedRound}
-                </span>
-              </div>
+              {predictedMethod !== "DEC" && (
+                <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/60">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block mb-1">Predicted Round</span>
+                  <span className="text-lg font-black text-white">
+                    Round {predictedRound}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           

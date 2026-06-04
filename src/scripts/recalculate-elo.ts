@@ -28,7 +28,9 @@ export async function recalculateAllElo() {
       event: { date: 'asc' }
     },
     include: {
-      event: true
+      event: true,
+      fighter1: true,
+      fighter2: true
     }
   });
 
@@ -40,6 +42,9 @@ export async function recalculateAllElo() {
     const currentElo1 = eloMap.get(fight.fighter1Id) || 1500;
     const currentElo2 = eloMap.get(fight.fighter2Id) || 1500;
 
+    const isUFCFight = fight.event?.name?.toLowerCase().includes("ufc") ?? false;
+    const winnerLosses = fight.winnerId === fight.fighter1Id ? fight.fighter1.losses : fight.fighter2.losses;
+
     const dA = calculateEloDelta(currentElo1, currentElo2, {
       isTitleFight: fight.isTitleFight,
       method: fight.method,
@@ -47,6 +52,8 @@ export async function recalculateAllElo() {
       winnerId: fight.winnerId,
       fighter1Id: fight.fighter1Id,
       fighter2Id: fight.fighter2Id,
+      isUFCFight,
+      winnerIsUndefeated: winnerLosses === 0
     });
 
     eloMap.set(fight.fighter1Id, currentElo1 + dA);

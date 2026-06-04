@@ -45,10 +45,23 @@ export async function GET(req: Request) {
       for (const fight of unpredictedFights) {
         if (fight.fighter1 && fight.fighter2) {
           try {
+            // Try to figure out if it's the main event (usually the last fight scraped, or marked somehow)
+            // If the fight has isTitleFight true, it's 5 rounds.
+            // A simple heuristic for main event if we don't have explicit sort order:
+            // Usually the main event has the highest implied importance or was the first one scraped (in our DB, usually event's first fight is main event).
+            // Actually, we can query if this fight is the main event. Since we don't have an order index easily available, we'll just query the first fight created for this event.
+            const firstFightForEvent = await prisma.fight.findFirst({
+               where: { eventId: fight.eventId },
+               orderBy: { createdAt: 'asc' }
+            });
+            const isMainEvent = firstFightForEvent?.id === fight.id;
+            const isFiveRounds = fight.isTitleFight || isMainEvent;
+
             const prediction = await engine.generateHypotheticalPrediction(
               fight.fighter1,
               fight.fighter2,
-              fight.event?.date || new Date()
+              fight.event?.date || new Date(),
+              isFiveRounds
             );
 
             await prisma.fight.update({

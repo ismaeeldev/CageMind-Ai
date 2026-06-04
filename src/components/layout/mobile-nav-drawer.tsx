@@ -39,7 +39,7 @@ export function MobileNavDrawer() {
         className="left-auto right-0 top-0 h-[100dvh] w-[min(86vw,20rem)] translate-x-0 translate-y-0 rounded-none rounded-l-3xl border-l border-border/60 bg-background/98 p-0 shadow-2xl data-[state=open]:slide-in-from-right-4 data-[state=closed]:slide-out-to-right-4 sm:max-w-none"
       >
         <div className="flex h-full flex-col overflow-y-auto">
-          <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
+          <div className="flex items-start justify-between border-b border-border/60 px-5 py-4" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}>
             <div>
               <p className="text-base font-black uppercase tracking-wide">
                 CageMind <span className="text-premium">AI</span>
@@ -57,7 +57,7 @@ export function MobileNavDrawer() {
             </Button>
           </div>
 
-          <nav className="flex-1 px-3 py-4">
+          <nav className="flex-1 px-3 py-4" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
             <div className="space-y-1.5">
               {primaryLinks.map(({ href, label, icon: Icon }) => (
                 <Link

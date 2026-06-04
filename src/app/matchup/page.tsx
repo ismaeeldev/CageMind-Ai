@@ -148,7 +148,7 @@ export default function MatchupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#18181B] text-zinc-100 p-8">
+    <div className="min-h-screen bg-[#18181B] text-zinc-100 p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
@@ -236,7 +236,7 @@ export default function MatchupPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
 
             {/* Fighter Face-Off Panel */}
-            <div className="relative h-[280px] flex items-center justify-between px-10 overflow-hidden bg-gradient-to-b from-zinc-900 to-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl mb-8 group">
+            <div className="relative flex items-center justify-between px-4 md:px-10 py-8 overflow-hidden bg-gradient-to-b from-zinc-900 to-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl mb-8 group">
               {/* Left/Red vs Right/Blue Back Glow */}
               <div className="absolute inset-0 flex pointer-events-none opacity-25 group-hover:opacity-40 transition-opacity duration-700">
                 <div className="flex-1 bg-gradient-to-tr from-[#D22828]/25 to-transparent blur-3xl"></div>
@@ -301,15 +301,15 @@ export default function MatchupPage() {
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 opacity-50"></div>
 
-              <div className="grid grid-cols-[1fr,auto,1fr] items-end mb-4 gap-4">
+              <div className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,1fr] items-start sm:items-end mb-4 gap-2 sm:gap-4">
                 <div className="text-left min-w-0">
-                  <h2 className="text-2xl md:text-3xl font-black text-white uppercase truncate" title={f1Details.name}>{f1Details.name}</h2>
-                  <p className="text-5xl font-black text-blue-400 mt-2">{prediction.winProbabilityFighter1}%</p>
+                  <h2 className="text-xl md:text-3xl font-black text-white uppercase truncate" title={f1Details.name}>{f1Details.name}</h2>
+                  <p className="text-4xl md:text-5xl font-black text-blue-400 mt-1">{prediction.winProbabilityFighter1}%</p>
                 </div>
-                <div className="text-zinc-500 font-bold uppercase tracking-widest px-2 md:px-4 text-center pb-2">VS</div>
-                <div className="text-right min-w-0">
-                  <h2 className="text-2xl md:text-3xl font-black text-white uppercase truncate" title={f2Details.name}>{f2Details.name}</h2>
-                  <p className="text-5xl font-black text-orange-400 mt-2">{prediction.winProbabilityFighter2}%</p>
+                <div className="text-zinc-500 font-bold uppercase tracking-widest px-2 md:px-4 text-center pb-1 hidden sm:block">VS</div>
+                <div className="text-left sm:text-right min-w-0">
+                  <h2 className="text-xl md:text-3xl font-black text-white uppercase truncate" title={f2Details.name}>{f2Details.name}</h2>
+                  <p className="text-4xl md:text-5xl font-black text-orange-400 mt-1">{prediction.winProbabilityFighter2}%</p>
                 </div>
               </div>
 
@@ -335,10 +335,10 @@ export default function MatchupPage() {
               
               {/* Stat Matrix */}
               <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl h-fit">
-              <div className="grid grid-cols-[1fr,auto,1fr] gap-4 p-4 border-b border-zinc-800 bg-zinc-950/50">
-                <div className="font-bold text-white text-lg">{f1Details.name}</div>
-                <div className="text-zinc-500 font-bold uppercase tracking-widest px-4 text-center text-sm mt-1">Attribute</div>
-                <div className="font-bold text-white text-lg text-right">{f2Details.name}</div>
+              <div className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,1fr] gap-2 sm:gap-4 p-4 border-b border-zinc-800 bg-zinc-950/50">
+                <div className="font-bold text-white text-base md:text-lg">{f1Details.name}</div>
+                <div className="text-zinc-500 font-bold uppercase tracking-widest px-4 text-center text-sm hidden sm:block">Attribute</div>
+                <div className="font-bold text-white text-base md:text-lg sm:text-right">{f2Details.name}</div>
               </div>
 
               <div className="p-4 space-y-2">
@@ -353,14 +353,14 @@ export default function MatchupPage() {
                   { label: "TD Acc", icon: <Activity className="w-4 h-4" />, v1: f1Details.tdAcc ?? null, v2: f2Details.tdAcc ?? null, suffix: "%", invert: false },
                   { label: "Sub/15m", icon: <Swords className="w-4 h-4" />, v1: f1Details.sub15m ?? null, v2: f2Details.sub15m ?? null, suffix: "", invert: false },
                 ].filter(stat => stat.v1 !== null && stat.v2 !== null).map((stat, i) => (
-                  <div key={i} className="grid grid-cols-[1fr,auto,1fr] gap-4 py-4 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors rounded-lg px-4">
-                    <div className={`text-xl font-bold ${getAdvantageClass(stat.v1, stat.v2, stat.invert)}`}>
+                  <div key={i} className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,1fr] gap-1 sm:gap-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors rounded-lg px-4">
+                    <div className={`text-lg font-bold ${getAdvantageClass(stat.v1, stat.v2, stat.invert)}`}>
                       {stat.v1 !== null ? `${stat.v1}${stat.suffix}` : 'N/A'}
                     </div>
-                    <div className="text-zinc-400 flex items-center justify-center gap-2 font-medium uppercase tracking-wider text-sm w-32">
+                    <div className="text-zinc-500 flex items-center gap-2 font-medium uppercase tracking-wider text-xs w-auto sm:w-32 sm:justify-center">
                       {stat.icon} {stat.label}
                     </div>
-                    <div className={`text-xl font-bold text-right ${getAdvantageClass(stat.v2, stat.v1, stat.invert)}`}>
+                    <div className={`text-lg font-bold sm:text-right ${getAdvantageClass(stat.v2, stat.v1, stat.invert)}`}>
                       {stat.v2 !== null ? `${stat.v2}${stat.suffix}` : 'N/A'}
                     </div>
                   </div>
@@ -368,28 +368,28 @@ export default function MatchupPage() {
 
                 {/* Weight Class Row */}
                 {f1Details.weightClass && f2Details.weightClass && (
-                  <div className="grid grid-cols-[1fr,auto,1fr] gap-4 py-4 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors rounded-lg px-4">
-                    <div className="text-xl font-bold text-white">
+                  <div className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,1fr] gap-1 sm:gap-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-800/20 transition-colors rounded-lg px-4">
+                    <div className="text-lg font-bold text-white">
                       {f1Details.weightClass.replace(/weight/i, "")} ({getWeightLimit(f1Details.weightClass)})
                     </div>
-                    <div className="text-zinc-400 flex items-center justify-center gap-2 font-medium uppercase tracking-wider text-sm w-32">
+                    <div className="text-zinc-500 flex items-center gap-2 font-medium uppercase tracking-wider text-xs sm:justify-center">
                       <User className="w-4 h-4" /> Weight
                     </div>
-                    <div className="text-xl font-bold text-white text-right">
+                    <div className="text-lg font-bold text-white sm:text-right">
                       {f2Details.weightClass.replace(/weight/i, "")} ({getWeightLimit(f2Details.weightClass)})
                     </div>
                   </div>
                 )}
 
                 {/* Record Row (Special Format) */}
-                <div className="grid grid-cols-[1fr,auto,1fr] gap-4 py-4 px-4 hover:bg-zinc-800/20 transition-colors rounded-lg">
-                  <div className="text-xl font-bold text-white">
+                <div className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,1fr] gap-1 sm:gap-4 py-3 px-4 hover:bg-zinc-800/20 transition-colors rounded-lg">
+                  <div className="text-lg font-bold text-white">
                     {f1Details.wins}-{f1Details.losses}-{f1Details.draws}
                   </div>
-                  <div className="text-zinc-400 flex items-center justify-center gap-2 font-medium uppercase tracking-wider text-sm w-32">
+                  <div className="text-zinc-500 flex items-center gap-2 font-medium uppercase tracking-wider text-xs sm:justify-center">
                     <Swords className="w-4 h-4" /> Record
                   </div>
-                  <div className="text-xl font-bold text-white text-right">
+                  <div className="text-lg font-bold text-white sm:text-right">
                     {f2Details.wins}-{f2Details.losses}-{f2Details.draws}
                   </div>
                 </div>

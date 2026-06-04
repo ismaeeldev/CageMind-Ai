@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, Lock, ChevronLeft, ChevronRight, Activity, Calendar } from "lucide-react";
+import { Search, Filter, Lock, ChevronLeft, ChevronRight, Activity, Calendar, Layers } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BestBetsSection } from "@/components/predictions/best-bets-section";
+import { ParlayBuilder } from "@/components/performance/parlay-builder";
 
 interface Fight {
   id: string;
@@ -108,6 +109,7 @@ export default function PredictionsDashboard() {
   const [weightClass, setWeightClass] = useState("");
   const [sortBy, setSortBy] = useState<"date" | "confidence" | "value" | "finish">("date");
   const [filterBy, setFilterBy] = useState<"all" | "favorites" | "underdogs" | "finishes">("all");
+  const [activeTab, setActiveTab] = useState<"picks" | "parlay">("picks");
   
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -302,21 +304,53 @@ export default function PredictionsDashboard() {
       <div className="max-w-6xl mx-auto">
 
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-4xl font-black text-white uppercase tracking-tight mb-2 flex items-center gap-3">
             <Activity className="w-8 h-8 text-[#D22828]" /> AI Predictions
           </h1>
           <p className="text-zinc-400">Unlock mathematically precise fight predictions powered by our proprietary heuristic engine.</p>
         </div>
 
-        {/* Best Bets / Top Edges Section */}
-        {fights.length > 0 && isPremium && !loading && (
-          <BestBetsSection fights={fights} />
+        {/* Top-level tab switcher */}
+        <div className="flex gap-2 border-b border-zinc-800 mb-8">
+          <button
+            onClick={() => setActiveTab("picks")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition-all border-b-2 -mb-px ${
+              activeTab === "picks"
+                ? "border-[#D22828] text-white"
+                : "border-transparent text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            Upcoming Picks
+          </button>
+          <button
+            onClick={() => setActiveTab("parlay")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition-all border-b-2 -mb-px ${
+              activeTab === "parlay"
+                ? "border-[#D22828] text-white"
+                : "border-transparent text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            Parlay Builder
+          </button>
+        </div>
+
+        {activeTab === "parlay" && (
+          <ParlayBuilder fights={fights} />
         )}
 
+        {activeTab === "picks" && (
+          <>
+            {/* Best Bets / Top Edges Section */}
+            {fights.length > 0 && isPremium && !loading && (
+              <BestBetsSection fights={fights} />
+            )}
+
         {/* Filters and Sorting Options */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,auto,auto] gap-4 mb-8">
-          <div className="relative">
+        <div className="grid grid-cols-2 md:grid-cols-[1fr,auto,auto,auto] gap-3 mb-8">
+          <div className="relative col-span-2 md:col-span-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <input
               type="text"
@@ -520,6 +554,8 @@ export default function PredictionsDashboard() {
               <ChevronRight className="w-6 h-6" />
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

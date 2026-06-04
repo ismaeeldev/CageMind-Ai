@@ -140,3 +140,17 @@
 .animate-scan {
   animation: scan 3s ease-in-out infinite;
 }
+/* ============================================
+   PWA Safe Area Insets (iOS notch / Android)
+   ============================================ */
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Ensure full screen content scrolls under the notch correctly */
+html {
+  /* Required for env() to work with viewportFit=cover */
+  height: -webkit-fill-available;
+}

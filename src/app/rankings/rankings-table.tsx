@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Image from "next/image";
-import { Search } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 interface Fighter {
   id: string;
@@ -15,6 +15,7 @@ interface Fighter {
   losses: number;
   draws: number;
   eloRating: number;
+  isActive: boolean;
 }
 
 const DIVISIONS = [
@@ -34,11 +35,17 @@ const DIVISIONS = [
 ];
 
 export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
+  const router = useRouter();
   const [activeDivision, setActiveDivision] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"active" | "retired" | "all">("active");
 
   const filteredFighters = useMemo(() => {
     return fighters.filter((f) => {
+      // Status filter
+      if (statusFilter === "active" && !f.isActive) return false;
+      if (statusFilter === "retired" && f.isActive) return false;
+
       // Search filter
       if (searchQuery && !f.name.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
@@ -46,17 +53,14 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
       
       // Division filter
       if (activeDivision === "All") return true;
-      if (activeDivision === "Pound-for-Pound") {
-        // Technically all fighters apply for P4P if no other filter is applied
-        return true; 
-      }
+      if (activeDivision === "Pound-for-Pound") return true; 
 
       const wc = (f.weightClass || "").toLowerCase();
       const div = activeDivision.toLowerCase();
       
       return wc.includes(div);
     });
-  }, [fighters, activeDivision, searchQuery]);
+  }, [fighters, activeDivision, searchQuery, statusFilter]);
 
   return (
     <div className="space-y-6">
@@ -79,15 +83,38 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
           ))}
         </div>
 
-        {/* Search */}
-        <div className="relative w-full lg:w-72 shrink-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-          <Input
-            placeholder="Search fighters..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-zinc-700"
-          />
+        {/* Secondary Filters */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+          <div className="flex bg-zinc-900/50 rounded-lg p-1 border border-zinc-800 w-full sm:w-auto">
+            <button
+              onClick={() => setStatusFilter("active")}
+              className={`flex-1 sm:w-20 px-3 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${statusFilter === "active" ? "bg-primary text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            >
+              Active
+            </button>
+            <button
+              onClick={() => setStatusFilter("retired")}
+              className={`flex-1 sm:w-20 px-3 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${statusFilter === "retired" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            >
+              Retired
+            </button>
+            <button
+              onClick={() => setStatusFilter("all")}
+              className={`flex-1 sm:w-16 px-3 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${statusFilter === "all" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            >
+              All
+            </button>
+          </div>
+
+          <div className="relative w-full sm:w-64 shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <Input
+              placeholder="Search fighters..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-zinc-700"
+            />
+          </div>
         </div>
       </div>
 
@@ -106,7 +133,11 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
             </thead>
             <tbody className="divide-y divide-zinc-800/50">
               {filteredFighters.slice(0, 100).map((fighter, idx) => (
-                <tr key={fighter.id} className="hover:bg-zinc-900/30 transition-colors group">
+                <tr 
+                  key={fighter.id} 
+                  className="hover:bg-zinc-900/30 transition-colors group cursor-pointer"
+                  onClick={() => router.push(`/fighters/${fighter.id}`)}
+                >
                   <td className="p-4 text-center">
                     <span className="font-mono text-lg font-bold text-zinc-400 group-hover:text-zinc-200">
                       {idx + 1}
@@ -114,16 +145,25 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-4">
-                      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-zinc-900 border border-zinc-800 shrink-0">
-                        <Image
-                          src={fighter.imageUrl && fighter.imageUrl !== "N/A" ? fighter.imageUrl : "/placeholder.png"}
-                          alt={fighter.name}
-                          fill
-                          className="object-cover object-top"
-                        />
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-zinc-900 border border-zinc-800 shrink-0 flex items-center justify-center text-zinc-600 font-bold uppercase">
+                        {fighter.imageUrl && fighter.imageUrl !== "N/A" && fighter.imageUrl !== "null" ? (
+                          <img
+                            src={fighter.imageUrl}
+                            alt={fighter.name}
+                            className="w-full h-full object-cover object-top"
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        ) : (
+                          fighter.name.substring(0,2)
+                        )}
                       </div>
-                      <div className="font-bold text-zinc-100 text-lg group-hover:text-blue-400 transition-colors">
-                        {fighter.name}
+                      <div>
+                        <div className="font-bold text-zinc-100 text-lg group-hover:text-primary transition-colors">
+                          {fighter.name}
+                        </div>
+                        {!fighter.isActive && (
+                          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Retired</span>
+                        )}
                       </div>
                     </div>
                   </td>

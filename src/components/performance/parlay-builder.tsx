@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { CopyPlus, TrendingUp, Sparkles, AlertCircle, X } from "lucide-react";
+import { CopyPlus, TrendingUp, Sparkles, AlertCircle, X, ClipboardCheck, Copy } from "lucide-react";
 
 interface Fight {
   id: string;
@@ -29,6 +29,7 @@ interface ProcessedLeg {
 
 export function ParlayBuilder({ fights }: { fights: Fight[] }) {
   const [selectedLegIds, setSelectedLegIds] = useState<string[]>([]);
+  const [copied, setCopied] = useState(false);
 
   const extractProbabilities = (summary: string, f1Name: string): { f1Prob: number, f2Prob: number } | null => {
     const match = summary.match(/(\d+\.\d+)%/);
@@ -140,8 +141,36 @@ export function ParlayBuilder({ fights }: { fights: Fight[] }) {
 
   const combinedEdge = selectedLegs.length > 0 ? combinedAiProb - combinedSportsbookProb : 0;
 
+  const copyToSportsbook = () => {
+    if (selectedLegs.length === 0) return;
+    const lines: string[] = [
+      "🥊 CageMind AI Parlay Slip",
+      "═══════════════════════════",
+    ];
+    selectedLegs.forEach((leg, i) => {
+      const oddsStr = leg.odds > 0 ? `+${leg.odds}` : `${leg.odds}`;
+      lines.push(`${i + 1}. ${leg.fighterName} (${oddsStr})`);
+      lines.push(`   ${leg.fight.fighter1.name} vs ${leg.fight.fighter2.name}`);
+      lines.push(`   AI Win Prob: ${leg.winProb.toFixed(1)}%`);
+      lines.push("");
+    });
+    const combinedOddsStr = combinedAmericanOdds > 0 ? `+${combinedAmericanOdds}` : `${combinedAmericanOdds}`;
+    lines.push("═══════════════════════════");
+    lines.push(`Combined Odds: ${combinedOddsStr}`);
+    lines.push(`AI True Prob: ${combinedAiProb.toFixed(1)}%`);
+    lines.push(`Expected Value Edge: ${combinedEdge > 0 ? "+" : ""}${combinedEdge.toFixed(1)}%`);
+    lines.push("");
+    lines.push("Powered by CageMind AI — cagemind.ai");
+
+    const text = lines.join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[1fr,400px] gap-8">
+    <div className="flex flex-col xl:grid xl:grid-cols-[1fr,400px] gap-8">
       
       {/* Left Column: Builder & Available Legs */}
       <div className="space-y-8">
@@ -293,11 +322,29 @@ export function ParlayBuilder({ fights }: { fights: Fight[] }) {
               </div>
             </div>
 
-            <button 
+            {selectedLegs.length > 0 && (
+              <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 mt-4 text-xs font-mono text-zinc-400 leading-relaxed max-h-32 overflow-y-auto">
+                {selectedLegs.map((leg, i) => (
+                  <div key={leg.id}>
+                    {i + 1}. {leg.fighterName} ({leg.odds > 0 ? `+${leg.odds}` : leg.odds}) — AI: {leg.winProb.toFixed(1)}%
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={copyToSportsbook}
               disabled={selectedLegs.length === 0}
-              className="w-full mt-6 bg-[#D22828] hover:bg-red-700 disabled:opacity-40 disabled:hover:bg-[#D22828] text-white font-black py-4 rounded-xl uppercase tracking-widest transition-all shadow-xl shadow-[#D22828]/20 border border-red-500/50"
+              className={`w-full mt-4 flex items-center justify-center gap-2 font-black py-4 rounded-xl uppercase tracking-widest transition-all shadow-xl border text-white ${
+                copied
+                  ? "bg-emerald-600 border-emerald-500/50 shadow-emerald-500/20"
+                  : "bg-[#D22828] hover:bg-red-700 border-red-500/50 shadow-[#D22828]/20 disabled:opacity-40 disabled:hover:bg-[#D22828]"
+              }`}
             >
-              Copy to Sportsbook
+              {copied ? (
+                <><ClipboardCheck className="w-5 h-5" /> Copied to Clipboard!</>
+              ) : (
+                <><Copy className="w-5 h-5" /> Copy to Sportsbook</>
+              )}
             </button>
           </div>
         </div>
