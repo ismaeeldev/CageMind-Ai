@@ -35,17 +35,17 @@ export default async function EventPage({ params }: EventPageProps) {
   const mainEvent = event.fights[0];
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 mt-16 max-w-5xl mx-auto">
+    <div className="min-h-screen py-10 sm:py-14 md:py-16 px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 max-w-5xl mx-auto">
 
       {/* Event Header — always visible */}
-      <div className="mb-12 text-center md:text-left">
+      <div className="mb-10 sm:mb-12 text-center md:text-left">
         <Badge variant={event.isUpcoming ? "default" : "secondary"} className="mb-4">
           {event.isUpcoming ? "Upcoming Event" : "Past Event"}
         </Badge>
-        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 premium-gradient-text text-white">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tight mb-4 premium-gradient-text text-white">
           {event.name}
         </h1>
-        <div className="flex flex-col md:flex-row items-center md:justify-start gap-4 text-muted-foreground text-lg">
+        <div className="flex flex-col md:flex-row items-center md:justify-start gap-3 sm:gap-4 text-muted-foreground text-sm sm:text-lg">
           <span className="flex items-center gap-2">
             📅 {format(new Date(event.date), "MMMM do, yyyy")}
           </span>
@@ -68,22 +68,22 @@ export default async function EventPage({ params }: EventPageProps) {
 
           {/* Main event teaser (free) */}
           {mainEvent && (
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 md:p-8">
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
               <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Main Event</p>
-              <div className="flex items-center justify-center gap-6 md:gap-12">
-                <div className="text-center">
-                  <p className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-12">
+                <div className="text-center sm:max-w-[40%]">
+                  <p className="text-xl sm:text-2xl md:text-4xl font-black uppercase tracking-tight text-white leading-tight">
                     {mainEvent.fighter1.name}
                   </p>
                   <p className="text-xs text-zinc-500 font-mono mt-1">
                     {mainEvent.fighter1.wins}-{mainEvent.fighter1.losses}-{mainEvent.fighter1.draws}
                   </p>
                 </div>
-                <div className="text-zinc-600 font-black text-xl uppercase tracking-widest px-4 py-2 border border-zinc-800 rounded-xl bg-zinc-950">
+                <div className="text-zinc-600 font-black text-sm sm:text-xl uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 border border-zinc-800 rounded-xl bg-zinc-950">
                   VS
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white">
+                <div className="text-center sm:max-w-[40%]">
+                  <p className="text-xl sm:text-2xl md:text-4xl font-black uppercase tracking-tight text-white leading-tight">
                     {mainEvent.fighter2.name}
                   </p>
                   <p className="text-xs text-zinc-500 font-mono mt-1">
@@ -112,25 +112,25 @@ export default async function EventPage({ params }: EventPageProps) {
             </div>
 
             {/* Lock overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 animate-pulse">
+            <div className="absolute inset-0 flex flex-col items-center justify-start sm:justify-center bg-zinc-950/80 backdrop-blur-sm p-4 sm:p-8 text-center overflow-y-auto">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 sm:mb-5 animate-pulse mt-2 sm:mt-0">
                 <Lock className="w-7 h-7 text-primary" />
               </div>
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
+              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mb-2">
                 Full Card Locked
               </h2>
-              <p className="text-zinc-400 text-sm max-w-sm mb-6 leading-relaxed">
+              <p className="text-zinc-400 text-xs sm:text-sm max-w-sm mb-5 sm:mb-6 leading-relaxed">
                 Subscribe to Premium to unlock the full fight card, AI predictions, betting edge finder, and fighter analytics for every bout.
               </p>
 
               {/* Feature pills */}
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <div className="flex flex-wrap justify-center gap-2 mb-6 sm:mb-8">
                 {[
                   { icon: BrainCircuit, label: "AI Fight Predictions" },
                   { icon: TrendingUp, label: "Betting Edge Finder" },
                   { icon: Zap, label: "Full Fight Card" },
                 ].map(({ icon: Icon, label }) => (
-                  <span key={label} className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-bold px-3 py-1.5 rounded-full">
+                  <span key={label} className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-full">
                     <Icon className="w-3.5 h-3.5 text-primary" /> {label}
                   </span>
                 ))}
@@ -138,7 +138,7 @@ export default async function EventPage({ params }: EventPageProps) {
 
               <Link
                 href="/pricing"
-                className="bg-primary hover:bg-red-700 text-white font-black uppercase tracking-widest text-sm px-8 py-3.5 rounded-xl transition-all shadow-xl shadow-primary/25 hover:scale-105 active:scale-95"
+                className="bg-primary hover:bg-red-700 text-white font-black uppercase tracking-widest text-xs sm:text-sm px-6 sm:px-8 py-3 rounded-xl transition-all shadow-xl shadow-primary/25 hover:scale-105 active:scale-95"
               >
                 Unlock Premium — View Full Card
               </Link>

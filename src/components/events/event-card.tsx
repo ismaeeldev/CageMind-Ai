@@ -83,11 +83,11 @@ export function EventCard({ event }: { event: any }) {
 
   return (
     <Link href={`/events/${event.id}`} className="group block h-full">
-      <Card className="h-[320px] md:h-[360px] flex flex-col justify-between bg-[#131316]/60 backdrop-blur-md border border-zinc-800/60 transition-all duration-500 hover:shadow-[0_0_30px_-5px_rgba(210,40,40,0.2)] hover:-translate-y-1.5 hover:border-primary/30 relative overflow-hidden rounded-2xl">
+      <Card className="h-auto md:h-[360px] min-h-[300px] md:min-h-0 flex flex-col justify-between bg-[#131316]/60 backdrop-blur-md border border-zinc-800/60 transition-all duration-500 hover:shadow-[0_0_30px_-5px_rgba(210,40,40,0.2)] hover:-translate-y-1.5 hover:border-primary/30 relative overflow-hidden rounded-2xl">
         
         {/* Header / Event Name */}
-        <div className="p-5 pb-2 relative z-20 flex justify-between items-start gap-4">
-          <h3 className="text-lg font-black uppercase tracking-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 max-w-[70%] text-white leading-tight">
+        <div className="p-4 md:p-5 pb-2 relative z-20 flex justify-between items-start gap-3 md:gap-4">
+          <h3 className="text-base md:text-lg font-black uppercase tracking-tight group-hover:text-primary transition-colors duration-300 line-clamp-2 max-w-[68%] text-white leading-tight">
             {event.name}
           </h3>
           {event.isUpcoming ? (
@@ -102,7 +102,7 @@ export function EventCard({ event }: { event: any }) {
         </div>
 
         {/* Center: Face-off graphic */}
-        <div className="relative flex-1 flex items-center justify-between px-6 overflow-hidden h-[180px] bg-gradient-to-b from-transparent via-zinc-900/10 to-zinc-950/20">
+        <div className="relative flex-1 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 sm:py-0 overflow-hidden min-h-[220px] sm:h-[180px] bg-gradient-to-b from-transparent via-zinc-900/10 to-zinc-950/20">
           
           {/* Background split gradient: Red on left, Blue on right */}
           <div className="absolute inset-0 flex pointer-events-none opacity-20 group-hover:opacity-35 transition-opacity duration-500">
@@ -112,50 +112,50 @@ export function EventCard({ event }: { event: any }) {
 
           {loading ? (
             /* Loading skeleton */
-            <div className="w-full flex items-center justify-between relative z-10">
+            <div className="w-full flex items-center justify-between gap-3 relative z-10">
               <div className="w-[42%] flex flex-col items-center gap-2">
-                <div className="h-[120px] w-[100px] bg-zinc-800/50 rounded-lg animate-pulse"></div>
-                <div className="h-3 w-20 bg-zinc-800/50 rounded animate-pulse"></div>
+                <div className="h-[96px] sm:h-[120px] w-[78px] sm:w-[100px] bg-zinc-800/50 rounded-lg animate-pulse"></div>
+                <div className="h-3 w-16 sm:w-20 bg-zinc-800/50 rounded animate-pulse"></div>
               </div>
               <div className="w-8 h-8 rounded-full bg-zinc-800/50 animate-pulse"></div>
               <div className="w-[42%] flex flex-col items-center gap-2">
-                <div className="h-[120px] w-[100px] bg-zinc-800/50 rounded-lg animate-pulse"></div>
-                <div className="h-3 w-20 bg-zinc-800/50 rounded animate-pulse"></div>
+                <div className="h-[96px] sm:h-[120px] w-[78px] sm:w-[100px] bg-zinc-800/50 rounded-lg animate-pulse"></div>
+                <div className="h-3 w-16 sm:w-20 bg-zinc-800/50 rounded animate-pulse"></div>
               </div>
             </div>
           ) : (
             <>
               {/* Left Fighter */}
-              <div className="w-[42%] flex flex-col items-center justify-end h-full relative z-10 transition-transform duration-500 group-hover:-translate-x-1">
+              <div className="w-full sm:w-[42%] flex flex-col items-center justify-end h-full relative z-10 transition-transform duration-500 group-hover:-translate-x-1">
                 <img
                   src={f1Img || "/fallback_image.png"}
                   alt={f1?.name || "Fighter 1"}
                   referrerPolicy="no-referrer"
-                  className="h-[150px] object-contain select-none filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.6)] transition-opacity duration-500"
+                  className="h-[120px] sm:h-[150px] object-contain select-none filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.6)] transition-opacity duration-500"
                   onError={(e) => { (e.target as HTMLImageElement).src = '/fallback_image.png'; }}
                 />
-                <span className="absolute bottom-1 bg-zinc-950/80 border border-zinc-800/80 px-2 py-0.5 rounded text-[10px] font-black uppercase text-zinc-300 tracking-wider max-w-full truncate shadow-md">
+                <span className="absolute bottom-1 bg-zinc-950/80 border border-zinc-800/80 px-2 py-0.5 rounded text-[10px] font-black uppercase text-zinc-300 tracking-wider max-w-[90%] truncate shadow-md">
                   {f1 ? f1.name.split(' ').pop() : "TBD"}
                 </span>
               </div>
 
               {/* VS Centerpiece */}
-              <div className="flex flex-col items-center justify-center relative z-20">
+              <div className="flex flex-col items-center justify-center relative z-20 my-1 sm:my-0">
                 <span className="text-xs font-black text-zinc-500 italic bg-zinc-950 border border-zinc-800 w-8 h-8 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:border-primary/50 group-hover:text-primary transition-all duration-300">
                   VS
                 </span>
               </div>
 
               {/* Right Fighter */}
-              <div className="w-[42%] flex flex-col items-center justify-end h-full relative z-10 transition-transform duration-500 group-hover:translate-x-1">
+              <div className="w-full sm:w-[42%] flex flex-col items-center justify-end h-full relative z-10 transition-transform duration-500 group-hover:translate-x-1">
                 <img
                   src={f2Img || "/fallback_image.png"}
                   alt={f2?.name || "Fighter 2"}
                   referrerPolicy="no-referrer"
-                  className="h-[150px] object-contain select-none filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.6)] transition-opacity duration-500"
+                  className="h-[120px] sm:h-[150px] object-contain select-none filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.6)] transition-opacity duration-500"
                   onError={(e) => { (e.target as HTMLImageElement).src = '/fallback_image.png'; }}
                 />
-                <span className="absolute bottom-1 bg-zinc-950/80 border border-zinc-800/80 px-2 py-0.5 rounded text-[10px] font-black uppercase text-zinc-300 tracking-wider max-w-full truncate shadow-md">
+                <span className="absolute bottom-1 bg-zinc-950/80 border border-zinc-800/80 px-2 py-0.5 rounded text-[10px] font-black uppercase text-zinc-300 tracking-wider max-w-[90%] truncate shadow-md">
                   {f2 ? f2.name.split(' ').pop() : "TBD"}
                 </span>
               </div>
@@ -165,7 +165,7 @@ export function EventCard({ event }: { event: any }) {
         </div>
 
         {/* Footer: Date & Location */}
-        <div className="p-5 pt-3 border-t border-zinc-800/40 relative z-10 flex flex-col gap-2 bg-[#17171c]/40">
+        <div className="p-4 md:p-5 pt-3 border-t border-zinc-800/40 relative z-10 flex flex-col gap-2 bg-[#17171c]/40">
           <div className="flex justify-between items-center text-[10px] md:text-xs">
             <span className="text-zinc-500 font-bold uppercase tracking-wider">Date</span>
             <span className="font-semibold text-zinc-300 font-mono">
