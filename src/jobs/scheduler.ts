@@ -49,6 +49,15 @@ export class Scheduler {
       const manager = new ScraperManager();
       manager.register(new FighterScraper(false)); // Switched to use REAL data
       await manager.runAllSequentially();
+
+      // Run status synchronization
+      try {
+        const { syncFighterStatus } = await import("../scripts/sync-fighter-status");
+        await syncFighterStatus();
+      } catch (err) {
+        logger.error("[Jobs] Failed to run syncFighterStatus", err);
+      }
+
       logger.info("[Jobs] Sync Fighters completed.");
     });
   }

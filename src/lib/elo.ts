@@ -32,24 +32,7 @@ export function getNewRating(
  * Seeds a fighter's initial Elo rating based on their record and age.
  */
 export function seedElo(fighter: { wins: number; losses: number; age: number | null }): number {
-  let e = 1450;
-  const ww = fighter.wins || 0;
-  const ll = fighter.losses || 0;
-
-  // Career win rate impact
-  e += (ww / ((ww + ll) || 1) - 0.5) * 300;
-
-  // Experience/volume impact
-  e += Math.min(ww, 28) * 4.5;
-
-  // Age curve impact
-  if (fighter.age) {
-    if (fighter.age >= 27 && fighter.age <= 32) e += 14;        // athletic prime
-    else if (fighter.age > 35) e -= (fighter.age - 35) * 7;
-    else if (fighter.age < 24) e -= (24 - fighter.age) * 5;
-  }
-
-  return Math.round(e);
+  return 1300;
 }
 
 export interface FightOutcomeDetails {
@@ -115,12 +98,12 @@ export function calculateEloDelta(
 
   let dA = Math.round(K * mult * (Sa - Ea));
 
-  // Promotion Weight (Favor UFC fights at exactly 2x the weight of non-UFC fights)
+  // Promotion Weight (Only gain/lose ELO points in UFC fights)
   if (outcome.isUFCFight) {
     dA = Math.round(dA * 2.0);
   } else {
-    // Non-UFC fights have 1.0x impact
-    dA = Math.round(dA * 1.0);
+    // Non-UFC fights result in exactly 0 Elo change
+    dA = 0;
   }
 
   return dA;

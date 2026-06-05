@@ -275,16 +275,35 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
     // Archiving Step
     logger.info(`[${this.scraperName}] Archiving missing fighters...`);
     try {
-      const result = await prisma.fighter.updateMany({
-        where: {
-          isActive: true,
-          ufcId: { notIn: Array.from(scrapedIds), not: null }
-        },
-        data: { isActive: false }
+      const activeDbFighters = await prisma.fighter.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, ufcId: true }
       });
 
-      if (result.count > 0) {
-        logger.info(`[${this.scraperName}] Archived ${result.count} inactive fighters.`);
+      const scrapedNamesSet = new Set(fighters.map(f => f.name.toLowerCase()));
+      const scrapedUfcIdsSet = new Set(fighters.map(f => f.ufcId?.toLowerCase()).filter(Boolean));
+
+      const retiredFighterIds: string[] = [];
+
+      for (const dbFighter of activeDbFighters) {
+        const hasMatchingName = scrapedNamesSet.has(dbFighter.name.toLowerCase());
+        const hasMatchingUfcId = dbFighter.ufcId && scrapedUfcIdsSet.has(dbFighter.ufcId.toLowerCase());
+
+        if (!hasMatchingName && !hasMatchingUfcId) {
+          retiredFighterIds.push(dbFighter.id);
+        }
+      }
+
+      if (retiredFighterIds.length > 0) {
+        const batchSize = 100;
+        for (let i = 0; i < retiredFighterIds.length; i += batchSize) {
+          const chunk = retiredFighterIds.slice(i, i + batchSize);
+          await prisma.fighter.updateMany({
+            where: { id: { in: chunk } },
+            data: { isActive: false }
+          });
+        }
+        logger.info(`[${this.scraperName}] Archived ${retiredFighterIds.length} inactive fighters.`);
       }
     } catch (error) {
       logger.error(`[${this.scraperName}] Failed to archive missing fighters`, error);

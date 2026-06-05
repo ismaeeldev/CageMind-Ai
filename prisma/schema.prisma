@@ -44,7 +44,7 @@ model Fighter {
   draws       Int      @default(0)
   koWins      Int      @default(0)
   subWins     Int      @default(0)
-  eloRating   Int      @default(1500)
+  eloRating   Int      @default(1300)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

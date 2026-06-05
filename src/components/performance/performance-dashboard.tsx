@@ -5,7 +5,7 @@ import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine, Legend,
 } from "recharts";
-import { TrendingUp, Target, DollarSign, BarChart2, Activity, CheckCircle2, XCircle } from "lucide-react";
+import { TrendingUp, Target, DollarSign, BarChart2, Activity, CheckCircle2, XCircle, X } from "lucide-react";
 
 interface Stats {
   total: number;
@@ -91,6 +91,8 @@ const CustomLineTooltip = ({ active, payload, label }: any) => {
 };
 
 function StatsPanel({ stats }: { stats: Stats }) {
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+
   if (stats.total === 0) return <EmptyState />;
 
   const profitColor = stats.totalProfit >= 0 ? "text-emerald-400" : "text-red-400";
@@ -214,7 +216,11 @@ function StatsPanel({ stats }: { stats: Stats }) {
         </div>
         <div className="divide-y divide-zinc-800/50">
           {stats.timeline.map((evt, i) => (
-            <div key={i} className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,auto,auto] items-start sm:items-center gap-4 px-4 sm:px-6 py-4 hover:bg-zinc-800/20 transition-colors">
+            <div 
+              key={i} 
+              onClick={() => setSelectedEvent(evt)}
+              className="flex flex-col sm:grid sm:grid-cols-[1fr,auto,auto,auto] items-start sm:items-center gap-4 px-4 sm:px-6 py-4 hover:bg-zinc-800/20 transition-colors cursor-pointer"
+            >
               <div className="w-full">
                 <div className="text-sm font-bold text-zinc-200">{evt.eventName}</div>
                 <div className="text-xs text-zinc-600 font-mono">{evt.date}</div>
@@ -240,6 +246,81 @@ function StatsPanel({ stats }: { stats: Stats }) {
           ))}
         </div>
       </div>
+
+      {/* Prediction Details Drawer / Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+            {/* Header */}
+            <div className="p-4 sm:p-6 border-b border-zinc-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight">{selectedEvent.eventName}</h3>
+                <p className="text-zinc-500 text-xs font-mono mt-1">Date: {selectedEvent.date}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedEvent(null)}
+                className="text-zinc-500 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 divide-y divide-zinc-800/40">
+              {selectedEvent.picks?.map((pick: any, idx: number) => {
+                const isUnderdogWin = pick.isCorrect && pick.odds && pick.odds > 0;
+                const statusLabel = pick.isCorrect 
+                  ? (isUnderdogWin ? "Value Won" : "Correct") 
+                  : "Incorrect";
+                const statusColor = pick.isCorrect
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                  : "bg-red-500/10 text-red-400 border border-red-500/30";
+
+                return (
+                  <div key={idx} className="pt-4 first:pt-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="space-y-1">
+                      <div className="text-sm sm:text-base font-bold text-white">
+                        {pick.fighter1Name} <span className="text-zinc-500 text-xs px-1">vs</span> {pick.fighter2Name}
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className="text-zinc-400">
+                          AI Pick: <strong className="text-zinc-200">{pick.aiPickedFighter}</strong> ({Math.round(pick.confidence * 100)}%)
+                        </span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-400">
+                          Actual Winner: <strong className="text-zinc-200">{pick.actualWinner}</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                      <div className="text-right">
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Profit / Loss</div>
+                        <div className={`text-xs font-mono font-bold ${pick.profit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                          {pick.profit >= 0 ? `+$${pick.profit.toFixed(0)}` : `-$${Math.abs(pick.profit).toFixed(0)}`}
+                        </div>
+                      </div>
+                      <span className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider border rounded-lg ${statusColor}`}>
+                        {statusLabel}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 sm:p-6 border-t border-zinc-800 flex justify-end">
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold uppercase tracking-wider text-xs px-6 py-2.5 rounded-xl transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

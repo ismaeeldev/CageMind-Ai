@@ -1,6 +1,7 @@
-import { prisma } from "./src/lib/db";
-import { PostEventProcessor } from "./src/jobs/post-event-processor";
-import { logger } from "./src/lib/logger";
+import "dotenv/config";
+import { prisma } from "../lib/db";
+import { PostEventProcessor } from "../jobs/post-event-processor";
+import { logger } from "../lib/logger";
 
 async function runTest() {
   logger.info("=== Starting Post-Event Processor Test ===");

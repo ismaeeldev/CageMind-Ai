@@ -10,6 +10,22 @@ export class PostEventProcessor {
   public async processCompletedEvents() {
     logger.info("[PostEventProcessor] Scanning for completed events...");
 
+    // Transition passed events to isUpcoming: false
+    const now = new Date();
+    const transitionCount = await prisma.event.updateMany({
+      where: {
+        isUpcoming: true,
+        date: { lt: now }
+      },
+      data: {
+        isUpcoming: false
+      }
+    });
+
+    if (transitionCount.count > 0) {
+      logger.info(`[PostEventProcessor] Transitioned ${transitionCount.count} passed events from upcoming to completed.`);
+    }
+
     // Find all events that have occurred but haven't been processed yet
     const eventsToProcess = await prisma.event.findMany({
       where: {
@@ -31,12 +47,38 @@ export class PostEventProcessor {
       return;
     }
 
-    for (const event of eventsToProcess) {
+    // Dynamic import to avoid circular dependency
+    const { TapologyScraper } = await import("../scrapers/tapology-scraper");
+
+    for (let event of eventsToProcess) {
       logger.info(`[PostEventProcessor] Processing Event: ${event.name}`);
       try {
+        // If event has incomplete fight cards (less than 5 fights), scrape first
+        if (event.fights.length < 5) {
+          logger.info(`[PostEventProcessor] Event ${event.name} has only ${event.fights.length} fights. Scraping complete fight card...`);
+          const scraper = new TapologyScraper(event.id, event.name);
+          await scraper.scrapeAndSave();
+          
+          // Re-fetch event with full fights
+          const updatedEvent = await prisma.event.findUnique({
+            where: { id: event.id },
+            include: {
+              fights: {
+                include: {
+                  fighter1: true,
+                  fighter2: true,
+                }
+              }
+            }
+          });
+          if (updatedEvent) {
+            event = updatedEvent;
+          }
+        }
+
         await this.processSingleEvent(event);
       } catch (error) {
-        logger.error(`[PostEventProcessor] Critical failure processing event ${event.name}. Transaction rolled back.`, error);
+        logger.error(`[PostEventProcessor] Critical failure processing event ${event.name}.`, error);
       }
     }
   }

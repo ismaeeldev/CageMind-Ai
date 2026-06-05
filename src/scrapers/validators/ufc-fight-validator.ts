@@ -10,11 +10,18 @@ export class UfcFightValidator {
       throw new ParsingError("Missing fighter names for fight.");
     }
 
-    // Normalize strings: Title Case and trim
+    // Normalize strings: Title Case, trim, and handle special capitalization rules
     const normalize = (name: string) => {
       return name.trim().replace(/\s+/g, ' ')
         .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .map(word => {
+          let capped = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          // Capitalize after apostrophe: O'Malley -> O'Malley, O’Malley -> O’Malley
+          capped = capped.replace(/([oO]['’])([a-z])/, (m, p1, p2) => p1 + p2.toUpperCase());
+          // Capitalize after Mc: Mcgregor -> McGregor
+          capped = capped.replace(/^(Mc)([a-z])/, (m, p1, p2) => p1 + p2.toUpperCase());
+          return capped;
+        })
         .join(' ');
     };
 

@@ -299,7 +299,7 @@ async function generateFallbackFullFightCard(eventId: string, eventName: string)
         fighter1Id: mainEvent.fighter1.id,
         fighter2Id: mainEvent.fighter2.id,
         weightClass: mainEvent.fighter1.weightClass || "Welterweight",
-        isTitleFight: true,
+        isTitleFight: eventName.toLowerCase().includes("title") || eventName.toLowerCase().includes("championship"),
         rounds: 5
       },
       include: { fighter1: true, fighter2: true }

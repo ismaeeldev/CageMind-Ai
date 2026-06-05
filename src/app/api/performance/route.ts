@@ -43,12 +43,20 @@ export async function GET() {
       // Flat $100 unit bet ROI calculation
       // Determine the odds for the AI's pick
       const aiOdds = aiPickedFighter1 ? fight.oddsFighter1 : fight.oddsFighter2;
-      let profit = -100; // assume loss
-      if (isCorrect && aiOdds !== null) {
-        if (aiOdds > 0) {
-          profit = aiOdds; // e.g., +150 odds → $150 profit
+      let profit = 0;
+      let wager = 0;
+      if (aiOdds !== null) {
+        wager = 100;
+        if (isCorrect) {
+          if (aiOdds > 0) {
+            profit = aiOdds; // e.g., +150 odds → $150 profit
+          } else if (aiOdds < 0) {
+            profit = (100 / Math.abs(aiOdds)) * 100; // e.g., -200 odds → $50 profit
+          } else {
+            profit = 0;
+          }
         } else {
-          profit = (100 / Math.abs(aiOdds)) * 100; // e.g., -200 odds → $50 profit
+          profit = -100;
         }
       }
 
@@ -102,12 +110,14 @@ export async function GET() {
       Object.values(byEvent).forEach((evt) => {
         const evtCorrect = evt.picks.filter((p) => p.isCorrect).length;
         const evtProfit = evt.picks.reduce((s, p) => s + p.profit, 0);
-        const evtROI = (evtProfit / (evt.picks.length * 100)) * 100;
+        const evtWager = evt.picks.reduce((s, p) => s + (p.odds !== null ? 100 : 0), 0);
+        const evtROI = evtWager > 0 ? (evtProfit / evtWager) * 100 : 0;
         cumBankroll += evtProfit;
         totalCorrectSoFar += evtCorrect;
         totalPicksSoFar += evt.picks.length;
 
         timeline.push({
+          eventId: evt.picks[0]?.eventId || "",
           eventName: evt.eventName.split(":")[0].trim(),
           date: evt.date.toISOString().split("T")[0],
           correct: evtCorrect,
@@ -115,18 +125,21 @@ export async function GET() {
           roi: parseFloat(evtROI.toFixed(1)),
           cumulativeBankroll: parseFloat(cumBankroll.toFixed(2)),
           rollingWinRate: parseFloat(((totalCorrectSoFar / totalPicksSoFar) * 100).toFixed(1)),
+          picks: evt.picks
         });
       });
 
       const totalCorrect = picks.filter((p) => p.isCorrect).length;
       const totalProfit = picks.reduce((s, p) => s + p.profit, 0);
+      const totalWager = picks.reduce((s, p) => s + (p.odds !== null ? 100 : 0), 0);
+      const overallROI = totalWager > 0 ? (totalProfit / totalWager) * 100 : 0;
 
       return {
         total: picks.length,
         correct: totalCorrect,
         accuracy: parseFloat(((totalCorrect / picks.length) * 100).toFixed(1)),
         totalProfit: parseFloat(totalProfit.toFixed(2)),
-        roi: parseFloat(((totalProfit / (picks.length * 100)) * 100).toFixed(1)),
+        roi: parseFloat(overallROI.toFixed(1)),
         eventsGraded: eventIds.size,
         timeline,
       };

@@ -78,9 +78,18 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
     const ALIASES: Record<string, string> = {
       "eduardo matias torres": "Manuel Torres",
       "belal muhamed": "Belal Muhammad",
+      "belal muhammad": "Belal Muhammad",
       "alex pereria": "Alex Pereira",
       "illia topuria": "Ilia Topuria",
-      "elizeu zaleski dos santos": "Elizeu Zaleski dos Santos"
+      "elizeu zaleski dos santos": "Elizeu Zaleski dos Santos",
+      "aieman zahabi": "Aiemann Zahabi",
+      "aiemann zahabi": "Aiemann Zahabi",
+      "sean o'malley": "Sean O'Malley",
+      "sean o’malley": "Sean O'Malley",
+      "sean omalley": "Sean O'Malley",
+      "gabriel bonfim": "Gabriel Bonfim",
+      "deiveson figuereido": "Deiveson Figueiredo",
+      "deiveson figueiredo": "Deiveson Figueiredo"
     };
 
     const parsedFights: ParsedFight[] = [];
