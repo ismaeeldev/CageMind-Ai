@@ -93,8 +93,15 @@ export async function GET() {
       const eventIds = new Set(picks.map((p) => p.eventId));
       let cumBankroll = 1000; // Start with $1000 virtual bankroll
       const timeline: {
-        eventName: string; date: string; correct: number; total: number;
-        roi: number; cumulativeBankroll: number; rollingWinRate: number;
+        eventId: string;
+        eventName: string;
+        date: string;
+        correct: number;
+        total: number;
+        roi: number;
+        cumulativeBankroll: number;
+        rollingWinRate: number;
+        picks: any[];
       }[] = [];
 
       // Group by event for charting
