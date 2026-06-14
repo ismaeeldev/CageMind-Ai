@@ -17,6 +17,7 @@ interface FightRowProps {
 
 export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; isUpcoming: boolean }) {
   const [fights, setFights] = useState<any[]>([]);
+  const [syncing, setSyncing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,6 +34,7 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
         const data = await res.json();
         if (active) {
           setFights(data.fights || []);
+          setSyncing(data.syncing === true && (!data.fights || data.fights.length === 0));
         }
       } catch (err: any) {
         if (active) {
@@ -86,16 +88,30 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
   }
 
   if (fights.length === 0) {
+    if (syncing) {
+      return (
+        <div className="text-center py-20 border border-amber-500/20 border-dashed rounded-xl bg-amber-500/5">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-amber-400 animate-pulse" />
+          </div>
+          <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-2">
+            Fight Card Syncing in Progress
+          </h3>
+          <p className="text-sm text-zinc-400 max-w-sm mx-auto">
+            Our scrapers are working to pull the official fight card. Check back shortly — data will appear automatically once available.
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="text-center py-20 text-zinc-500 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/10">
         <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-2">
           {isUpcoming ? "Bouts Not Finalized Yet" : "Results Not Yet Synced"}
         </h3>
         <p className="text-sm text-zinc-400">
-          {isUpcoming 
-            ? "The fight card for this upcoming event has not been finalized or scraped yet. Check back soon!" 
-            : "The results and bouts for this past event have not been imported or scraped yet."
-          }
+          {isUpcoming
+            ? "The fight card for this upcoming event has not been finalized or scraped yet. Check back soon!"
+            : "The results and bouts for this past event have not been imported or scraped yet."}
         </p>
       </div>
     );

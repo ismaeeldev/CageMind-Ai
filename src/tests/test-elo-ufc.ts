@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { seedElo, calculateEloDelta } from '../lib/elo';
+import { seedElo, calculateEloDelta, isUFCEvent } from '../lib/elo';
 
 function testEloUfcLogic() {
   console.log("=== Testing ELO UFC Engine Modifications ===");
@@ -46,6 +46,48 @@ function testEloUfcLogic() {
     console.log(`✓ Success: UFC fights return positive ELO delta (+${ufcDelta}) with quick finish multiplier.`);
   } else {
     console.error("X Failure: UFC delta should be positive, got:", ufcDelta);
+    process.exit(1);
+  }
+
+  // 4. isUFCEvent: standard "UFC N" names
+  const standardUfcCases: [string, boolean][] = [
+    ["UFC 300", true],
+    ["UFC Fight Night 248", true],
+    ["Fight Night: Jones vs Smith", true],
+    ["The Ultimate Fighter 31", true],
+    ["TUF 32 Finale", true],
+    ["Dana White's Contender Series", true],
+    ["UFC Apex Event", true],
+    // "vs" cards without the "UFC" prefix — the key bug fix
+    ["Muhammad vs Bonfim", true],
+    ["Pereira vs Blachowicz 2", true],
+    ["Yan vs Cejudo", true],
+    // Non-UFC orgs must NOT match
+    ["Bellator 300", false],
+    ["ONE Championship", false],
+    ["PFL 2024", false],
+    ["RIZIN 45", false],
+    // Empty / null
+    ["", false],
+  ];
+
+  let isUFCPassed = true;
+  for (const [name, expected] of standardUfcCases) {
+    const result = isUFCEvent(name);
+    if (result !== expected) {
+      console.error(`X Failure: isUFCEvent("${name}") expected ${expected}, got ${result}`);
+      isUFCPassed = false;
+    }
+  }
+  // Also test null
+  if (isUFCEvent(null) !== false) {
+    console.error("X Failure: isUFCEvent(null) should return false");
+    isUFCPassed = false;
+  }
+
+  if (isUFCPassed) {
+    console.log("✓ Success: isUFCEvent() correctly classifies all UFC and non-UFC event names.");
+  } else {
     process.exit(1);
   }
 

@@ -41,23 +41,22 @@ export async function GET() {
       const isHighConfidence = confidence >= 0.6;
 
       // Flat $100 unit bet ROI calculation
-      // Determine the odds for the AI's pick
-      const aiOdds = aiPickedFighter1 ? fight.oddsFighter1 : fight.oddsFighter2;
+      // Determine the odds for the AI's pick (fallback to -110 if missing)
+      const rawOdds = aiPickedFighter1 ? fight.oddsFighter1 : fight.oddsFighter2;
+      const aiOdds = rawOdds !== null ? rawOdds : -110;
+
+      const wager = 100;
       let profit = 0;
-      let wager = 0;
-      if (aiOdds !== null) {
-        wager = 100;
-        if (isCorrect) {
-          if (aiOdds > 0) {
-            profit = aiOdds; // e.g., +150 odds → $150 profit
-          } else if (aiOdds < 0) {
-            profit = (100 / Math.abs(aiOdds)) * 100; // e.g., -200 odds → $50 profit
-          } else {
-            profit = 0;
-          }
+      if (isCorrect) {
+        if (aiOdds > 0) {
+          profit = aiOdds; // e.g., +150 odds → $150 profit
+        } else if (aiOdds < 0) {
+          profit = (100 / Math.abs(aiOdds)) * 100; // e.g., -200 odds → $50 profit
         } else {
-          profit = -100;
+          profit = 0;
         }
+      } else {
+        profit = -100;
       }
 
       return {
@@ -79,7 +78,7 @@ export async function GET() {
       fightId: string; eventId: string; eventName: string; eventDate: Date;
       fighter1Name: string; fighter2Name: string; aiPickedFighter: string;
       actualWinner: string; isCorrect: boolean; confidence: number;
-      isHighConfidence: boolean; profit: number; odds: number | null;
+      isHighConfidence: boolean; profit: number; odds: number;
     }[];
 
     // ── Helper: compute aggregate stats ──────────────────────────────────
@@ -115,23 +114,39 @@ export async function GET() {
       let totalPicksSoFar = 0;
 
       Object.values(byEvent).forEach((evt) => {
+        const picksCount = evt.picks.length;
+        if (picksCount === 0) return;
+
         const evtCorrect = evt.picks.filter((p) => p.isCorrect).length;
         const evtProfit = evt.picks.reduce((s, p) => s + p.profit, 0);
         const evtWager = evt.picks.reduce((s, p) => s + (p.odds !== null ? 100 : 0), 0);
-        const evtROI = evtWager > 0 ? (evtProfit / evtWager) * 100 : 0;
+        
+        const rawROI = evtWager > 0 ? (evtProfit / evtWager) * 100 : 0;
+        const evtROI = isNaN(rawROI) || rawROI === null ? 0 : rawROI;
+
         cumBankroll += evtProfit;
+        if (isNaN(cumBankroll) || cumBankroll === null) {
+          cumBankroll = 1000;
+        }
+
         totalCorrectSoFar += evtCorrect;
-        totalPicksSoFar += evt.picks.length;
+        totalPicksSoFar += picksCount;
+
+        const rawRollingWinRate = totalPicksSoFar > 0 ? (totalCorrectSoFar / totalPicksSoFar) * 100 : 0;
+        const rollingWinRate = isNaN(rawRollingWinRate) || rawRollingWinRate === null ? 0 : rawRollingWinRate;
+
+        const eventName = evt.eventName ? evt.eventName.split(":")[0].trim() : "Unknown Event";
+        const dateStr = evt.date ? (evt.date instanceof Date ? evt.date.toISOString().split("T")[0] : new Date(evt.date).toISOString().split("T")[0]) : "";
 
         timeline.push({
           eventId: evt.picks[0]?.eventId || "",
-          eventName: evt.eventName.split(":")[0].trim(),
-          date: evt.date.toISOString().split("T")[0],
-          correct: evtCorrect,
-          total: evt.picks.length,
-          roi: parseFloat(evtROI.toFixed(1)),
-          cumulativeBankroll: parseFloat(cumBankroll.toFixed(2)),
-          rollingWinRate: parseFloat(((totalCorrectSoFar / totalPicksSoFar) * 100).toFixed(1)),
+          eventName,
+          date: dateStr,
+          correct: isNaN(evtCorrect) || evtCorrect === null ? 0 : evtCorrect,
+          total: isNaN(picksCount) || picksCount === null ? 0 : picksCount,
+          roi: isNaN(evtROI) ? 0 : parseFloat(evtROI.toFixed(1)),
+          cumulativeBankroll: isNaN(cumBankroll) ? 1000 : parseFloat(cumBankroll.toFixed(2)),
+          rollingWinRate: isNaN(rollingWinRate) ? 0 : parseFloat(rollingWinRate.toFixed(1)),
           picks: evt.picks
         });
       });
@@ -139,14 +154,21 @@ export async function GET() {
       const totalCorrect = picks.filter((p) => p.isCorrect).length;
       const totalProfit = picks.reduce((s, p) => s + p.profit, 0);
       const totalWager = picks.reduce((s, p) => s + (p.odds !== null ? 100 : 0), 0);
-      const overallROI = totalWager > 0 ? (totalProfit / totalWager) * 100 : 0;
+      
+      const rawOverallROI = totalWager > 0 ? (totalProfit / totalWager) * 100 : 0;
+      const safeOverallROI = isNaN(rawOverallROI) || rawOverallROI === null ? 0 : rawOverallROI;
+      
+      const rawAccuracy = picks.length > 0 ? (totalCorrect / picks.length) * 100 : 0;
+      const safeAccuracy = isNaN(rawAccuracy) || rawAccuracy === null ? 0 : rawAccuracy;
+
+      const safeTotalProfit = isNaN(totalProfit) || totalProfit === null ? 0 : totalProfit;
 
       return {
         total: picks.length,
         correct: totalCorrect,
-        accuracy: parseFloat(((totalCorrect / picks.length) * 100).toFixed(1)),
-        totalProfit: parseFloat(totalProfit.toFixed(2)),
-        roi: parseFloat(overallROI.toFixed(1)),
+        accuracy: parseFloat(safeAccuracy.toFixed(1)) || 0,
+        totalProfit: parseFloat(safeTotalProfit.toFixed(2)) || 0,
+        roi: parseFloat(safeOverallROI.toFixed(1)) || 0,
         eventsGraded: eventIds.size,
         timeline,
       };

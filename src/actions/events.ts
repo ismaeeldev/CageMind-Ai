@@ -5,8 +5,17 @@ import { Prisma } from "@/generated/prisma";
 
 export async function getEvents(isUpcoming?: boolean) {
   const where: Prisma.EventWhereInput = {};
+
   if (isUpcoming !== undefined) {
-    where.isUpcoming = isUpcoming;
+    const startOfTodayUTC = new Date();
+    startOfTodayUTC.setUTCHours(0, 0, 0, 0);
+
+    if (isUpcoming === true) {
+      where.isUpcoming = true;
+    } else {
+      where.isUpcoming = false;
+      where.date = { lt: startOfTodayUTC };
+    }
   }
 
   const events = await prisma.event.findMany({

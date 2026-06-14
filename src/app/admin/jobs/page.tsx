@@ -38,7 +38,7 @@ export default function AdminJobsDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const triggerJob = async (type: 'daily' | 'weekly') => {
+  const triggerJob = async (type: 'daily' | 'weekly' | 'status' | 'results') => {
     setTriggering(type);
     try {
       await fetch("/api/admin/jobs", {
@@ -89,6 +89,22 @@ export default function AdminJobsDashboard() {
             >
               <Play className="w-4 h-4" />
               {triggering === 'weekly' ? 'Triggering...' : 'Sync All Fighters & Records'}
+            </button>
+            <button
+              onClick={() => triggerJob('status')}
+              disabled={triggering !== null}
+              className="bg-zinc-800 hover:bg-[#D22828] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            >
+              <Play className="w-4 h-4" />
+              {triggering === 'status' ? 'Triggering...' : 'Sync Active/Inactive Status'}
+            </button>
+            <button
+              onClick={() => triggerJob('results')}
+              disabled={triggering !== null}
+              className="bg-zinc-800 hover:bg-[#D22828] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            >
+              <Play className="w-4 h-4" />
+              {triggering === 'results' ? 'Recalculating...' : 'Recalculate Elo Ratings'}
             </button>
           </div>
         </div>

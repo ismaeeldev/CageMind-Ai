@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     const unpredictedFights = await prisma.fight.findMany({
       where: {
         aiPrediction: null,
-        event: { isUpcoming: true, date: { gte: todayStart } }
+        event: { date: { gte: todayStart } }
       },
       include: {
         fighter1: true,
@@ -88,10 +88,10 @@ export async function GET(req: Request) {
       }
     }
 
-    // 2. Fetch predicted fights (strictly UPCOMING events ONLY)
+    // 2. Fetch predicted fights for upcoming events (date-based, not flag-based)
     const where: Prisma.FightWhereInput = {
       aiPrediction: { not: null },
-      event: { isUpcoming: true, date: { gte: todayStart } }
+      event: { date: { gte: todayStart } }
     };
 
     if (search) {

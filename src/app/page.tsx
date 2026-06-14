@@ -39,9 +39,11 @@ export default async function HomePage() {
   const todayStart = new Date();
   todayStart.setUTCHours(0, 0, 0, 0);
 
-  // Query the database for the most recent upcoming event
+  // Query the database for the most recent upcoming event.
+  // Use date as the source of truth — isUpcoming: true alone is unreliable if the
+  // flag was prematurely flipped earlier in the day before the card took place.
   let upcomingEvent = await prisma.event.findFirst({
-    where: { isUpcoming: true, date: { gte: todayStart } },
+    where: { date: { gte: todayStart } },
     orderBy: { date: "asc" },
     include: {
       fights: {

@@ -29,10 +29,21 @@ export function getNewRating(
 }
 
 /**
- * Seeds a fighter's initial Elo rating based on their record and age.
+ * Seeds a fighter's initial Elo rating based on their win/loss record.
+ * Used for fighters who have no individual fight records in the Fight table.
+ * Returns 1300 for unproven fighters (0-0), scaling ±200 by win rate and experience.
  */
 export function seedElo(fighter: { wins: number; losses: number; age: number | null }): number {
-  return 1300;
+  const BASE = 1300;
+  const total = fighter.wins + fighter.losses;
+  if (total === 0) return BASE;
+
+  const winRate = fighter.wins / total;
+  // Ramp confidence over the first 15 fights so a 1-0 record barely moves the needle
+  const expFactor = Math.min(1.0, total / 15);
+  const adjustment = Math.round((winRate - 0.5) * 400 * expFactor);
+
+  return Math.max(900, Math.min(1600, BASE + adjustment));
 }
 
 export interface FightOutcomeDetails {
@@ -44,6 +55,43 @@ export interface FightOutcomeDetails {
   fighter2Id: string;
   isUFCFight?: boolean;
   winnerIsUndefeated?: boolean;
+}
+
+/**
+ * Determines whether an event is a UFC-sanctioned fight.
+ * Handles all UFC naming conventions:
+ *   - "UFC 300", "UFC Fight Night 248"
+ *   - "Fight Night" (standalone)
+ *   - "The Ultimate Fighter" / "TUF"
+ *   - "Dana White's Contender Series"
+ *   - "[Fighter] vs [Fighter]" style UFC cards (no "UFC" prefix)
+ *   - Apex events
+ *
+ * Use this everywhere instead of a raw `.includes("ufc")` check.
+ */
+export function isUFCEvent(eventName: string | null | undefined): boolean {
+  if (!eventName) return false;
+  const n = eventName.toLowerCase().trim();
+  return (
+    n.includes("ufc") ||
+    n.includes("fight night") ||
+    n.includes("the ultimate fighter") ||
+    n.startsWith("tuf ") ||
+    n.includes("contender series") ||
+    n.includes("apex") ||
+    // "Fighter vs Fighter" cards that are UFC events but lack the "UFC" prefix
+    // Detect by checking if it matches the "Name vs Name" / "Name vs. Name" pattern
+    // AND does NOT contain non-UFC organisation keywords
+    (/^[a-z].+ vs\.? [a-z].+$/.test(n) &&
+      !n.includes("bellator") &&
+      !n.includes("one fc") &&
+      !n.includes("one championship") &&
+      !n.includes("pfl") &&
+      !n.includes("rizin") &&
+      !n.includes("invicta") &&
+      !n.includes("ksw") &&
+      !n.includes("cage warriors"))
+  );
 }
 
 /**

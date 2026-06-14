@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
-import { calculateEloDelta } from "@/lib/elo";
+import { calculateEloDelta, isUFCEvent } from "@/lib/elo";
 import { PredictionEngine } from "@/lib/prediction-engine";
 
 export class PostEventProcessor {
@@ -10,12 +10,19 @@ export class PostEventProcessor {
   public async processCompletedEvents() {
     logger.info("[PostEventProcessor] Scanning for completed events...");
 
-    // Transition passed events to isUpcoming: false
+    // Transition passed events to isUpcoming: false.
+    // Use start-of-today UTC as the threshold so events stored on today's date
+    // (e.g. "2026-06-14T00:00:00Z") are never flipped before midnight UTC tonight,
+    // even when the processor runs mid-day. UFC cards run into the early hours UTC,
+    // so any event date matching today must still be treated as upcoming.
     const now = new Date();
+    const startOfTodayUTC = new Date(now);
+    startOfTodayUTC.setUTCHours(0, 0, 0, 0);
+
     const transitionCount = await prisma.event.updateMany({
       where: {
         isUpcoming: true,
-        date: { lt: now }
+        date: { lt: startOfTodayUTC }
       },
       data: {
         isUpcoming: false
@@ -174,7 +181,8 @@ export class PostEventProcessor {
         const isDraw = !f1Won && !f2Won;
 
         // 1. Calculate New Elo using our central ELO calculator
-        const isUFCFight = event.name.toUpperCase().includes("UFC");
+        // Use shared isUFCEvent() — covers "UFC 300", "Fight Night", "Muhammad vs Bonfim", etc.
+        const isUFCFight = isUFCEvent(event.name);
         const winnerLosses = winnerId === f1.id ? f1.losses : f2.losses;
 
         const delta = calculateEloDelta(f1.eloRating, f2.eloRating, {

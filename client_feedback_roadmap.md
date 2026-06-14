@@ -1,166 +1,155 @@
-# Client Feedback & Implementation Roadmap
+# CageMind AI - Client Feedback Implementation Roadmap
 
-This document captures the analysis, problem breakdown, root causes, proposed solutions, and verification/test cases for the latest batch of client feedback.
-
----
-
-## 1. Fighter Status (Active vs. Retired)
-
-### Problem Description
-Some fighters are correctly showing as "Retired" (inactive) in the directory, but the majority of retired fighters are incorrectly appearing as "Active".
-
-### Root Cause Analysis
-1. **Fighter Scraper Incompleteness**: In `FighterScraper` (`src/scrapers/fighter-scraper.ts`), fighters are scraped from `https://www.ufc.com/athletes/all`. If a fighter is no longer on the active roster, they are omitted from the scraped list.
-2. **Archiving Logic Limitation**: The scraper marks missing fighters as inactive using:
-   ```typescript
-   prisma.fighter.updateMany({
-     where: {
-       isActive: true,
-       ufcId: { notIn: Array.from(scrapedIds), not: null }
-     },
-     data: { isActive: false }
-   });
-   ```
-   If a fighter in the database does not have a `ufcId` (which happens for fighters imported via the event or fight-card scrapers, or past event logs), their `ufcId` is `null`. They are excluded from this archiving step and remain marked as `isActive: true` indefinitely.
-3. **No Tapology Status Scrape**: The `TapologyScraper` and database seeding defaults new fighters to `isActive: true` without validating their actual career status.
-
-### Proposed Solution
-1. **Enhance Archiving Rule**: Update the archiving query to flag fighters as inactive if they are missing from the scraped list *or* if they haven't had a fight in a long time (e.g., 2+ years).
-2. **Scrape Tapology Career Status**: When importing or scraping fight cards, query the fighter's Tapology profile and parse the "Status" field (e.g., "Retired", "Active", "Discharged").
-3. **Admin Status Synchronization Tool**: Provide a script `sync-fighter-status.ts` to scan the database and update `isActive` based on fight history and Tapology profile scraping.
-
-### Verification / Test Case
-* **Unit Test**: A script `tests/test-fighter-status.ts` that inserts a mock retired fighter (e.g., "Khabib Nurmagomedov" with no active fights or marked as retired) and verifies the status synchronization correctly flags them as `isActive: false`.
+This document outlines a detailed, point-by-point plan to address the latest client feedback across all components of the application. No modifications are implemented yet; this serves as a blueprint for the next phase.
 
 ---
 
-## 2. ELO Engine: UFC Entry Rating & Fight Exclusivity
+## 1. Active Fighters Showing Up as Retired
 
-### Problem Description
-Fighters entering the UFC should start with a baseline ELO rating of exactly `1300` points. They should only gain or lose ELO points in UFC fights, while non-UFC fights should result in a `0` ELO change.
+### Problem
+A significant number of active UFC fighters are incorrectly flagged as retired and displayed under the retired section.
 
-### Root Cause Analysis
-1. **Initial Seeding**: In `src/lib/elo.ts`, `seedElo` calculates ratings based on career records (wins/losses/age), seeding them around 1450.
-2. **Non-UFC Weighting**: In `calculateEloDelta` (`src/lib/elo.ts`), non-UFC fights currently have a 1.0x impact:
-   ```typescript
-   if (outcome.isUFCFight) {
-     dA = Math.round(dA * 2.0);
-   } else {
-     dA = Math.round(dA * 1.0);
-   }
-   ```
-   This shifts ratings for non-UFC matches, violating the ufc-only ELO progression requirement.
+### Root Cause
+1. **Accidental Archiving**: The `fighter-scraper.ts` archives fighters if they are missing from the latest active roster scrape *or* if they haven't fought in the UFC for more than 2 years.
+2. **Name Matching Mismatches**: Capitalization, spacing, or spelling differences between scraped rosters and the database prevent name matches, causing active fighters to fail validation and get marked as inactive.
+3. **Inadequate UFC Page Verification**: The `verifyUfcAthleteActive` function may fail to resolve athlete pages due to URL slug mismatches (e.g. `jon-jones` vs `jonathan-jones`), reverting active fighters to retired.
 
-### Proposed Solution
-1. **Reset Starting ELO**: Modify `seedElo` to return exactly `1300`. Update the Prisma schema `Fighter` model default value for `eloRating` from `1500` to `1300`.
-2. **UFC Exclusive Shifts**: Modify `calculateEloDelta` in `src/lib/elo.ts` to return `0` if `outcome.isUFCFight` is false.
-3. **Recalculation**: Run `recalculateAllElo` chronologically to rebuild the ELO history from the new 1300 baseline.
+### Solution
+1. **Increase Inactivity Buffer**: Relax the inactive threshold from 2 years to 4 years to prevent active but inactive fighters (like Jon Jones or Conor McGregor) from being archived.
+2. **Upcoming Fight Immunity**: If a fighter has any upcoming/scheduled fight in the database, lock their status to `isActive: true`.
+3. **Robust Slug Matching**: Refactor the profile page checker to try multiple slug variations (e.g., trying first-last, full name, and last name combinations) before confirming retirement.
+4. **Synchronization Script**: Provide an administrative script `src/scripts/reactivate-active-fighters.ts` to restore active status for all verified UFC roster fighters.
 
-### Verification / Test Case
-* **ELO Test Script**: Run `tests/test-elo-ufc.ts` to verify:
-  * A fighter's initial rating is 1300.
-  * A UFC fight modifies the ratings of both fighters (underdog/finish bonuses active).
-  * A non-UFC fight returns a delta of exactly `0` for both fighters.
+### Test / Verification
+- Run a test script to check database records for known fighters (e.g., Conor McGregor, Jon Jones) and assert that `isActive` is `true`.
+- Run the scraper and verify that active fighters are not shifted to retired status.
 
 ---
 
-## 3. Scraper: Tapology Fightcenter Card Ingestion
+## 2. Elo Ratings Flatlined at 1300 for UFC Wins
 
-### Problem Description
-The events page currently loads a disorganized mix of fights instead of the true main card, prelims, and early prelims.
+### Problem
+Undefeated fighters with multiple UFC wins are stuck at a flat 1300 Elo rating.
 
-### Root Cause Analysis
-1. **Parsing Heuristics**: `TapologyScraper` (`src/scrapers/tapology-scraper.ts`) parses the event page using generic cheerio queries (`$event('li, tr, div')`) which grabs unrelated sidebar matches, promotions, or advertisements.
-2. **Lack of Card Sections**: It does not split the card into "Main Card", "Preliminary Card", and "Early Prelims".
+### Root Cause
+1. **Event Name Checks**: The Elo engine in `elo.ts` only applies rating changes if `outcome.isUFCFight` is `true`. This was computed using `event.name.toUpperCase().includes("UFC")`.
+2. **Non-Standard Event Names**: Fallback events or scraped events named "Muhammad vs Bonfim" or similar do not contain the "UFC" substring, causing the Elo calculations to treat them as non-UFC fights and yield a `0` rating change.
 
-### Proposed Solution
-1. **Target Tapology Card Selectors**: Rewrite the parser to scrape from the specific list container on Tapology's fightcenter pages (e.g., `.section-bouts`, `.bout-row`, `.bout-card`).
-2. **Order Preservation**: Follow the exact DOM order from top to bottom (which represents Main Event down to Early Prelims).
-3. **Past Card Backfill**: Create a script `backfill-past-cards.ts` to re-scrape and overwrite incorrect fight rosters for completed events.
+### Solution
+1. **Broaden UFC Event Matching**: Update `isUFCFight` verification to also check:
+   - If the event name matches common patterns like `"Fight Night"`, `"Apex"`, or starts with fighter names representing a UFC card.
+   - If the event record has a flag `isUFC: true` or custom source identifiers.
+2. **Recalculation Trigger**: Once the event classification is resolved, trigger a full chronological Elo recalculation across all completed fights to backfill the ratings.
 
-### Verification / Test Case
-* **Scraper Test**: Run `tests/test-tapology-scraper.ts` on a specific event page (e.g., UFC 300) and assert that:
-  * The total number of fights matches the official count.
-  * The main card fights appear at the top.
-  * No unrelated fights are imported.
+### Test / Verification
+- Run `tests/test-elo-ufc.ts` to verify that wins on cards without "UFC" in the title (like "Muhammad vs Bonfim") correctly change fighter Elo ratings.
 
 ---
 
-## 4. Fight Card Details (Title Bouts, Fight Nights & Round Count)
+## 3. Upcoming Events Prematurely Marked as Past Events
 
-### Problem Description
-1. Sean O'Malley vs. Aieman Zahabi disappeared from UFC 250.
-2. Belal Muhammad vs. Gabriel Bonfim was incorrectly labeled as a title fight.
-3. Fight Night main events are incorrectly marked as title fights, even though they should just be 5-round non-title fights.
+### Problem
+All upcoming events have been moved into the past events tab.
 
-### Root Cause Analysis
-1. **Missing Fighters / Merges**: Name mismatches (e.g., "Aieman Zahabi" or "Sean O'Malley") cause validation to drop fights if name mappings fail.
-2. **Title Heuristic**: The current parser flags any 5-round fight or main event as a title bout if `rounds === 5` or if it's the main event. It fails to distinguish between a "5-round Main Event" and a "Championship Title Bout".
+### Root Cause
+1. **Timezone Offset Check**: The event transition check compares `event.date` directly against `new Date()`.
+2. **Premature Transition**: Since events are stored in UTC and timezones vary, upcoming events scheduled for the current day are flagged as past events before they actually happen.
 
-### Proposed Solution
-1. **Tapology Title Flag**: Parse the title bout text specifically from the bout row headers on Tapology (e.g., check for the presence of "Title", "Championship", or "UFC Belt").
-2. **Round Logic**:
-   * Explicitly set `rounds = 5` for any Main Event (the first/top fight on the card) and Title Bouts.
-   * Ensure `isTitleFight = false` for non-title main events.
-3. **Aliases Dictionary**: Expand name matching aliases in `FightCardScraper` to handle accent marks and minor spelling changes.
+### Solution
+1. **Time Buffer**: Add a 24-hour buffer to the date transition check (i.e. only mark as past if `event.date` is older than `now - 24 hours`), ensuring fight cards remain in "Upcoming" until the broadcast ends.
+2. **Strict Timezone Handling**: Parse dates using proper localized midnight offsets.
 
-### Verification / Test Case
-* **Bout Assertions**: Run a verification script that checks specific fights in the database:
-  * Assert "Belal Muhammad vs. Gabriel Bonfim" is `isTitleFight: false`.
-  * Assert Fight Night main events have `rounds: 5` and `isTitleFight: false`.
+### Test / Verification
+- Create a mock event starting in 2 hours, run the transition job, and assert that it remains in the "Upcoming Events" list.
 
 ---
 
-## 5. Past Events & Statistics Processing
+## 4. Fake / Fallback Fights Loaded into Events
 
-### Problem Description
-Past events are missing from the "Past Events" tab, and metrics/statistics (predictions count, correct picks, ELO performance) are not fully updated.
+### Problem
+Mock/fake fights are loaded into upcoming and past events.
 
-### Root Cause Analysis
-1. **Scraper Pipeline Gap**: Scraped events are stored as upcoming, but when they occur, they are not marked as completed with results unless manually processed.
-2. **Missing Card Details**: Past events in the DB have incomplete fight cards (only 1-2 fights instead of the full card).
+### Root Cause
+1. **Aggressive Fallback Generator**: The API endpoint `/api/events/[id]/fights` contains a fallback generator `generateFallbackFullFightCard` that inserts 10 dummy bouts using active fighter combinations when scraping fails.
+2. **Scraper Failures**: Direct network requests to ufc.com or tapology.com often return `403 Forbidden` due to Cloudflare anti-scraping protections, triggering this fallback.
 
-### Proposed Solution
-1. **Post-Event Processing Pipeline**: Run the scraper to fetch completed card results (including methods of victory, ending rounds, and winner IDs) and apply ELO adjustments.
-2. **Stats Update Job**: Run a script to aggregate stats (ROI, Win Rate, total prediction counts) and update the `PastEvent` dashboard state.
+### Solution
+1. **Remove Mock Fallbacks**: Completely remove the `generateFallbackFullFightCard` code.
+2. **Graceful Error Handling**: If scraping fails and no fights are in the DB, display a clean error card in the UI ("Fight Card Syncing in Progress") instead of writing dummy data to the database.
+3. **Purge Script**: Create `src/scripts/purge-fake-fights.ts` to remove all generated bouts that do not correspond to real UFC/Tapology cards.
 
-### Verification / Test Case
-* **Pipeline Run**: Execute `src/jobs/post-event-processor.ts` locally and verify that ROI and correct picks percentages update in the database.
-
----
-
-## 6. Past Events: ROI Formula Correction
-
-### Problem Description
-The ROI (Return on Investment) calculation on the Past Events tab does not load or calculate correctly.
-
-### Root Cause Analysis
-1. **ROI Formula**: ROI is calculated as `(Net Profit / Total Wagered) * 100`.
-2. **Null Values**: If odds are null or predictions don't match, division by zero or NaN values creep in, causing the calculation to fail on the frontend.
-
-### Proposed Solution
-1. **Safe ROI Utility**: Implement a robust calculation helper that defaults to `0` when wagers are zero and handles both positive/negative moneyline math correctly.
-2. **Database Schema Enforcement**: Ensure all calculated metrics are stored as floats/decimals instead of raw unparsed strings.
-
-### Verification / Test Case
-* **Math Validation**: Run `tests/test-roi.ts` to verify ROI computations against static predictions and actual fight results.
+### Test / Verification
+- Mock a failed scraper execution and assert that the database contains 0 new fights (no fallback fights created).
 
 ---
 
-## 7. Past Events Interactivity (Prediction Details view)
+## 5. Duplicate and Mock Events in Past Events Tab
 
-### Problem Description
-Users cannot click on past events to see what predictions were made and compare them to actual outcomes.
+### Problem
+Mock events (like UFC Freedom 250) and duplicate events (e.g. UFC 300 vs UFC 300: Pereira vs Hill) are displayed under Past Events. Duplicate fights have also reappeared in UFC Freedom 250.
 
-### Root Cause Analysis
-1. **Static UI List**: The past events UI is a static display with no click/details navigation drawer or modal implemented.
+### Root Cause
+1. **No Slug Constraints**: The `Event` model does not have unique slug constraints, allowing duplicate scrapers to insert the same event under different name strings.
+2. **Incomplete Cleanup**: Previous cleanups did not purge mock events or deduplicate existing fights.
 
-### Proposed Solution
-1. **Interactive Modal/Accordion**: Add a click trigger to each past event row that opens a slide-over drawer or modal showing:
-   * Every fight on the card.
-   * The AI-predicted winner and confidence percentage.
-   * The actual fight winner and method of finish.
-   * The outcome status (e.g. Correct / Incorrect / Value Won).
+### Solution
+1. **Database Purge**: Write a database cleanup script `src/scripts/purge-duplicates.ts` to delete all mock events (e.g. "UFC Freedom 250") and merge duplicate events.
+2. **Unique Constraints**: Add a unique index/constraint on event dates or slugified name templates to prevent double insertion.
 
-### Verification / Test Case
-* **UI Walkthrough**: Perform a manual walkthrough on the past events page, clicking a card, verifying the modal opens, and confirming predictions are detailed correctly.
+### Test / Verification
+- Run the cleanup script and verify that no duplicate event names exist, and `UFC Freedom 250` is completely gone.
+
+---
+
+## 6. Non-Title Fights Labeled as Title Fights
+
+### Problem
+Non-title bouts (including standard Fight Night main events) are marked as title fights.
+
+### Root Cause
+1. **Fuzzy Search Match**: The title heuristics match terms like "title" or "belt" inside any part of the row or weight class.
+2. **Hardcoded Fallbacks**: The fallback generator previously set `isTitleFight: true` for all main events.
+
+### Solution
+1. **Strict Text Match**: Only set `isTitleFight: true` if the bout row text explicitly contains "Championship", "Title Bout", or "UFC Belt" as standalone words, and NOT if it just contains "Bout" or division names.
+2. **Separate Rounds from Title Flag**: Ensure Fight Night main events are set to 5 rounds but maintain `isTitleFight: false`.
+
+### Test / Verification
+- Run a scraper test on a Fight Night event (e.g. UFC Fight Night: Song vs. Figueiredo) and assert that `isTitleFight` is `false` while `rounds` is `5`.
+
+---
+
+## 7. Missing Events & Wrong Fighter Matches (e.g., Burns vs Malott)
+
+### Problem
+The "Gabriel Bonfim vs Belal Muhammad" event is missing, and the "Burns vs Malott" event linked the wrong Burns (Herbert Burns instead of Gilbert Burns).
+
+### Root Cause
+1. **Last Name Match Priority**: If first names do not match exactly, the parser falls back to matching by last name. "Burns" matched "Herbert Burns" because he was parsed/scraped first in database order.
+2. **Missing Syncs**: Certain events failed to scrape during server errors and were not backfilled.
+
+### Solution
+1. **Weight Class Matching Constraint**: Ensure name matching also compares weight classes. Herbert Burns (Featherweight) should not match a Welterweight fight with Malott; it must match Gilbert Burns (Welterweight).
+2. **Manual Aliases Override**: Add explicit mappings for similar names in the aliases dictionary.
+3. **Scrape Backfill**: Re-run the backfill job to scrape the missing Belal Muhammad event.
+
+### Test / Verification
+- Query the Welterweight bout for Malott and assert that `fighter1.name` or `fighter2.name` is "Gilbert Burns".
+
+---
+
+## 8. Net P/L and ROI Charting Failures
+
+### Problem
+The Net P/L and simulated ROI trackers do not load or render correctly on the dashboard graphs.
+
+### Root Cause
+1. **NaN Chart Data**: If fights are missing odds, wagers are set to `0`. If wagers are zero, dividing profit by wagers returns `NaN`, breaking the Recharts rendering logic.
+2. **Empty Timeline Points**: If an event has no graded fights, timeline coordinates are undefined.
+
+### Solution
+1. **Defensive Value Parsing**: Ensure all chart nodes map `NaN` or `null` values to `0`.
+2. **Estimation Fallbacks**: Use standard default odds (e.g. -110 for both sides) when real odds are missing, ensuring wagers are never zero for a graded pick.
+
+### Test / Verification
+- Fetch `/api/performance` and verify that no value in the `timeline` array is `NaN` or `null`.

@@ -2,21 +2,19 @@ import "dotenv/config";
 
 // Simple test matching the logic in the performance route
 function calculateProfit(isCorrect: boolean, aiOdds: number | null): { profit: number; wager: number } {
+  const odds = aiOdds !== null ? aiOdds : -110;
+  const wager = 100;
   let profit = 0;
-  let wager = 0;
-  if (aiOdds !== null) {
-    wager = 100;
-    if (isCorrect) {
-      if (aiOdds > 0) {
-        profit = aiOdds; // e.g., +150 odds → $150 profit
-      } else if (aiOdds < 0) {
-        profit = (100 / Math.abs(aiOdds)) * 100; // e.g., -200 odds → $50 profit
-      } else {
-        profit = 0;
-      }
+  if (isCorrect) {
+    if (odds > 0) {
+      profit = odds; // e.g., +150 odds → $150 profit
+    } else if (odds < 0) {
+      profit = (100 / Math.abs(odds)) * 100; // e.g., -200 odds → $50 profit
     } else {
-      profit = -100;
+      profit = 0;
     }
+  } else {
+    profit = -100;
   }
   return { profit, wager };
 }
@@ -54,10 +52,10 @@ function verifyRoi() {
     process.exit(1);
   }
 
-  // Test Case 4: Null odds, correct pick (should be no wager/profit)
+  // Test Case 4: Null odds, correct pick (should fallback to -110 odds)
   const tc4 = calculateProfit(true, null);
   console.log("TC4 (Null Odds):", tc4);
-  if (tc4.wager === 0 && tc4.profit === 0) {
+  if (tc4.wager === 100 && Math.abs(tc4.profit - 90.91) < 0.01) {
     console.log("✓ TC4 Passed");
   } else {
     console.error("X TC4 Failed");
@@ -70,8 +68,8 @@ function verifyRoi() {
   const totalWager = picks.reduce((s, p) => s + p.wager, 0);
   const overallROI = totalWager > 0 ? (totalProfit / totalWager) * 100 : 0;
 
-  console.log(`Summary - Profit: $${totalProfit}, Wagered: $${totalWager}, ROI: ${overallROI}%`);
-  if (totalWager === 300 && totalProfit === 100 && Math.round(overallROI) === 33) {
+  console.log(`Summary - Profit: $${totalProfit.toFixed(2)}, Wagered: $${totalWager}, ROI: ${overallROI.toFixed(2)}%`);
+  if (totalWager === 400 && Math.abs(totalProfit - 190.91) < 0.01 && Math.round(overallROI) === 48) {
     console.log("✓ ROI Aggregating Passed");
   } else {
     console.error("X ROI Aggregating Failed");

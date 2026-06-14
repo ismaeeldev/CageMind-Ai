@@ -83,7 +83,7 @@ export function EventCard({ event }: { event: any }) {
 
   return (
     <Link href={`/events/${event.id}`} className="group block h-full">
-      <Card className="h-auto md:h-[360px] min-h-[300px] md:min-h-0 flex flex-col justify-between bg-[#131316]/60 backdrop-blur-md border border-zinc-800/60 transition-all duration-500 hover:shadow-[0_0_30px_-5px_rgba(210,40,40,0.2)] hover:-translate-y-1.5 hover:border-primary/30 relative overflow-hidden rounded-2xl">
+      <Card className="h-auto md:h-[400px] min-h-[320px] md:min-h-0 flex flex-col bg-[#131316]/60 backdrop-blur-md border border-zinc-800/60 transition-all duration-500 hover:shadow-[0_0_30px_-5px_rgba(210,40,40,0.2)] hover:-translate-y-1.5 hover:border-primary/30 relative overflow-hidden rounded-2xl">
         
         {/* Header / Event Name */}
         <div className="p-4 md:p-5 pb-2 relative z-20 flex justify-between items-start gap-3 md:gap-4">
@@ -101,8 +101,8 @@ export function EventCard({ event }: { event: any }) {
           )}
         </div>
 
-        {/* Center: Face-off graphic */}
-        <div className="relative flex-1 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 sm:py-0 overflow-hidden min-h-[220px] sm:h-[180px] bg-gradient-to-b from-transparent via-zinc-900/10 to-zinc-950/20">
+        {/* Center: Face-off graphic — min-h-0 allows it to shrink so the footer is never clipped */}
+        <div className="relative flex-1 min-h-0 flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 sm:py-0 overflow-hidden bg-gradient-to-b from-transparent via-zinc-900/10 to-zinc-950/20">
           
           {/* Background split gradient: Red on left, Blue on right */}
           <div className="absolute inset-0 flex pointer-events-none opacity-20 group-hover:opacity-35 transition-opacity duration-500">
@@ -164,17 +164,24 @@ export function EventCard({ event }: { event: any }) {
 
         </div>
 
-        {/* Footer: Date & Location */}
-        <div className="p-4 md:p-5 pt-3 border-t border-zinc-800/40 relative z-10 flex flex-col gap-2 bg-[#17171c]/40">
+        {/* Footer: Date & Venue — shrink-0 ensures it is never compressed or hidden */}
+        <div className="shrink-0 p-4 md:p-5 pt-3 border-t border-zinc-800/40 relative z-10 flex flex-col gap-2 bg-[#17171c]/40">
           <div className="flex justify-between items-center text-[10px] md:text-xs">
             <span className="text-zinc-500 font-bold uppercase tracking-wider">Date</span>
             <span className="font-semibold text-zinc-300 font-mono">
-              {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(event.date))}
+              {new Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                timeZone: "UTC",
+              }).format(new Date(event.date))}
             </span>
           </div>
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-zinc-500 font-bold uppercase tracking-wider">Location</span>
-            <span className="font-semibold text-zinc-300 truncate max-w-[70%]">{event.location || "TBD"}</span>
+          <div className="flex justify-between items-center text-[10px] md:text-xs">
+            <span className="text-zinc-500 font-bold uppercase tracking-wider">Venue</span>
+            <span className="font-semibold text-zinc-300 truncate max-w-[70%] text-right" title={event.location || "TBD"}>
+              {event.location || "TBD"}
+            </span>
           </div>
         </div>
 

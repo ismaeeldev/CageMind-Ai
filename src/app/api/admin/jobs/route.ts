@@ -51,17 +51,17 @@ export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
-    const { jobType } = await req.json(); // 'daily' or 'weekly'
-    
-    if (!['daily', 'weekly'].includes(jobType)) {
+    const { jobType } = await req.json(); // 'daily', 'weekly', 'status', or 'results'
+
+    if (!['daily', 'weekly', 'status', 'results'].includes(jobType)) {
       return NextResponse.json({ error: "Invalid job type" }, { status: 400 });
     }
 
     const scheduler = new Scheduler();
-    
+
     // In Vercel serverless environments, we MUST await background jobs or they will be terminated.
     // Ensure this route has export const maxDuration = 300; configured at the top.
-    await scheduler.triggerManual(jobType as 'daily' | 'weekly');
+    await scheduler.triggerManual(jobType as 'daily' | 'weekly' | 'status' | 'results');
 
     return NextResponse.json({ message: `Triggered ${jobType} jobs successfully in background.` });
   } catch (error: any) {

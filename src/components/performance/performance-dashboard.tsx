@@ -93,10 +93,28 @@ const CustomLineTooltip = ({ active, payload, label }: any) => {
 function StatsPanel({ stats }: { stats: Stats }) {
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 
-  if (stats.total === 0) return <EmptyState />;
+  if (!stats || stats.total === 0) return <EmptyState />;
 
-  const profitColor = stats.totalProfit >= 0 ? "text-emerald-400" : "text-red-400";
-  const roiColor = stats.roi >= 0 ? "text-emerald-400" : "text-red-400";
+  const safeAccuracy = typeof stats.accuracy === "number" && !isNaN(stats.accuracy) ? stats.accuracy : 0;
+  const safeRoi = typeof stats.roi === "number" && !isNaN(stats.roi) ? stats.roi : 0;
+  const safeTotalProfit = typeof stats.totalProfit === "number" && !isNaN(stats.totalProfit) ? stats.totalProfit : 0;
+  const safeEventsGraded = typeof stats.eventsGraded === "number" && !isNaN(stats.eventsGraded) ? stats.eventsGraded : 0;
+  const safeTotal = typeof stats.total === "number" && !isNaN(stats.total) ? stats.total : 0;
+  const safeCorrect = typeof stats.correct === "number" && !isNaN(stats.correct) ? stats.correct : 0;
+
+  const sanitizedTimeline = (stats.timeline || []).map((item) => ({
+    ...item,
+    eventName: item.eventName || "Unknown",
+    date: item.date || "",
+    correct: typeof item.correct === "number" && !isNaN(item.correct) ? item.correct : 0,
+    total: typeof item.total === "number" && !isNaN(item.total) ? item.total : 0,
+    roi: typeof item.roi === "number" && !isNaN(item.roi) ? item.roi : 0,
+    cumulativeBankroll: typeof item.cumulativeBankroll === "number" && !isNaN(item.cumulativeBankroll) ? item.cumulativeBankroll : 1000,
+    rollingWinRate: typeof item.rollingWinRate === "number" && !isNaN(item.rollingWinRate) ? item.rollingWinRate : 0,
+  }));
+
+  const profitColor = safeTotalProfit >= 0 ? "text-emerald-400" : "text-red-400";
+  const roiColor = safeRoi >= 0 ? "text-emerald-400" : "text-red-400";
 
   return (
     <div className="space-y-8">
@@ -104,29 +122,29 @@ function StatsPanel({ stats }: { stats: Stats }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Pick Accuracy"
-          value={`${stats.accuracy}%`}
-          sub={`${stats.correct}/${stats.total} correct`}
+          value={`${safeAccuracy}%`}
+          sub={`${safeCorrect}/${safeTotal} correct`}
           icon={Target}
           color="bg-blue-500 text-blue-400"
         />
         <KpiCard
           label="Simulated ROI"
-          value={`${stats.roi >= 0 ? "+" : ""}${stats.roi}%`}
+          value={`${safeRoi >= 0 ? "+" : ""}${safeRoi}%`}
           sub="flat $100/bet"
           icon={TrendingUp}
-          color={stats.roi >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
+          color={safeRoi >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
         <KpiCard
           label="Net P/L"
-          value={`${stats.totalProfit >= 0 ? "+$" : "-$"}${Math.abs(stats.totalProfit).toFixed(0)}`}
+          value={`${safeTotalProfit >= 0 ? "+$" : "-$"}${Math.abs(safeTotalProfit).toFixed(0)}`}
           sub="on $100 flat units"
           icon={DollarSign}
-          color={stats.totalProfit >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
+          color={safeTotalProfit >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
         <KpiCard
           label="Events Graded"
-          value={`${stats.eventsGraded}`}
-          sub={`${stats.total} total picks`}
+          value={`${safeEventsGraded}`}
+          sub={`${safeTotal} total picks`}
           icon={BarChart2}
           color="bg-purple-500 text-purple-400"
         />
@@ -138,7 +156,7 @@ function StatsPanel({ stats }: { stats: Stats }) {
           Bankroll Progression (Starting $1,000)
         </h3>
         <ResponsiveContainer width="100%" height={280}>
-          <LineChart data={stats.timeline}>
+          <LineChart data={sanitizedTimeline}>
             <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
             <XAxis dataKey="eventName" tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
@@ -165,7 +183,7 @@ function StatsPanel({ stats }: { stats: Stats }) {
             Rolling Win Rate
           </h3>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={stats.timeline}>
+            <LineChart data={sanitizedTimeline}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="eventName" tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis domain={[0, 100]} tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
@@ -190,7 +208,7 @@ function StatsPanel({ stats }: { stats: Stats }) {
             Event-by-Event ROI
           </h3>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={stats.timeline}>
+            <BarChart data={sanitizedTimeline}>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis dataKey="eventName" tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#52525b", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
@@ -215,7 +233,7 @@ function StatsPanel({ stats }: { stats: Stats }) {
           </h3>
         </div>
         <div className="divide-y divide-zinc-800/50">
-          {stats.timeline.map((evt, i) => (
+          {sanitizedTimeline.map((evt, i) => (
             <div 
               key={i} 
               onClick={() => setSelectedEvent(evt)}
@@ -328,9 +346,12 @@ function StatsPanel({ stats }: { stats: Stats }) {
 export function PerformanceDashboard({ allStats, highConfStats }: PerformanceDashboardProps) {
   const [activeTab, setActiveTab] = useState<"all" | "high">("all");
 
+  const allTotal = typeof allStats?.total === "number" && !isNaN(allStats.total) ? allStats.total : 0;
+  const highTotal = typeof highConfStats?.total === "number" && !isNaN(highConfStats.total) ? highConfStats.total : 0;
+
   const tabs = [
-    { id: "all" as const, label: "All Picks", count: allStats.total },
-    { id: "high" as const, label: ">60% Confidence", count: highConfStats.total },
+    { id: "all" as const, label: "All Picks", count: allTotal },
+    { id: "high" as const, label: ">60% Confidence", count: highTotal },
   ];
 
   return (

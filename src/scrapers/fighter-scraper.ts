@@ -62,6 +62,59 @@ function generateMockFighters(): RawFighter[] {
   return fighters;
 }
 
+function getSlugCandidates(ufcId: string, name: string): string[] {
+  const candidates = new Set<string>();
+  const clean = (s: string) => s.toLowerCase().replace(/['"’‘“”\.]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const cleanWithHyphen = (s: string) => s.toLowerCase().replace(/['"’‘“”]/g, "-").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  
+  let originalSlug = ufcId;
+  if (originalSlug.startsWith("/athlete/")) {
+    originalSlug = originalSlug.replace("/athlete/", "");
+  }
+  candidates.add(clean(originalSlug));
+  candidates.add(cleanWithHyphen(originalSlug));
+  
+  const nameCleaned = name.toLowerCase().replace(/['"’‘“”]/g, "-").replace(/[^a-z0-9]+/g, " ").trim();
+  const parts = nameCleaned.split(/\s+/);
+  
+  if (parts.length >= 2) {
+    const first = parts[0];
+    const last = parts[parts.length - 1];
+    candidates.add(`${clean(first)}-${clean(last)}`);
+    candidates.add(parts.map(clean).filter(Boolean).join("-"));
+    candidates.add(`${clean(first)}${clean(last)}`);
+  }
+  candidates.add(clean(name));
+  candidates.add(cleanWithHyphen(name));
+  
+  return Array.from(candidates).map(slug => `/athlete/${slug}`);
+}
+
+async function verifyUfcAthleteActive(ufcId: string, name: string): Promise<boolean> {
+  const slugs = getSlugCandidates(ufcId, name);
+  for (const slug of slugs) {
+    const url = `https://www.ufc.com${slug}`;
+    try {
+      const response = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0" },
+        signal: AbortSignal.timeout(6000)
+      });
+      if (response.ok) {
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        const heroText = $(".hero-profile__division, .hero-profile__tag, .hero-profile__division-body").text().toLowerCase();
+        if (heroText.includes("former athlete")) {
+          return false;
+        }
+        return true;
+      }
+    } catch (error) {
+      return true; // default to true on error to avoid false retirement
+    }
+  }
+  return false;
+}
+
 export class FighterScraper extends BaseScraper<ParsedFighter[]> {
   private useMock: boolean;
 
@@ -280,6 +333,15 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
         select: { id: true, name: true, ufcId: true }
       });
 
+      // Upcoming Fight Immunity
+      const upcomingFights = await prisma.fight.findMany({
+        where: {
+          event: { isUpcoming: true }
+        },
+        select: { fighter1Id: true, fighter2Id: true }
+      });
+      const upcomingFighterIds = new Set(upcomingFights.flatMap(f => [f.fighter1Id, f.fighter2Id]));
+
       const scrapedNamesSet = new Set(fighters.map(f => f.name.toLowerCase()));
       const scrapedUfcIdsSet = new Set(fighters.map(f => f.ufcId?.toLowerCase()).filter(Boolean));
 
@@ -290,6 +352,19 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
         const hasMatchingUfcId = dbFighter.ufcId && scrapedUfcIdsSet.has(dbFighter.ufcId.toLowerCase());
 
         if (!hasMatchingName && !hasMatchingUfcId) {
+          if (upcomingFighterIds.has(dbFighter.id)) {
+            logger.info(`[${this.scraperName}] Athlete ${dbFighter.name} is immune from archiving due to an upcoming fight.`);
+            continue;
+          }
+          
+          if (dbFighter.ufcId) {
+            const isStillActive = await verifyUfcAthleteActive(dbFighter.ufcId, dbFighter.name);
+            if (isStillActive) {
+              logger.info(`[${this.scraperName}] Athlete ${dbFighter.name} is verified active via UFC page. Skipping archiving.`);
+              continue;
+            }
+          }
+          
           retiredFighterIds.push(dbFighter.id);
         }
       }

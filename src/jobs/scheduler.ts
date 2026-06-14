@@ -83,7 +83,20 @@ export class Scheduler {
     });
   }
 
-  public async triggerManual(jobType: 'daily' | 'weekly' | 'events' | 'fighters' | 'results') {
+  public async syncFighterStatusesOnly() {
+    await JobRunner.run("SyncFighterStatusesOnly", async () => {
+      logger.info("[Jobs] Executing Sync Fighter Statuses Only...");
+      try {
+        const { syncFighterStatus } = await import("../scripts/sync-fighter-status");
+        await syncFighterStatus();
+      } catch (err) {
+        logger.error("[Jobs] Failed to run syncFighterStatus", err);
+      }
+      logger.info("[Jobs] Sync Fighter Statuses Only completed.");
+    });
+  }
+
+  public async triggerManual(jobType: 'daily' | 'weekly' | 'events' | 'fighters' | 'results' | 'status') {
     logger.info(`[Scheduler] MANUAL TRIGGER executing ${jobType} jobs...`);
     if (jobType === 'events' || jobType === 'daily') {
       await this.syncEvents();
@@ -91,6 +104,8 @@ export class Scheduler {
       await this.syncFighters();
     } else if (jobType === 'results') {
       await this.processResults();
+    } else if (jobType === 'status') {
+      await this.syncFighterStatusesOnly();
     }
   }
 }
