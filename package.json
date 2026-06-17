@@ -11,7 +11,16 @@
     "elo:diagnose": "tsx src/scripts/diagnose-elo.ts",
     "backfill:events": "tsx src/scripts/backfill-events.ts",
     "fights:purge-dry": "tsx src/scripts/purge-fake-fights.ts",
-    "fights:purge": "tsx src/scripts/purge-fake-fights.ts --execute"
+    "fights:purge": "tsx src/scripts/purge-fake-fights.ts --execute",
+    "fighters:dedup-dry": "tsx src/scripts/dedup-fighters.ts",
+    "fighters:dedup": "tsx src/scripts/dedup-fighters.ts --execute",
+    "fights:fix-titles-dry": "tsx src/scripts/fix-title-fights.ts",
+    "fights:fix-titles": "tsx src/scripts/fix-title-fights.ts --execute",
+    "fights:backfill-fn-dry": "tsx src/scripts/backfill-fight-nights.ts",
+    "fights:backfill-fn": "tsx src/scripts/backfill-fight-nights.ts --execute",
+    "predictions:reset-fn": "tsx src/scripts/reset-fn-processed.ts",
+    "predictions:backfill-dry": "tsx src/scripts/backfill-predictions.ts",
+    "predictions:backfill": "tsx src/scripts/backfill-predictions.ts --execute"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

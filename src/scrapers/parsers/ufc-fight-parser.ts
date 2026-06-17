@@ -32,10 +32,22 @@ export class UfcFightParser {
       const fighter1UfcId = f1NameEl.closest('a').attr('href') || f1NameEl.find('a').attr('href') || null;
       const fighter2UfcId = f2NameEl.closest('a').attr('href') || f2NameEl.find('a').attr('href') || null;
 
-      const weightClass = $el.find('.c-listing-fight__class-text, .c-listing-fight__class, .weight-class, .b-fight-details__table-text:eq(6)').first().text().trim();
-      
+      const rawWeightClass = $el.find('.c-listing-fight__class-text, .c-listing-fight__class, .weight-class, .b-fight-details__table-text:eq(6)').first().text().trim();
+
+      // Detect title fight from UFC.com elements or explicit keywords in the weight class string
+      const TITLE_KEYWORDS = ["title", "championship", "interim", "undisputed"];
+      const isTitleFight =
+        $el.find('.c-listing-fight__title-bout, .title-bout, img[src*="belt"]').length > 0 ||
+        TITLE_KEYWORDS.some((kw) => rawWeightClass.toLowerCase().includes(kw));
+
+      // Normalise weight class to just the division name ("Lightweight Title Bout" → "Lightweight")
+      const DIVISION_RE = /strawweight|atomweight|flyweight|bantamweight|featherweight|lightweight|welterweight|middleweight|light heavyweight|heavyweight/i;
+      const divMatch = rawWeightClass.match(DIVISION_RE);
+      const weightClass = divMatch
+        ? divMatch[0].charAt(0).toUpperCase() + divMatch[0].slice(1).toLowerCase()
+        : (rawWeightClass || "Catchweight");
+
       const isMainCard = $el.closest('.main-card, #main-card, .c-listing-fight--main-card').length > 0 || i < 5;
-      const isTitleFight = $el.find('.c-listing-fight__title-bout, .title-bout, img[src*="belt"]').length > 0 || weightClass.toLowerCase().includes('title');
 
       if (fighter1Name && fighter2Name && fighter1Name !== fighter2Name && fighter1Name !== "Fighter" && fighter2Name !== "Fighter") {
         const f1Won = $el.find('.c-listing-fight__corner--red .c-listing-fight__outcome--win, .c-listing-matchup__corner--red .c-listing-matchup__outcome--win, .b-fight-details__table-text:contains("W")').first().length > 0;

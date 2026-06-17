@@ -15,7 +15,10 @@ export function FightCardRow({ fight, index }: { fight: FightWithFighters; index
   return (
     <div className={`p-4 sm:p-6 flex flex-col gap-5 border-b border-border/30 last:border-0 hover:bg-white/[0.02] transition-colors duration-300 ${isMainEvent ? 'bg-primary/5' : ''}`}>
       <div className="flex justify-between items-center text-xs font-bold text-muted-foreground uppercase tracking-widest">
-        <span>{fight.weightClass} {fight.isTitleFight ? 'Title Bout' : 'Bout'}</span>
+        <span>
+          {(fight.weightClass || "Catchweight").replace(/\s*(title bout|championship|interim|undisputed)\s*/gi, "").trim()}
+          {fight.isTitleFight ? " Title Bout" : " Bout"}
+        </span>
         {isMainEvent && <Badge variant="default" className="bg-primary/20 text-primary border-primary/30 shadow-[0_0_10px_-2px_rgba(210,40,40,0.3)]">Main Event</Badge>}
       </div>
 

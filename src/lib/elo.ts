@@ -31,10 +31,11 @@ export function getNewRating(
 /**
  * Seeds a fighter's initial Elo rating based on their win/loss record.
  * Used for fighters who have no individual fight records in the Fight table.
- * Returns 1300 for unproven fighters (0-0), scaling ±200 by win rate and experience.
+ * Returns 1200 for unproven fighters (0-0), scaling up to 1400 max so fighters
+ * without UFC fight history in the DB never start with an unearned elite rating.
  */
 export function seedElo(fighter: { wins: number; losses: number; age: number | null }): number {
-  const BASE = 1300;
+  const BASE = 1200;
   const total = fighter.wins + fighter.losses;
   if (total === 0) return BASE;
 
@@ -43,7 +44,8 @@ export function seedElo(fighter: { wins: number; losses: number; age: number | n
   const expFactor = Math.min(1.0, total / 15);
   const adjustment = Math.round((winRate - 0.5) * 400 * expFactor);
 
-  return Math.max(900, Math.min(1600, BASE + adjustment));
+  // Cap at 1400: a fighter with no UFC history in our DB should not start at elite levels
+  return Math.max(800, Math.min(1400, BASE + adjustment));
 }
 
 export interface FightOutcomeDetails {

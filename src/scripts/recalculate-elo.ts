@@ -74,9 +74,10 @@ export async function recalculateAllElo() {
   // ── Step 2: Calculate Elo in memory ───────────────────────────────────────
   const eloMap = new Map<string, number>();
 
-  // Seed everyone at the base 1300 so fight-by-fight deltas start from a level field
+  // Seed everyone at 1200 — the new conservative baseline for untested fighters.
+  // Fighters with fight history in the DB accumulate ELO from actual results.
   for (const fighter of fighters) {
-    eloMap.set(fighter.id, 1300);
+    eloMap.set(fighter.id, 1200);
   }
 
   let ufcFightCount = 0;

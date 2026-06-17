@@ -38,7 +38,7 @@ export async function GET() {
 
       const isCorrect = aiPickedWinnerId === fight.winnerId;
       const confidence = history.confidence; // 0-1 scale
-      const isHighConfidence = confidence >= 0.6;
+      const isHighConfidence = confidence >= 0.70;
 
       // Flat $100 unit bet ROI calculation
       // Determine the odds for the AI's pick (fallback to -110 if missing)

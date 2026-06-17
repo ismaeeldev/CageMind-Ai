@@ -351,7 +351,7 @@ export function PerformanceDashboard({ allStats, highConfStats }: PerformanceDas
 
   const tabs = [
     { id: "all" as const, label: "All Picks", count: allTotal },
-    { id: "high" as const, label: ">60% Confidence", count: highTotal },
+    { id: "high" as const, label: "70%+ Confidence", count: highTotal },
   ];
 
   return (

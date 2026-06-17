@@ -86,12 +86,15 @@ export class PredictionEngine {
     // --- Confidence Score ---
     // Higher confidence if the delta is very large (lopsided)
     const absoluteDelta = Math.abs(finalDeltaScore);
-    let confidence = 0.5 + (absoluteDelta * 0.5); 
-    
+    let confidence = 0.5 + (absoluteDelta * 0.5);
+
     // Penalize confidence if we are missing physical data
     if (missingPhysicalData) {
-      confidence *= 0.8;
+      confidence *= 0.85; // smaller penalty than before; still reflects uncertainty
     }
+
+    // Clamp: confidence must be in [0.50, 1.0] — a pick is never less than 50% certain
+    confidence = Math.max(0.50, Math.min(1.0, confidence));
 
     // --- Generate Narrative Summary ---
     const summary = this.generateSummary(f1, f2, winProbF1, eloDiff, momentumScore, physicalScore, missingPhysicalData, isFiveRounds, confidence);

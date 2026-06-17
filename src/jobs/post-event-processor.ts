@@ -157,22 +157,11 @@ export class PostEventProcessor {
         const f1 = fight.fighter1;
         const f2 = fight.fighter2;
 
-        // In a fully live environment, we would fetch/scrape actual results here.
-        // For testing/mock architecture, if winnerId is null, we simulate a result.
-        let winnerId = fight.winnerId;
-        let method = fight.method;
-        if (!winnerId) {
-          // Simulate a winner (randomly pick f1 or f2) for test purposes
-          const f1Wins = Math.random() > 0.5;
-          winnerId = f1Wins ? fight.fighter1.id : fight.fighter2.id;
-          method = f1Wins ? "KO/TKO" : "Submission";
+        const winnerId = fight.winnerId;
+        const method = fight.method;
 
-          // Update the fight record with the result
-          await tx.fight.update({
-            where: { id: fight.id },
-            data: { winnerId, method, endingRound: 1, endingTime: "2:30" }
-          });
-        }
+        // Skip fights with no real result — wait for the scraper to supply actual data.
+        if (!winnerId) continue;
 
         const f1Won = winnerId === f1.id;
         const f2Won = winnerId === f2.id;

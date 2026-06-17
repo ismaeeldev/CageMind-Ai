@@ -243,7 +243,7 @@ export class FightCardScraper extends BaseScraper<ParsedFight[]> {
         }
       } else {
         await prisma.fighter.create({
-          data: { name, ufcId, weightClass }
+          data: { name, ufcId, weightClass, eloRating: 1200 }
         });
       }
     } catch (error) {

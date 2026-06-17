@@ -273,7 +273,7 @@ export class TapologyScraper {
         data: {
           name,
           weightClass,
-          eloRating: 1300,
+          eloRating: 1200,
           isActive: true
         }
       });
