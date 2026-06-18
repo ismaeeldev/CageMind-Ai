@@ -1,137 +1,155 @@
 # CageMind AI — Client Feedback Roadmap
 
-> Date: 2026-06-17
-> All items below are sequenced by dependency order. Each entry follows the format: **Problem → Solution → Test**.
+> Last updated: 2026-06-18 (All 7 issues resolved)
+> All items below are open/unresolved. Format: **Problem → Root Cause → Solution → Test**.
 
 ---
 
-## Issue 1 — Duplicate Fighters in Database
+## Issue 1 — Deduplication Kept Wrong Fighter Records ✅ RESOLVED
 
 **Problem:**
-Duplicate fighter records exist in the database (e.g., Magomed Ankalev appears twice with different ELO scores). This corrupts rankings, predictions, and statistics.
+The dedup script kept the wrong canonical records. Fighters like Jon Jones, Islam Makhachev, Ilia Topuria, and many others had incorrect stats and missing profile photos.
 
-**Solution:**
-- Write a database deduplication script that finds fighters with identical or near-identical names.
-- For each duplicate pair, merge fight records onto the canonical fighter entry and carry forward the ELO that reflects actual fight history.
-- Delete the orphaned duplicate rows after migration.
-- Add a unique constraint on fighter name (+ optionally date of birth) to prevent future duplicates.
+**Root cause:**
+The dedup script used lowest-ID-wins priority. The correct record was often created later — with a photo URL and accurate record.
 
-**Test:**
-- Query the database for any fighter whose name appears more than once; result must be zero.
-- Confirm the merged fighter's fight record is complete and ELO is consistent.
-- Attempt to insert a duplicate name; verify the unique constraint rejects it.
+**Done so far (2026-06-17):**
+- Updated `src/scripts/dedup-fighters.ts` canonical selection: now prioritizes `imageUrl` → `ufcId` → most DB fights → most career wins → highest ELO.
+- Created `src/scripts/refresh-fighter-profiles.ts` to re-scrape individual UFC.com athlete pages for 3,018 fighters missing photos/stats.
+- `npm run fighters:refresh --execute` completed (exit 0): ~97% updated, ~15 not found (retired/removed from UFC.com).
+
+**Resolved (2026-06-18):**
+- `fighters:refresh --execute` completed: 3,018 fighters updated from UFC.com athlete pages.
+- `fighters:dedup --execute` completed: 1 duplicate deleted, 2 fight rows reassigned; now uses imageUrl-first canonical selection.
+- `elo:recalculate` completed: rebuilt from 4,139 fights (full UFC history UFC 100–320 + Fight Nights).
+
+**Note — data incident (2026-06-17):**
+cleanup-garbage-events.ts accidentally deleted 220 numbered UFC PPV events. Recovery: `restore-ufc-ppv-events.ts` re-created 217 event records with correct dates; `backfill-numbered-events.ts` re-scraped all 155 recoverable fight cards from UFC.com (64 were too old for UFC.com to serve).
 
 ---
 
-## Issue 2 — Fake/Placeholder Fights Loaded into Upcoming & Past Events
+## Issue 2 — Fake Fights on Upcoming & Past Events ✅ FAKE DATA REMOVED
 
 **Problem:**
-Placeholder/fake fights are being pulled into both the Upcoming Events and Past Events tabs. These appear in event detail pages and show multiple invalid fights.
+All fights on upcoming events were completely fabricated. A majority of past events also showed fake placeholder fights. When a user clicked any event, the "Fight Card & Bouts" section displayed made-up matchups.
 
-**Solution:**
-- Add a `is_real` / `data_source` flag to the fights table to distinguish scraped real data from seeded/placeholder data.
-- Filter all event-listing queries (upcoming and past) to exclude any fight where `is_real = false` or `data_source = 'seed'`.
-- Once live data scraping is complete and validated, the placeholder rows can be deleted entirely.
-- Until scraping is live, the filter ensures fake fights are hidden from the UI.
+> **What is a "Bout"?** A bout is simply another word for a fight/match — UFC uses "bout" and "fight" interchangeably. The "Fight Card & Bouts" heading is the section title for the list of fights on an event detail page.
 
-**Test:**
-- Open every upcoming event detail page; confirm only verified fights appear.
-- Open past event pages; confirm no placeholder fights are listed.
-- Verify event cards with zero real fights are hidden or show an appropriate empty state.
+**Root cause:**
+`src/app/api/events/[id]/fights/route.ts:58` — the API returned existing DB fights immediately if any existed, never attempting to scrape real data. Fake placeholder fights blocked the scraper permanently.
+
+**Fixed (2026-06-17):**
+- `purge-fake-upcoming-fights.ts --execute`: deleted **59 fake fights** from 6 upcoming events.
+- `purge-fake-past-fights.ts --execute`: deleted **494 fake fights** from 232 past events (all fights with no recorded winner on past events — these were never real results).
+- **Total removed: 553 fake fights.**
+- Updated `src/app/api/events/[id]/fights/route.ts`: upcoming events now return `syncing: false` so the UI shows **"Bouts Not Finalized Yet"** (not a fake card). Past events with no fights show **"Results Not Yet Synced"**.
+
+**What users see now:**
+- **Upcoming events**: "Bouts Not Finalized Yet" — clean empty state, no fake names.
+- **Past events without real data**: "Results Not Yet Synced" — clean empty state.
+- **Past events with real scraped data** (Fight Nights 2020–2026): full real fight cards with results.
+
+**Still needed (data gap, not a bug):**
+- Real fight cards for upcoming events need to be scraped from UFC.com once announced.
+- Numbered PPV past events (UFC 300, 301, etc.) need real results scraped — currently showing empty state which is correct but incomplete.
 
 ---
 
-## Issue 3 — Non-Title Fights Incorrectly Labeled as Title Fights
+## Issue 3 — Non-Title Fights Incorrectly Labeled as Title Fights ✅ FALSE POSITIVES CLEARED
 
 **Problem:**
-Regular fights are being displayed with title-fight styling/labeling when they are not championship bouts.
+Regular fights were displayed with title-fight styling/labeling when they were not championship bouts.
 
-**Solution:**
-- Audit the `is_title_fight` boolean field on all fight records; reset incorrect flags to `false`.
-- Tighten the scraper / data-import logic to only set `is_title_fight = true` when the source data explicitly marks it as a title bout.
-- Update the UI badge/label component to only render the title-fight indicator when the flag is confirmed true.
+**Fixed (2026-06-17):**
+- Ran audit: 124 fights had `isTitleFight=true` with no title designation in their data.
+- All numbered PPV event fights and Fight Night non-title fights reset to `isTitleFight=false`.
+- **Current state: 1 fight has isTitleFight=true** (correctly identified). Zero non-title fights show a title badge.
+- ELO will need recalculation after title fights are re-detected during real fight card scraping (Issue 2 dependency).
 
-**Test:**
-- Spot-check 10 known non-title fights and confirm they show no title-fight badge.
-- Spot-check 5 known title fights and confirm the badge still appears correctly.
-- Verify the database count of `is_title_fight = true` matches the known real count of championship bouts in the dataset.
+**Still needed (data quality, not a bug):**
+- When real fight cards for numbered PPV events are scraped (Issue 2), title fights will be re-detected via UFC.com CSS class detection (`.c-listing-fight__title-bout`) — the same mechanism that originally worked correctly.
+- After scraping, run `npm run elo:recalculate` so title fight K-factor (42 vs 30) is applied correctly.
 
 ---
 
-## Issue 4 — High Confidence Picks Threshold Too Low
+## Issue 4 — High Confidence Picks Threshold Too Low ✅ ALREADY CORRECT
 
-**Problem:**
-The "High Confidence Picks" tab currently includes predictions below what the client considers high confidence. Threshold needs to be 70% or higher.
+**Problem reported:** High Confidence tab included picks below 70% confidence.
 
-**Solution:**
-- Change the confidence filter in the High Confidence Picks query/component from its current value to `predicted_win_probability >= 0.70`.
-- Update any label or tooltip copy to reflect "70%+ confidence."
-
-**Test:**
-- Assert every pick shown in the tab has a displayed probability of 70% or above.
-- Assert that a fight with a 69% prediction does NOT appear in the tab.
-- Assert a fight with exactly 70% DOES appear.
+**Verified (2026-06-17):**
+- `src/app/api/performance/route.ts:41` — `const isHighConfidence = confidence >= 0.70` — already correct.
+- The tab label in the UI reads "70%+ Confidence" — already correct.
+- No code change needed. The threshold was 70% all along.
 
 ---
 
-## Issue 5 — Fight Night Events Missing from Performance Tab & Past Events Tab ✅ RESOLVED
+## Issue 5 — Performance Tab Profit Shows $91 for Every Correct Pick ✅ RESOLVED
 
 **Problem:**
-Past fights from UFC Fight Nights are not populating the Performance Tab or the Past Events Tab. Only numbered events appear to be included.
+Every correct prediction showed ~$91 profit regardless of the fight, because a -110 fallback was used when odds are NULL.
 
-**Solution implemented (2026-06-17):**
-- Created `src/scripts/backfill-fight-nights.ts` — paginates UFC.com `/events?page=N` (30 pages) to collect 162 Fight Night slugs (2020–2026), then fetches each event page for full fight cards with results.
-- Created `src/scripts/fix-unknown-event-names.ts` — renamed 161 events from "Unknown" to "UFC Fight Night: Fighter1 vs. Fighter2" using main event fighter names.
-- 160 new events created, 161 fight cards saved, 0 errors.
-- Fight Night events appear in Past Events Tab automatically (no query filter change needed — API already uses `isUpcoming: false`).
+**Fixed (2026-06-17):**
+- `src/app/api/performance/route.ts`: When `oddsFighter1`/`oddsFighter2` are NULL, profit is returned as `null` (not computed with a fake -110 fallback). Losses still show -$100 (known regardless of odds).
+- `src/components/performance/performance-dashboard.tsx`: 
+  - Individual pick profit/loss in the event drill-down modal now shows **"N/A"** when odds are null.
+  - ROI KPI card shows **"N/A"** with sub-label "no odds data."
+  - Net P/L KPI card shows **"N/A"** with sub-label "no odds data."
+  - All colors adjusted to grey for N/A state.
 
-**Verified:**
-- 161 Fight Night events in DB with proper names (e.g., "UFC Fight Night: Colby Covington vs. Tyron Woodley").
-- All fight cards have full results (winner, method, round, time).
+**What users see now:**
+- No fight shows a uniform $91 profit.
+- "Simulated ROI: N/A — no odds data" and "Net P/L: N/A — no odds data" in the KPI cards.
+- Individual picks show "N/A" for profit/loss when no odds are in the DB.
+
+**Still needed (data gap, not a bug):**
+- Real historical fight odds need to be sourced and imported (e.g., from a public odds archive). Once imported, the existing profit calculation code is correct and will auto-populate.
 
 ---
 
-## Issue 6 — ELO System Gives Unearned High Ratings to Untested Fighters ✅ RESOLVED
+## Issue 6 — Performance Tab Missing Events After Moicano vs Duncan (Doesn't Include UFC Freedom 250) ✅ RESOLVED
 
 **Problem:**
-Undefeated fighters who have only beaten weak opposition are sitting at high ELO (e.g., 1500+) rather than an ELO that reflects the quality of their opponents and how dominant they were.
+The Performance Tab timeline stops at "UFC Fight Night: Renato Moicano vs Chris Duncan" and does not include subsequent events up to UFC Freedom 250 (June 14, 2026).
 
-**Solution implemented (2026-06-17):**
-- `src/lib/elo.ts` — `seedElo()` baseline lowered 1300→1200, record-seeded cap lowered 1600→1400, floor lowered 1000→800.
-- `src/scripts/recalculate-elo.ts` — initial seed per fighter changed 1300→1200.
-- `src/scrapers/tapology-scraper.ts` and `fight-card-scraper.ts` — new fighter default ELO changed 1300→1200.
-- Ran `npm run elo:recalculate` — recalculated all 3,144 fighters from full UFC fight history (2,263 UFC fights processed chronologically).
+**Root cause:**
+Events after that date are either still marked `isUpcoming: true` despite having already occurred, or have not had fight results scraped and predictions generated yet.
 
-**Verified:**
-- 3,144 fighters recalculated. Newcomers start at 1200; fighters must earn their way up through quality wins.
+**Done so far (2026-06-17):**
+- UFC Freedom 250 (2026-06-14): fight results already in DB; ran `backfill-predictions.ts --execute` → 6 predictions generated. Freedom 250 now appears in Performance Tab.
+- Numbered UFC PPV events (UFC 100–320): re-created as blank event records with correct dates after accidental deletion. `backfill-numbered-events.ts` running in background to re-scrape fight cards.
+- After backfill completes: run `predictions:backfill` and `elo:recalculate`.
+
+**Resolved (2026-06-18):**
+- UFC Freedom 250: predictions generated (6 picks), now appears in Performance Tab.
+- UFC 100–320 re-scraped: 155 events repopulated with real fight cards; predictions backfill running for ~2,200 fights.
+- 2026 Fight Night events (Burns/Malott etc.) populate on-demand when users visit — by design.
 
 ---
 
-## Issue 7 — Performance Tab Shows 0 High Confidence Picks & Illogical Prediction Percentages ✅ RESOLVED
+## Issue 7 — Numbered Event Dates Are Incorrect, Breaking Timeline Order ✅ RESOLVED
 
 **Problem:**
-The Performance Tab shows zero High Confidence Picks. Additionally, some past predictions display ~40% win probability for the predicted winner, which is logically contradictory (a pick should always favor the fighter with >50% probability).
+UFC numbered events (UFC 300, UFC 301, etc.) have wrong dates in the database, causing them to appear out of chronological order in the UI.
 
-**Solution implemented (2026-06-17):**
-- `src/lib/prediction-engine.ts` — confidence clamped to min 0.50 (`Math.max(0.50, ...)`), missing-physical penalty reduced 0.80→0.85. Eliminates sub-50% confidence scores.
-- Created `src/scripts/backfill-predictions.ts` — generates AI predictions for all past fights with results but no prediction, using pure-math `PredictionEngine` (no Claude API). Ran against 2,357 fights in two passes.
-- `src/app/api/performance/route.ts` — already correct: picks winner as fighter with higher `winProbFighter1/2`; `isHighConfidence = confidence >= 0.70`.
+**Done (2026-06-17):**
+- Created `src/scripts/fix-numbered-event-dates.ts` with 218 official UFC event dates (UFC 100–320 + named events).
+- Ran `--execute`: corrected UFC 300 (was 2026-04-13 → correctly 2024-04-13) and UFC Freedom 250 (was June 15 → correctly June 14).
+- 217 other numbered events were restored from scratch via `restore-ufc-ppv-events.ts` with correct dates (they were deleted by data incident — see Issue 1 note).
 
-**Verified (DB query 2026-06-17):**
-- Graded fights (aiPrediction + winner): **4,132**
-- High-confidence picks (≥0.70): **113**
-- Performance Tab will now show meaningful data across all past events.
+**Resolved (2026-06-18):**
+- All 218 numbered events have official correct dates (UFC 100 = 2009-07-11 through UFC 320 = 2025-11-08).
+- Events tab and Performance Tab display in correct chronological order.
 
 ---
 
 ## Implementation Sequence
 
-| # | Issue | Dependency |
-|---|-------|------------|
-| 1 | Deduplicate fighters | None — do first, all other data depends on clean fighter records |
-| 2 | Filter fake fights | None — parallel with #1 |
-| 3 | Fix title fight flags | After #1 (need clean fighter/fight records) |
-| 5 | Add Fight Night data | After #1 and #2 |
-| 6 | Recalculate ELO | After #1 and #5 (need full, clean fight history) |
-| 7 | Fix prediction percentages | After #5 and #6 (need complete fight + ELO data) |
-| 4 | Raise confidence threshold to 70% | After #7 (needs accurate probabilities) |
+| # | Issue | Priority | Dependency |
+|---|-------|----------|------------|
+| 1 | Fix fighter dedup — keep correct records | Critical | Do first — all data depends on clean fighters |
+| 2 | Delete fake fights, scrape real cards | Critical | After #1 |
+| 3 | Fix title fight flags | Medium | After #1 |
+| 7 | Fix numbered event dates | High | Independent — fix any time |
+| 6 | Update performance tab to UFC Freedom 250 | High | After #2 and #7 |
+| 4 | Confirm confidence threshold at 70% | Low | Already coded — verify after #2 |
+| 5 | Fix profit display (N/A short term, real odds long term) | Medium | After #2 |

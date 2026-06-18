@@ -7,9 +7,11 @@
  * orphaned duplicates.
  *
  * Canonical selection priority (highest wins):
- *   1. Has a ufcId (scraped, authoritative record)
- *   2. Most total fight rows
- *   3. Highest eloRating
+ *   1. Has a real imageUrl (photo = properly scraped UFC profile)
+ *   2. Has a ufcId
+ *   3. Most total fight rows in DB
+ *   4. Highest wins + losses (most complete career record)
+ *   5. Highest eloRating
  *
  * If reassigning a fight would violate the @@unique([eventId,fighter1Id,fighter2Id])
  * constraint (i.e. the canonical already has that bout), the duplicate fight row
@@ -106,16 +108,33 @@ async function main() {
     let reassignedFights = 0;
 
     for (const group of duplicateGroups) {
-      // Sort: prefer ufcId → most fights → highest ELO
+      // Sort: prefer imageUrl → ufcId → most DB fights → most career wins → highest ELO
+      const hasRealImage = (f: typeof group[0]) => {
+        const img = f.imageUrl?.trim();
+        return !!(img && img !== "null" && img !== "undefined" && img !== "N/A");
+      };
       const sorted = [...group].sort((a, b) => {
+        // 1. Has a real photo (primary signal of an authoritative UFC profile)
+        const aImg = hasRealImage(a) ? 1 : 0;
+        const bImg = hasRealImage(b) ? 1 : 0;
+        if (bImg !== aImg) return bImg - aImg;
+
+        // 2. Has a ufcId
         const aUfc = a.ufcId ? 1 : 0;
         const bUfc = b.ufcId ? 1 : 0;
         if (bUfc !== aUfc) return bUfc - aUfc;
 
+        // 3. Most fight rows linked in DB
         const aFights = a._count.fightsAsFighter1 + a._count.fightsAsFighter2;
         const bFights = b._count.fightsAsFighter1 + b._count.fightsAsFighter2;
         if (bFights !== aFights) return bFights - aFights;
 
+        // 4. Most complete career record
+        const aCareer = a.wins + a.losses + a.draws;
+        const bCareer = b.wins + b.losses + b.draws;
+        if (bCareer !== aCareer) return bCareer - aCareer;
+
+        // 5. Highest ELO
         return b.eloRating - a.eloRating;
       });
 

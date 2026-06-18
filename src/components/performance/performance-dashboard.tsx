@@ -11,9 +11,10 @@ interface Stats {
   total: number;
   correct: number;
   accuracy: number;
-  totalProfit: number;
-  roi: number;
+  totalProfit: number | null;
+  roi: number | null;
   eventsGraded: number;
+  oddsAvailable: boolean;
   timeline: {
     eventName: string;
     date: string;
@@ -96,8 +97,8 @@ function StatsPanel({ stats }: { stats: Stats }) {
   if (!stats || stats.total === 0) return <EmptyState />;
 
   const safeAccuracy = typeof stats.accuracy === "number" && !isNaN(stats.accuracy) ? stats.accuracy : 0;
-  const safeRoi = typeof stats.roi === "number" && !isNaN(stats.roi) ? stats.roi : 0;
-  const safeTotalProfit = typeof stats.totalProfit === "number" && !isNaN(stats.totalProfit) ? stats.totalProfit : 0;
+  const safeRoi = typeof stats.roi === "number" && !isNaN(stats.roi) ? stats.roi : null;
+  const safeTotalProfit = typeof stats.totalProfit === "number" && !isNaN(stats.totalProfit) ? stats.totalProfit : null;
   const safeEventsGraded = typeof stats.eventsGraded === "number" && !isNaN(stats.eventsGraded) ? stats.eventsGraded : 0;
   const safeTotal = typeof stats.total === "number" && !isNaN(stats.total) ? stats.total : 0;
   const safeCorrect = typeof stats.correct === "number" && !isNaN(stats.correct) ? stats.correct : 0;
@@ -113,8 +114,8 @@ function StatsPanel({ stats }: { stats: Stats }) {
     rollingWinRate: typeof item.rollingWinRate === "number" && !isNaN(item.rollingWinRate) ? item.rollingWinRate : 0,
   }));
 
-  const profitColor = safeTotalProfit >= 0 ? "text-emerald-400" : "text-red-400";
-  const roiColor = safeRoi >= 0 ? "text-emerald-400" : "text-red-400";
+  const profitColor = safeTotalProfit === null ? "text-zinc-500" : safeTotalProfit >= 0 ? "text-emerald-400" : "text-red-400";
+  const roiColor = safeRoi === null ? "text-zinc-500" : safeRoi >= 0 ? "text-emerald-400" : "text-red-400";
 
   return (
     <div className="space-y-8">
@@ -129,17 +130,17 @@ function StatsPanel({ stats }: { stats: Stats }) {
         />
         <KpiCard
           label="Simulated ROI"
-          value={`${safeRoi >= 0 ? "+" : ""}${safeRoi}%`}
-          sub="flat $100/bet"
+          value={safeRoi === null ? "N/A" : `${safeRoi >= 0 ? "+" : ""}${safeRoi}%`}
+          sub={safeRoi === null ? "no odds data" : "flat $100/bet"}
           icon={TrendingUp}
-          color={safeRoi >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
+          color={safeRoi === null ? "bg-zinc-700 text-zinc-500" : safeRoi >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
         <KpiCard
           label="Net P/L"
-          value={`${safeTotalProfit >= 0 ? "+$" : "-$"}${Math.abs(safeTotalProfit).toFixed(0)}`}
-          sub="on $100 flat units"
+          value={safeTotalProfit === null ? "N/A" : `${safeTotalProfit >= 0 ? "+$" : "-$"}${Math.abs(safeTotalProfit).toFixed(0)}`}
+          sub={safeTotalProfit === null ? "no odds data" : "on $100 flat units"}
           icon={DollarSign}
-          color={safeTotalProfit >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
+          color={safeTotalProfit === null ? "bg-zinc-700 text-zinc-500" : safeTotalProfit >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
         <KpiCard
           label="Events Graded"
@@ -314,8 +315,15 @@ function StatsPanel({ stats }: { stats: Stats }) {
                     <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                       <div className="text-right">
                         <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Profit / Loss</div>
-                        <div className={`text-xs font-mono font-bold ${pick.profit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                          {pick.profit >= 0 ? `+$${pick.profit.toFixed(0)}` : `-$${Math.abs(pick.profit).toFixed(0)}`}
+                        <div className={`text-xs font-mono font-bold ${
+                          pick.profit === null ? "text-zinc-500" : pick.profit >= 0 ? "text-emerald-400" : "text-red-400"
+                        }`}>
+                          {pick.profit === null
+                            ? "N/A"
+                            : pick.profit >= 0
+                              ? `+$${pick.profit.toFixed(0)}`
+                              : `-$${Math.abs(pick.profit).toFixed(0)}`
+                          }
                         </div>
                       </div>
                       <span className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider border rounded-lg ${statusColor}`}>

@@ -12,6 +12,15 @@
     "backfill:events": "tsx src/scripts/backfill-events.ts",
     "fights:purge-dry": "tsx src/scripts/purge-fake-fights.ts",
     "fights:purge": "tsx src/scripts/purge-fake-fights.ts --execute",
+    "fighters:refresh-dry": "tsx src/scripts/refresh-fighter-profiles.ts",
+    "fighters:refresh": "tsx src/scripts/refresh-fighter-profiles.ts --execute",
+    "events:flip-past-dry": "tsx src/scripts/flip-past-events.ts",
+    "events:flip-past": "tsx src/scripts/flip-past-events.ts --execute",
+    "events:fix-dates-dry": "tsx src/scripts/fix-numbered-event-dates.ts",
+    "events:fix-dates": "tsx src/scripts/fix-numbered-event-dates.ts --execute",
+    "events:restore-ppv-dry": "tsx src/scripts/restore-ufc-ppv-events.ts",
+    "events:restore-ppv": "tsx src/scripts/restore-ufc-ppv-events.ts --execute",
+    "events:backfill-ppv": "tsx src/scripts/backfill-numbered-events.ts",
     "fighters:dedup-dry": "tsx src/scripts/dedup-fighters.ts",
     "fighters:dedup": "tsx src/scripts/dedup-fighters.ts --execute",
     "fights:fix-titles-dry": "tsx src/scripts/fix-title-fights.ts",
@@ -20,7 +29,11 @@
     "fights:backfill-fn": "tsx src/scripts/backfill-fight-nights.ts --execute",
     "predictions:reset-fn": "tsx src/scripts/reset-fn-processed.ts",
     "predictions:backfill-dry": "tsx src/scripts/backfill-predictions.ts",
-    "predictions:backfill": "tsx src/scripts/backfill-predictions.ts --execute"
+    "predictions:backfill": "tsx src/scripts/backfill-predictions.ts --execute",
+    "fights:purge-upcoming-dry": "tsx src/scripts/purge-fake-upcoming-fights.ts",
+    "fights:purge-upcoming": "tsx src/scripts/purge-fake-upcoming-fights.ts --execute",
+    "fights:purge-past-dry": "tsx src/scripts/purge-fake-past-fights.ts",
+    "fights:purge-past": "tsx src/scripts/purge-fake-past-fights.ts --execute"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

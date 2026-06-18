@@ -99,11 +99,11 @@ export async function GET(
       console.error(`[FightsAPI] Scraping failed for ${event.name}:`, scrapeError);
     }
 
-    // Scrapers returned no data — tell the client to show a syncing state
-    // rather than writing fake placeholder fights to the database.
+    // Scrapers returned no data.
+    // For past events: show syncing (we'll retry). For upcoming: show "not yet announced".
     return NextResponse.json({
       fights: [],
-      syncing: true,
+      syncing: !event.isUpcoming,
       isUpcoming: event.isUpcoming,
     });
   } catch (error: any) {
