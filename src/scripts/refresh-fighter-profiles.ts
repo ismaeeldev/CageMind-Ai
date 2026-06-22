@@ -40,7 +40,10 @@ const HEADERS = {
 };
 
 function nameToSlug(name: string): string {
+  // NFD decomposes é→e+combining-acute; then strip the combining chars
   return name
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
     .replace(/['''""\.]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
@@ -56,6 +59,7 @@ function ufcIdToUrl(ufcId: string | null, name: string): string {
 }
 
 interface ScrapedProfile {
+  pageName: string | null;
   imageUrl: string | null;
   age: number | null;
   height: number | null;
@@ -66,6 +70,27 @@ interface ScrapedProfile {
   koWins: number | null;
   subWins: number | null;
   ufcId: string | null;
+}
+
+/** Normalised name for comparison: lowercase ASCII, letters+spaces only */
+function normName(s: string): string {
+  return s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
+}
+
+/** Returns true if the page is for a different fighter (wrong ufcId assigned) */
+function nameMismatch(dbName: string, pageName: string): boolean {
+  const db = normName(dbName).split(" ");
+  const pg = normName(pageName).split(" ");
+  const dbSet = new Set(db);
+  const pgSet = new Set(pg);
+  // Accept if first OR last name matches
+  const dbFirst = db[0], dbLast = db[db.length - 1];
+  const pgFirst = pg[0], pgLast = pg[pg.length - 1];
+  if (dbFirst === pgFirst || dbLast === pgLast) return false;
+  // Also accept if any two words are shared (handles middle names etc.)
+  const shared = db.filter(w => w.length > 2 && pgSet.has(w)).length;
+  if (shared >= 1) return false;
+  return true;
 }
 
 async function scrapeFighterPage(url: string): Promise<ScrapedProfile | null> {
@@ -79,12 +104,20 @@ async function scrapeFighterPage(url: string): Promise<ScrapedProfile | null> {
     // Verify it's actually a fighter page (not 404 or redirect)
     if ($(".hero-profile__name, .hero-profile__division").length === 0) return null;
 
-    // Image
+    // Extract the fighter's name from the page for mismatch detection
+    const firstName = $(".hero-profile__name-first").text().trim();
+    const lastName = $(".hero-profile__name-last").text().trim();
+    const pageName = [firstName, lastName].filter(Boolean).join(" ")
+      || $(".hero-profile__name").text().trim().replace(/\s+/g, " ")
+      || null;
+
+    // Image — class is ON the <img> itself, not a parent div
     let imageUrl: string | null = null;
-    const imgSrc = $(".hero-profile__image img").attr("src")
+    const imgSrc = $("img.hero-profile__image").attr("src")
+      || $(".hero-profile__image-wrap img").attr("src")
       || $(".c-bio__image img").attr("src")
-      || $(".hero-profile__image-wrap img").attr("src");
-    if (imgSrc && !imgSrc.includes("no-profile-image")) {
+      || $('meta[property="og:image"]').attr("content");
+    if (imgSrc && !imgSrc.includes("no-profile-image") && !imgSrc.includes("placeholder")) {
       imageUrl = imgSrc.startsWith("/") ? `https://www.ufc.com${imgSrc}` : imgSrc;
     }
 
@@ -95,7 +128,7 @@ async function scrapeFighterPage(url: string): Promise<ScrapedProfile | null> {
 
     $(".c-bio__label").each((_, el) => {
       const label = $(el).text().trim().toLowerCase();
-      const value = $(el).next(".c-bio__text").text().trim();
+      const value = $(el).next().text().trim();
       if (!value) return;
       const num = parseFloat(value);
       if (label === "age" && !isNaN(num)) age = Math.round(num);
@@ -132,7 +165,7 @@ async function scrapeFighterPage(url: string): Promise<ScrapedProfile | null> {
     const ufcIdMatch = canonical?.match(/\/athlete\/([^/?#]+)/);
     const ufcId = ufcIdMatch ? `/athlete/${ufcIdMatch[1]}` : null;
 
-    return { imageUrl, age, height, reach, wins, losses, draws, koWins, subWins, ufcId };
+    return { pageName, imageUrl, age, height, reach, wins, losses, draws, koWins, subWins, ufcId };
   } catch {
     return null;
   }
@@ -151,15 +184,19 @@ async function main() {
   const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
   try {
-    // Target fighters missing a photo (primary symptom of the bad dedup)
+    // Target fighters missing photo (including garbage strings), bio stats, or zero record
     const fighters = await prisma.fighter.findMany({
       where: {
         OR: [
           { imageUrl: null },
           { imageUrl: "" },
+          { imageUrl: "null" },
+          { imageUrl: "undefined" },
+          { imageUrl: "N/A" },
           { age: null },
           { height: null },
           { reach: null },
+          { wins: 0, losses: 0, draws: 0 },
         ],
       },
       select: { id: true, name: true, ufcId: true, imageUrl: true, wins: true, losses: true, draws: true, age: true, height: true, reach: true },
@@ -190,6 +227,17 @@ async function main() {
       if (!profile) {
         notFound++;
         if (notFound <= 5) console.log(`  [NOT FOUND] ${fighter.name} — ${url}`);
+        await sleep(DELAY_MS);
+        continue;
+      }
+
+      // Guard: if the page belongs to a different fighter, clear the bad ufcId and skip
+      if (profile.pageName && nameMismatch(fighter.name, profile.pageName)) {
+        console.log(`  [WRONG PAGE] "${fighter.name}" → page says "${profile.pageName}" — clearing bad ufcId`);
+        if (!DRY_RUN) {
+          await prisma.fighter.update({ where: { id: fighter.id }, data: { ufcId: null } });
+        }
+        notFound++;
         await sleep(DELAY_MS);
         continue;
       }

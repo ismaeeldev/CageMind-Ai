@@ -116,20 +116,22 @@ export async function scrapeAndSaveFighter(id: string) {
         }
       });
 
-      // Parse active status
-      let isActive = fighter.isActive;
-      const heroStatus = $(".hero-profile__division-body, .c-hero--fighter__status, .hero-profile__division, .hero-profile__tag, .c-bio__label").text().toLowerCase();
-      const bodyText = $("body").text().toLowerCase();
-      if (heroStatus.includes("retired") || bodyText.includes("status: retired") || bodyText.includes("retired fighter") || heroStatus.includes("former fighter")) {
-        isActive = false;
-      } else {
-        isActive = true;
-      }
+      // Parse active status — only check the hero/profile section, NOT full body text
+      // (full-body search causes false positives: active fighters whose bios mention retired opponents)
+      const heroStatus = $(".hero-profile__division-body, .c-hero--fighter__status, .hero-profile__division, .hero-profile__tag").text().toLowerCase();
+      const isRetired = heroStatus.includes("retired") || heroStatus.includes("former fighter");
+      const isActive = !isRetired;
+      // On-demand scraper knows active vs retired but not inactive (no fight-history context).
+      // Keep existing "inactive" status if the page doesn't say retired — the batch
+      // fighters:update-status script handles the active/inactive distinction properly.
+      const status = isRetired
+        ? "retired"
+        : fighter.status === "inactive" ? "inactive" : "active";
 
       // Update database with freshly scraped attributes
       await prisma.fighter.update({
         where: { id: fighter.id },
-        data: { age, height, reach, koWins, subWins, imageUrl, isActive },
+        data: { age, height, reach, koWins, subWins, imageUrl, isActive, status },
       });
     }
   } catch (scrapeError) {

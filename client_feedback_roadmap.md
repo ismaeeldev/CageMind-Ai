@@ -1,155 +1,120 @@
 # CageMind AI — Client Feedback Roadmap
 
-> Last updated: 2026-06-18 (All 7 issues resolved)
-> All items below are open/unresolved. Format: **Problem → Root Cause → Solution → Test**.
+> Last updated: 2026-06-18
+> Format: **Problem → Root Cause → Solution → Test**
 
 ---
 
-## Issue 1 — Deduplication Kept Wrong Fighter Records ✅ RESOLVED
+## Issue 1 — Fighter Photos Missing & Records Incorrect
 
 **Problem:**
-The dedup script kept the wrong canonical records. Fighters like Jon Jones, Islam Makhachev, Ilia Topuria, and many others had incorrect stats and missing profile photos.
+A large number of fighters have no profile photo and show wrong win/loss records (e.g. Jon Jones shows 7-7-0 instead of ~28-1-0, Max Holloway shows 9-9-0, etc.).
 
 **Root cause:**
-The dedup script used lowest-ID-wins priority. The correct record was often created later — with a photo URL and accurate record.
+Two separate bugs:
+1. **Photos**: The fighter profile refresh script (`fighters:refresh`) ran but the task output was truncated at 600/3,018 fighters — only ~600 fighters were fully updated before the output buffer filled. Current state: **57.7% of fighters (1,815/3,144) have no photo**.
+2. **Records**: The `wins`/`losses`/`draws` fields in the DB reflect only the fights we have stored in our database (not the fighter's full professional career). The ELO recalculate and dedup scripts do not overwrite these, but the original seeding/scraping only counted in-DB fights.
 
-**Done so far (2026-06-17):**
-- Updated `src/scripts/dedup-fighters.ts` canonical selection: now prioritizes `imageUrl` → `ufcId` → most DB fights → most career wins → highest ELO.
-- Created `src/scripts/refresh-fighter-profiles.ts` to re-scrape individual UFC.com athlete pages for 3,018 fighters missing photos/stats.
-- `npm run fighters:refresh --execute` completed (exit 0): ~97% updated, ~15 not found (retired/removed from UFC.com).
+**Solution:**
+1. Re-run `npm run fighters:refresh --execute` (the `--execute` flag uses Pool+PrismaPg pattern needed for scripts). Monitor full completion (3,018 fighters, ~42 min). This will scrape each fighter's photo AND career record from their UFC.com athlete page.
+2. After refresh: run `npm run fighters:dedup --execute` to ensure the record with best data is kept as canonical.
+3. After dedup: run `npm run elo:recalculate` to rebuild ELO with clean career records as seed data.
 
-**Resolved (2026-06-18):**
-- `fighters:refresh --execute` completed: 3,018 fighters updated from UFC.com athlete pages.
-- `fighters:dedup --execute` completed: 1 duplicate deleted, 2 fight rows reassigned; now uses imageUrl-first canonical selection.
-- `elo:recalculate` completed: rebuilt from 4,139 fights (full UFC history UFC 100–320 + Fight Nights).
-
-**Note — data incident (2026-06-17):**
-cleanup-garbage-events.ts accidentally deleted 220 numbered UFC PPV events. Recovery: `restore-ufc-ppv-events.ts` re-created 217 event records with correct dates; `backfill-numbered-events.ts` re-scraped all 155 recoverable fight cards from UFC.com (64 were too old for UFC.com to serve).
+**Test:**
+- Search **Jon Jones** → photo visible, record shows ~28-1-0, weight class = Heavyweight
+- Search **Islam Makhachev** → photo visible, record shows ~26-1-0, weight class = Lightweight
+- Search **Ilia Topuria** → photo visible, record shows ~16-0-0, weight class = Featherweight
+- Browse any fighter on Rankings or Events page → photo appears, record is correct
 
 ---
 
-## Issue 2 — Fake Fights on Upcoming & Past Events ✅ FAKE DATA REMOVED
+## Issue 2 — Upcoming Events Empty / Show "Bouts Not Finalized Yet"
 
 **Problem:**
-All fights on upcoming events were completely fabricated. A majority of past events also showed fake placeholder fights. When a user clicked any event, the "Fight Card & Bouts" section displayed made-up matchups.
-
-> **What is a "Bout"?** A bout is simply another word for a fight/match — UFC uses "bout" and "fight" interchangeably. The "Fight Card & Bouts" heading is the section title for the list of fights on an event detail page.
+All upcoming events display "Bouts Not Finalized Yet" with no fight card, even for events where the card has been announced.
 
 **Root cause:**
-`src/app/api/events/[id]/fights/route.ts:58` — the API returned existing DB fights immediately if any existed, never attempting to scrape real data. Fake placeholder fights blocked the scraper permanently.
+This is **partially correct behavior, partially a scraper issue**:
+- Events where the card isn't announced yet: showing "Bouts Not Finalized Yet" is **correct**.
+- Events where UFC.com HAS the card announced: the on-demand scraper runs when a user visits the event page, but the slug it constructs from the event name may not match UFC.com's actual URL (e.g. "UFC 321" → `ufc-321` is correct, but Fight Night events need full fighter names in the slug).
+- Tapology scraper returns 403 errors, so the UFC.com fallback is the only option.
 
-**Fixed (2026-06-17):**
-- `purge-fake-upcoming-fights.ts --execute`: deleted **59 fake fights** from 6 upcoming events.
-- `purge-fake-past-fights.ts --execute`: deleted **494 fake fights** from 232 past events (all fights with no recorded winner on past events — these were never real results).
-- **Total removed: 553 fake fights.**
-- Updated `src/app/api/events/[id]/fights/route.ts`: upcoming events now return `syncing: false` so the UI shows **"Bouts Not Finalized Yet"** (not a fake card). Past events with no fights show **"Results Not Yet Synced"**.
+**Solution:**
+1. For numbered upcoming PPV events (UFC 321+): slug generation works correctly (`ufc-321`, `ufc-322`, etc.) — visiting the event page will auto-scrape from UFC.com once the card is announced.
+2. For Fight Night upcoming events: improve `generateEventSlug()` in `src/app/api/events/[id]/fights/route.ts` to attempt multiple UFC.com URL patterns (with full fighter first names) before giving up.
+3. For truly unannounced events: "Bouts Not Finalized Yet" is the correct message — no fix needed.
 
-**What users see now:**
-- **Upcoming events**: "Bouts Not Finalized Yet" — clean empty state, no fake names.
-- **Past events without real data**: "Results Not Yet Synced" — clean empty state.
-- **Past events with real scraped data** (Fight Nights 2020–2026): full real fight cards with results.
-
-**Still needed (data gap, not a bug):**
-- Real fight cards for upcoming events need to be scraped from UFC.com once announced.
-- Numbered PPV past events (UFC 300, 301, etc.) need real results scraped — currently showing empty state which is correct but incomplete.
+**Test:**
+- Visit an upcoming numbered event (UFC 321) → if card is announced on UFC.com, fight card appears within 30 seconds (on-demand scrape)
+- Visit an upcoming Fight Night with announced card → same auto-populate behavior
+- Visit an event with no announced card → "Bouts Not Finalized Yet" message (correct)
 
 ---
 
-## Issue 3 — Non-Title Fights Incorrectly Labeled as Title Fights ✅ FALSE POSITIVES CLEARED
+## Issue 3 — Performance Tab Shows N/A for Correct Pick Profits (No Real Odds)
 
 **Problem:**
-Regular fights were displayed with title-fight styling/labeling when they were not championship bouts.
-
-**Fixed (2026-06-17):**
-- Ran audit: 124 fights had `isTitleFight=true` with no title designation in their data.
-- All numbered PPV event fights and Fight Night non-title fights reset to `isTitleFight=false`.
-- **Current state: 1 fight has isTitleFight=true** (correctly identified). Zero non-title fights show a title badge.
-- ELO will need recalculation after title fights are re-detected during real fight card scraping (Issue 2 dependency).
-
-**Still needed (data quality, not a bug):**
-- When real fight cards for numbered PPV events are scraped (Issue 2), title fights will be re-detected via UFC.com CSS class detection (`.c-listing-fight__title-bout`) — the same mechanism that originally worked correctly.
-- After scraping, run `npm run elo:recalculate` so title fight K-factor (42 vs 30) is applied correctly.
-
----
-
-## Issue 4 — High Confidence Picks Threshold Too Low ✅ ALREADY CORRECT
-
-**Problem reported:** High Confidence tab included picks below 70% confidence.
-
-**Verified (2026-06-17):**
-- `src/app/api/performance/route.ts:41` — `const isHighConfidence = confidence >= 0.70` — already correct.
-- The tab label in the UI reads "70%+ Confidence" — already correct.
-- No code change needed. The threshold was 70% all along.
-
----
-
-## Issue 5 — Performance Tab Profit Shows $91 for Every Correct Pick ✅ RESOLVED
-
-**Problem:**
-Every correct prediction showed ~$91 profit regardless of the fight, because a -110 fallback was used when odds are NULL.
-
-**Fixed (2026-06-17):**
-- `src/app/api/performance/route.ts`: When `oddsFighter1`/`oddsFighter2` are NULL, profit is returned as `null` (not computed with a fake -110 fallback). Losses still show -$100 (known regardless of odds).
-- `src/components/performance/performance-dashboard.tsx`: 
-  - Individual pick profit/loss in the event drill-down modal now shows **"N/A"** when odds are null.
-  - ROI KPI card shows **"N/A"** with sub-label "no odds data."
-  - Net P/L KPI card shows **"N/A"** with sub-label "no odds data."
-  - All colors adjusted to grey for N/A state.
-
-**What users see now:**
-- No fight shows a uniform $91 profit.
-- "Simulated ROI: N/A — no odds data" and "Net P/L: N/A — no odds data" in the KPI cards.
-- Individual picks show "N/A" for profit/loss when no odds are in the DB.
-
-**Still needed (data gap, not a bug):**
-- Real historical fight odds need to be sourced and imported (e.g., from a public odds archive). Once imported, the existing profit calculation code is correct and will auto-populate.
-
----
-
-## Issue 6 — Performance Tab Missing Events After Moicano vs Duncan (Doesn't Include UFC Freedom 250) ✅ RESOLVED
-
-**Problem:**
-The Performance Tab timeline stops at "UFC Fight Night: Renato Moicano vs Chris Duncan" and does not include subsequent events up to UFC Freedom 250 (June 14, 2026).
+In the Performance Tab, correct picks show "N/A" for profit instead of a real dollar amount. ROI and Net P/L KPI cards also show "N/A". This is because no historical fight odds are stored in the database.
 
 **Root cause:**
-Events after that date are either still marked `isUpcoming: true` despite having already occurred, or have not had fight results scraped and predictions generated yet.
+The `oddsFighter1` / `oddsFighter2` fields on Fight records are `null` for all historical fights. The profit calculation code is correct — it returns `null` when odds are missing rather than using a fake -110 fallback (Issue 5 fix from previous session). The gap is that no odds data source has been integrated.
 
-**Done so far (2026-06-17):**
-- UFC Freedom 250 (2026-06-14): fight results already in DB; ran `backfill-predictions.ts --execute` → 6 predictions generated. Freedom 250 now appears in Performance Tab.
-- Numbered UFC PPV events (UFC 100–320): re-created as blank event records with correct dates after accidental deletion. `backfill-numbered-events.ts` running in background to re-scrape fight cards.
-- After backfill completes: run `predictions:backfill` and `elo:recalculate`.
+**Solution:**
+Integrate a historical MMA odds API. Options ranked by ease:
+1. **The Odds API** (`the-odds-api.com`) — has UFC historical odds, free tier available. API key required.
+2. **BestFightOdds.com scrape** — public historical odds, scrapeable by event + fighter name.
+3. **Manual CSV import** — import a historical odds CSV matching fight by event name + fighter names.
 
-**Resolved (2026-06-18):**
-- UFC Freedom 250: predictions generated (6 picks), now appears in Performance Tab.
-- UFC 100–320 re-scraped: 155 events repopulated with real fight cards; predictions backfill running for ~2,200 fights.
-- 2026 Fight Night events (Burns/Malott etc.) populate on-demand when users visit — by design.
+Implementation steps (once source chosen):
+- Write `src/scripts/import-fight-odds.ts` that matches odds records to DB fights by event + fighter name
+- Populate `oddsFighter1`/`oddsFighter2` on the Fight table
+- Profit calculation is already implemented correctly — it will auto-populate once odds exist
+
+**Test:**
+- Performance Tab → correct picks show `+$XXX` profit (not N/A)
+- ROI KPI card shows a real percentage
+- Net P/L KPI card shows a real dollar total
+- Individual event pick modal shows actual profit/loss per fight
 
 ---
 
-## Issue 7 — Numbered Event Dates Are Incorrect, Breaking Timeline Order ✅ RESOLVED
+## Issue 4 — Missing Recent Events in Past Events & Performance Tab
 
 **Problem:**
-UFC numbered events (UFC 300, UFC 301, etc.) have wrong dates in the database, causing them to appear out of chronological order in the UI.
+The following events are missing from Past Events and the Performance Tab:
+- UFC Fight Night: Muhammad vs. Bonfim (June 7, 2026)
+- UFC Fight Night: Song vs. Figueiredo (marked as upcoming but has already occurred)
+- UFC Fight Night: Allen vs. Costa
+- UFC Fight Night: Della Maddalena vs. Prates
+- UFC Fight Night: Sterling vs. Zalal
+- UFC Fight Night: Burns vs. Malott
+- UFC 321 through UFC 328 (numbered events)
 
-**Done (2026-06-17):**
-- Created `src/scripts/fix-numbered-event-dates.ts` with 218 official UFC event dates (UFC 100–320 + named events).
-- Ran `--execute`: corrected UFC 300 (was 2026-04-13 → correctly 2024-04-13) and UFC Freedom 250 (was June 15 → correctly June 14).
-- 217 other numbered events were restored from scratch via `restore-ufc-ppv-events.ts` with correct dates (they were deleted by data incident — see Issue 1 note).
+**Root cause:**
+Two separate causes:
+1. **2026 Fight Night events** (Muhammad vs Bonfim, Allen vs Costa, etc.): These events occurred in April–June 2026. They do not exist on UFC.com (our scraper pulls from the real UFC.com website which is behind the current date). The placeholder events with short names ("Muhammad vs Bonfim") were deleted because they had no fight data. A proper data source for 2026 events is needed.
+2. **UFC 321–328**: These numbered events don't yet exist on UFC.com. They need to be created in the DB and their fight cards sourced once available.
+3. **Song vs. Figueiredo**: Currently exists in DB as "UFC Fight Night: Song vs. Figueiredo" dated 2026-11-23 and correctly flagged `isUpcoming=true`. If it has already occurred, the date and flag need correcting and fight results need importing.
 
-**Resolved (2026-06-18):**
-- All 218 numbered events have official correct dates (UFC 100 = 2009-07-11 through UFC 320 = 2025-11-08).
-- Events tab and Performance Tab display in correct chronological order.
+**Solution:**
+1. **For 2026 Fight Night events**: Since UFC.com doesn't have post-2025 data, these must be entered manually or via an alternative data source (e.g. Tapology, Sherdog, ESPN MMA) once Tapology access is restored (currently 403 blocked). Create event records and import fight results + winners.
+2. **For UFC 321–328**: Create event records via `restore-ufc-ppv-events.ts` (update the reference list to include 321–328 with correct dates), then scrape fight cards from UFC.com once they are available.
+3. **For Song vs. Figueiredo**: Confirm actual event date, update `isUpcoming=false`, import fight results.
+4. Once fight data is in: run `npm run predictions:backfill --execute` and `npm run elo:recalculate` to generate picks and rebuild ELO.
+
+**Test:**
+- Past Events tab → Muhammad vs. Bonfim, Allen vs. Costa, Della Maddalena vs. Prates, Sterling vs. Zalal, Burns vs. Malott all appear with real fight cards
+- UFC 321–328 appear in Past Events tab in correct chronological order
+- Song vs. Figueiredo appears in Past Events (not Upcoming) with real fight results
+- Performance Tab → all above events appear in the event list with AI picks
 
 ---
 
 ## Implementation Sequence
 
-| # | Issue | Priority | Dependency |
-|---|-------|----------|------------|
-| 1 | Fix fighter dedup — keep correct records | Critical | Do first — all data depends on clean fighters |
-| 2 | Delete fake fights, scrape real cards | Critical | After #1 |
-| 3 | Fix title fight flags | Medium | After #1 |
-| 7 | Fix numbered event dates | High | Independent — fix any time |
-| 6 | Update performance tab to UFC Freedom 250 | High | After #2 and #7 |
-| 4 | Confirm confidence threshold at 70% | Low | Already coded — verify after #2 |
-| 5 | Fix profit display (N/A short term, real odds long term) | Medium | After #2 |
+| # | Issue | Priority | Blocker |
+|---|-------|----------|---------|
+| 1 | Fix fighter photos + records | Critical | Re-run `fighters:refresh` (42 min) |
+| 2 | Upcoming events empty | Medium | Improve slug generation; announced cards auto-populate |
+| 3 | Real odds for profit stats | High | Needs odds API key / data source decision |
+| 4 | Missing 2026 events + UFC 321–328 | High | Needs Tapology access OR manual data entry |

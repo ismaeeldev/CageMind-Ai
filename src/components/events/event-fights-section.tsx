@@ -288,7 +288,7 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
               </div>
               <div className="relative w-12 h-12 rounded-full overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center shadow-lg shrink-0 order-1 md:order-2 ring-2 ring-zinc-800/50">
                 {fight.fighter1.imageUrl ? (
-                  <img src={fight.fighter1.imageUrl} alt={fight.fighter1.name} className="w-full h-full object-cover" />
+                  <img src={fight.fighter1.imageUrl} alt={fight.fighter1.name} className="w-full h-full object-cover object-top" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-400 font-black text-xs">
                     {fight.fighter1.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
@@ -343,7 +343,7 @@ function FightRow({ fight, isUpcoming, isPremium }: FightRowProps) {
             <div className="flex flex-col md:flex-row items-center md:justify-start gap-3">
               <div className="relative w-12 h-12 rounded-full overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center shadow-lg shrink-0 ring-2 ring-zinc-800/50">
                 {fight.fighter2.imageUrl ? (
-                  <img src={fight.fighter2.imageUrl} alt={fight.fighter2.name} className="w-full h-full object-cover" />
+                  <img src={fight.fighter2.imageUrl} alt={fight.fighter2.name} className="w-full h-full object-cover object-top" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-400 font-black text-xs">
                     {fight.fighter2.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}

@@ -98,9 +98,14 @@ async function FighterList({ query, page, status }: { query: string; page: numbe
                     <Badge variant="outline" className="text-[10px] font-mono tracking-widest uppercase bg-zinc-950/80 text-zinc-400 border-zinc-800 backdrop-blur-md px-2 py-0.5 shadow-sm">
                       {fighter.weightClass ? fighter.weightClass.replace('weight', '') : 'UFC'}
                     </Badge>
-                    {!fighter.isActive && (
+                    {fighter.status === "retired" && (
                       <Badge className="text-[10px] font-mono tracking-widest uppercase bg-red-950/80 text-red-400 border-red-900/40 backdrop-blur-md px-2 py-0.5 shadow-sm">
                         Retired
+                      </Badge>
+                    )}
+                    {fighter.status === "inactive" && (
+                      <Badge className="text-[10px] font-mono tracking-widest uppercase bg-zinc-900/80 text-zinc-400 border-zinc-700/40 backdrop-blur-md px-2 py-0.5 shadow-sm">
+                        Inactive
                       </Badge>
                     )}
                   </div>

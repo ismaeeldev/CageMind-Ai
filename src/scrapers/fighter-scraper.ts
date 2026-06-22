@@ -187,7 +187,8 @@ export class FighterScraper extends BaseScraper<ParsedFighter[]> {
           if (!nameEl.length) return;
 
           const name = nameEl.text().trim().replace(/\s+/g, " ");
-          const ufcId = nameEl.closest("a").attr("href") || null;
+          // The athlete link is on the back-of-card "Athlete Profile" button, not around the name span
+          const ufcId = $(el).find(".c-listing-athlete-flipcard__action a").attr("href") || null;
           
           const weightClass = $(el).find(".c-listing-athlete__title .field__item").text().trim() ||
             $(el).find(".c-listing-athlete__title").text().trim();

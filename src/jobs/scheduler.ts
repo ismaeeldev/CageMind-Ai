@@ -6,6 +6,18 @@ import { FightCardScraper } from "../scrapers/fight-card-scraper";
 import { FighterScraper } from "../scrapers/fighter-scraper";
 import { prisma } from "@/lib/db";
 
+/** UFC.com uses date-based slugs for Fight Nights, number-based for PPVs */
+function buildUfcEventUrl(eventName: string, eventDate: Date): string {
+  const numberedMatch = eventName.match(/UFC\s+(\d+)/i);
+  if (numberedMatch) return `https://www.ufc.com/event/ufc-${numberedMatch[1]}`;
+
+  // All non-PPV events use date-based slugs on UFC.com
+  const month = new Date(eventDate).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" }).toLowerCase();
+  const day = new Date(eventDate).getUTCDate();
+  const year = new Date(eventDate).getUTCFullYear();
+  return `https://www.ufc.com/event/ufc-fight-night-${month}-${day}-${year}`;
+}
+
 export class Scheduler {
   public async syncEvents() {
     await JobRunner.run("SyncEvents", async () => {
@@ -30,9 +42,7 @@ export class Scheduler {
 
       const fightCardManager = new ScraperManager();
       for (const event of eventsToSync) {
-        const match = event.name.match(/UFC\s(\d+)/i);
-        const urlSlug = match ? `ufc-${match[1]}` : event.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const eventUrl = `https://www.ufc.com/event/${urlSlug}`;
+        const eventUrl = buildUfcEventUrl(event.name, event.date);
         fightCardManager.register(new FightCardScraper(eventUrl, event.id, false));
       }
       

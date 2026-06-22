@@ -27,7 +27,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 const DRY_RUN = !process.argv.includes("--execute");
 /** UFC.com pages to scan. Each page covers roughly 4-6 events (≈2-3 months). */
-const MAX_PAGES = 30;
+const MAX_PAGES = 100;
 const DELAY_MS = 2000;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 

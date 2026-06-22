@@ -3848,6 +3848,7 @@ export namespace Prisma {
     subWins: number | null
     eloRating: number | null
     isActive: boolean | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3868,6 +3869,7 @@ export namespace Prisma {
     subWins: number | null
     eloRating: number | null
     isActive: boolean | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3888,6 +3890,7 @@ export namespace Prisma {
     subWins: number
     eloRating: number
     isActive: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3934,6 +3937,7 @@ export namespace Prisma {
     subWins?: true
     eloRating?: true
     isActive?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3954,6 +3958,7 @@ export namespace Prisma {
     subWins?: true
     eloRating?: true
     isActive?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3974,6 +3979,7 @@ export namespace Prisma {
     subWins?: true
     eloRating?: true
     isActive?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -4081,6 +4087,7 @@ export namespace Prisma {
     subWins: number
     eloRating: number
     isActive: boolean
+    status: string
     createdAt: Date
     updatedAt: Date
     _count: FighterCountAggregateOutputType | null
@@ -4120,6 +4127,7 @@ export namespace Prisma {
     subWins?: boolean
     eloRating?: boolean
     isActive?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
@@ -4144,6 +4152,7 @@ export namespace Prisma {
     subWins?: boolean
     eloRating?: boolean
     isActive?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["fighter"]>
@@ -4164,6 +4173,7 @@ export namespace Prisma {
     subWins?: boolean
     eloRating?: boolean
     isActive?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["fighter"]>
@@ -4184,11 +4194,12 @@ export namespace Prisma {
     subWins?: boolean
     eloRating?: boolean
     isActive?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ufcId" | "name" | "weightClass" | "imageUrl" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
+  export type FighterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ufcId" | "name" | "weightClass" | "imageUrl" | "age" | "height" | "reach" | "wins" | "losses" | "draws" | "koWins" | "subWins" | "eloRating" | "isActive" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["fighter"]>
   export type FighterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     fightsAsFighter1?: boolean | Fighter$fightsAsFighter1Args<ExtArgs>
     fightsAsFighter2?: boolean | Fighter$fightsAsFighter2Args<ExtArgs>
@@ -4221,6 +4232,7 @@ export namespace Prisma {
       subWins: number
       eloRating: number
       isActive: boolean
+      status: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["fighter"]>
@@ -4664,6 +4676,7 @@ export namespace Prisma {
     readonly subWins: FieldRef<"Fighter", 'Int'>
     readonly eloRating: FieldRef<"Fighter", 'Int'>
     readonly isActive: FieldRef<"Fighter", 'Boolean'>
+    readonly status: FieldRef<"Fighter", 'String'>
     readonly createdAt: FieldRef<"Fighter", 'DateTime'>
     readonly updatedAt: FieldRef<"Fighter", 'DateTime'>
   }
@@ -10839,6 +10852,7 @@ export namespace Prisma {
     subWins: 'subWins',
     eloRating: 'eloRating',
     isActive: 'isActive',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -11163,6 +11177,7 @@ export namespace Prisma {
     subWins?: IntFilter<"Fighter"> | number
     eloRating?: IntFilter<"Fighter"> | number
     isActive?: BoolFilter<"Fighter"> | boolean
+    status?: StringFilter<"Fighter"> | string
     createdAt?: DateTimeFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeFilter<"Fighter"> | Date | string
     fightsAsFighter1?: FightListRelationFilter
@@ -11186,6 +11201,7 @@ export namespace Prisma {
     subWins?: SortOrder
     eloRating?: SortOrder
     isActive?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     fightsAsFighter1?: FightOrderByRelationAggregateInput
@@ -11212,6 +11228,7 @@ export namespace Prisma {
     subWins?: IntFilter<"Fighter"> | number
     eloRating?: IntFilter<"Fighter"> | number
     isActive?: BoolFilter<"Fighter"> | boolean
+    status?: StringFilter<"Fighter"> | string
     createdAt?: DateTimeFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeFilter<"Fighter"> | Date | string
     fightsAsFighter1?: FightListRelationFilter
@@ -11235,6 +11252,7 @@ export namespace Prisma {
     subWins?: SortOrder
     eloRating?: SortOrder
     isActive?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: FighterCountOrderByAggregateInput
@@ -11263,6 +11281,7 @@ export namespace Prisma {
     subWins?: IntWithAggregatesFilter<"Fighter"> | number
     eloRating?: IntWithAggregatesFilter<"Fighter"> | number
     isActive?: BoolWithAggregatesFilter<"Fighter"> | boolean
+    status?: StringWithAggregatesFilter<"Fighter"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Fighter"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Fighter"> | Date | string
   }
@@ -11804,6 +11823,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -11827,6 +11847,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -11850,6 +11871,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -11873,6 +11895,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput
@@ -11896,6 +11919,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11916,6 +11940,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11936,6 +11961,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12604,6 +12630,7 @@ export namespace Prisma {
     subWins?: SortOrder
     eloRating?: SortOrder
     isActive?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12636,6 +12663,7 @@ export namespace Prisma {
     subWins?: SortOrder
     eloRating?: SortOrder
     isActive?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12656,6 +12684,7 @@ export namespace Prisma {
     subWins?: SortOrder
     eloRating?: SortOrder
     isActive?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14052,6 +14081,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter2?: FightCreateNestedManyWithoutFighter2Input
@@ -14074,6 +14104,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter2?: FightUncheckedCreateNestedManyWithoutFighter2Input
@@ -14101,6 +14132,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -14123,6 +14155,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -14150,6 +14183,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightCreateNestedManyWithoutFighter1Input
@@ -14172,6 +14206,7 @@ export namespace Prisma {
     subWins?: number
     eloRating?: number
     isActive?: boolean
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     fightsAsFighter1?: FightUncheckedCreateNestedManyWithoutFighter1Input
@@ -14271,6 +14306,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter2?: FightUpdateManyWithoutFighter2NestedInput
@@ -14293,6 +14329,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter2?: FightUncheckedUpdateManyWithoutFighter2NestedInput
@@ -14326,6 +14363,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -14348,6 +14386,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput
@@ -14381,6 +14420,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUpdateManyWithoutFighter1NestedInput
@@ -14403,6 +14443,7 @@ export namespace Prisma {
     subWins?: IntFieldUpdateOperationsInput | number
     eloRating?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fightsAsFighter1?: FightUncheckedUpdateManyWithoutFighter1NestedInput

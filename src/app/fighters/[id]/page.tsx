@@ -77,7 +77,7 @@ export default async function FighterDetailPage(props: {
 
           <div className="text-center md:text-right bg-muted/10 p-6 rounded-2xl border border-border/30 backdrop-blur-sm shadow-xl min-w-[220px] w-full lg:w-auto font-sans">
             <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-2">Pro Record</p>
-            <p className="text-5xl font-black font-mono tracking-tighter">
+            <p className="text-3xl font-black font-mono tracking-tighter whitespace-nowrap">
               {fighter.wins}<span className="text-muted-foreground opacity-50 mx-1">-</span>{fighter.losses}<span className="text-muted-foreground opacity-50 mx-1">-</span>{fighter.draws}
             </p>
           </div>

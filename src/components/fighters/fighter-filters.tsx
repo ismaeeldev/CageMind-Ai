@@ -26,6 +26,7 @@ export function FighterFilters() {
     <div className="flex bg-zinc-950/60 p-1 rounded-xl border border-zinc-800/80 backdrop-blur-md self-start md:self-auto shrink-0">
       {[
         { id: "active", label: "Active" },
+        { id: "inactive", label: "Inactive" },
         { id: "retired", label: "Retired" },
         { id: "all", label: "All" }
       ].map((tab) => (

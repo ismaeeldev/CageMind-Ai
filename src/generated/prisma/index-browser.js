@@ -156,6 +156,7 @@ exports.Prisma.FighterScalarFieldEnum = {
   subWins: 'subWins',
   eloRating: 'eloRating',
   isActive: 'isActive',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -16,9 +16,11 @@ export async function getFighters({
 }) {
   const statusFilter: Prisma.FighterWhereInput = {};
   if (status === "active") {
-    statusFilter.isActive = true;
+    statusFilter.status = "active";
+  } else if (status === "inactive") {
+    statusFilter.status = "inactive";
   } else if (status === "retired") {
-    statusFilter.isActive = false;
+    statusFilter.status = "retired";
   }
 
   if (!query) {

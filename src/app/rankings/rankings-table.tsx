@@ -16,6 +16,7 @@ interface Fighter {
   draws: number;
   eloRating: number;
   isActive: boolean;
+  status: string;
 }
 
 const DIVISIONS = [
@@ -38,13 +39,12 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
   const router = useRouter();
   const [activeDivision, setActiveDivision] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"active" | "retired" | "all">("active");
+  const [statusFilter, setStatusFilter] = useState<"active" | "inactive" | "retired" | "all">("active");
 
   const filteredFighters = useMemo(() => {
     return fighters.filter((f) => {
       // Status filter
-      if (statusFilter === "active" && !f.isActive) return false;
-      if (statusFilter === "retired" && f.isActive) return false;
+      if (statusFilter !== "all" && f.status !== statusFilter) return false;
 
       // Search filter
       if (searchQuery && !f.name.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -91,6 +91,12 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
               className={`flex-1 sm:w-20 px-3 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${statusFilter === "active" ? "bg-primary text-white" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               Active
+            </button>
+            <button
+              onClick={() => setStatusFilter("inactive")}
+              className={`flex-1 sm:w-20 px-3 py-1.5 rounded-md text-xs font-bold uppercase transition-colors ${statusFilter === "inactive" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            >
+              Inactive
             </button>
             <button
               onClick={() => setStatusFilter("retired")}
@@ -161,8 +167,11 @@ export function RankingsTable({ fighters }: { fighters: Fighter[] }) {
                         <div className="font-bold text-zinc-100 text-lg group-hover:text-primary transition-colors">
                           {fighter.name}
                         </div>
-                        {!fighter.isActive && (
-                          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Retired</span>
+                        {fighter.status === "retired" && (
+                          <span className="text-[10px] text-red-500 uppercase tracking-widest font-bold">Retired</span>
+                        )}
+                        {fighter.status === "inactive" && (
+                          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Inactive</span>
                         )}
                       </div>
                     </div>
