@@ -143,6 +143,7 @@
     .kpi-card.gold::before   { background: var(--gold); }
     .kpi-card.green::before  { background: var(--green); }
     .kpi-card.purple::before { background: var(--purple); }
+    .kpi-card.red::before    { background: var(--red); }
     .kpi-card label {
       display: block;
       font-size: 9px;
@@ -163,6 +164,40 @@
       color: var(--gray);
       margin-top: 5px;
     }
+
+    /* ── Status breakdown ── */
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0 24px;
+    }
+    .status-card {
+      border-radius: 8px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+    }
+    .status-card.active  { background: #f0fdf4; border-color: #86efac; }
+    .status-card.inactive { background: #f8fafc; border-color: #cbd5e1; }
+    .status-card.retired { background: #fef2f2; border-color: #fca5a5; }
+    .status-card label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .status-card.active  label { color: #16a34a; }
+    .status-card.inactive label { color: #64748b; }
+    .status-card.retired label { color: #dc2626; }
+    .status-card .value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1;
+    }
+    .status-card .sub { font-size: 10px; color: var(--gray); margin-top: 4px; }
 
     /* ── Tables ── */
     table {
@@ -214,6 +249,7 @@
     .pill-amber  { background: #fef3c7; color: #92400e; }
     .pill-red    { background: #fee2e2; color: #991b1b; }
     .pill-blue   { background: #dbeafe; color: #1e40af; }
+    .pill-gray   { background: #f1f5f9; color: #475569; }
 
     /* ── Badges ── */
     .badge {
@@ -246,6 +282,15 @@
       margin: 16px 0;
       font-size: 12.5px;
       color: #92400e;
+    }
+    .new-box {
+      background: #f0fdf4;
+      border-left: 4px solid var(--green);
+      padding: 13px 17px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 12.5px;
+      color: #065f46;
     }
 
     hr {
@@ -288,17 +333,20 @@
     <p class="cover-sub">UFC &amp; MMA Prediction Engine &mdash; Data Accuracy, Feature Status &amp; System Health</p>
     <div class="cover-meta">
       <div class="cover-meta-item"><label>Prepared For</label><span>Client Review</span></div>
-      <div class="cover-meta-item"><label>Report Date</label><span>20 June 2026</span></div>
-      <div class="cover-meta-item"><label>Version</label><span>v2.2 &mdash; Fully Resolved</span></div>
+      <div class="cover-meta-item"><label>Report Date</label><span>22 June 2026</span></div>
+      <div class="cover-meta-item"><label>Version</label><span>v2.3 &mdash; Status System Added</span></div>
       <div class="cover-meta-item"><label>Environment</label><span>Production &middot; Neon + Vercel</span></div>
     </div>
   </div>
 
   <!-- 1. Executive Summary -->
   <h2>1. Executive Summary</h2>
-  <p>CageMind AI is a full-stack UFC/MMA prediction platform combining real-time UFC.com data scraping, a custom ELO rating engine, and AI-powered fight analysis. This report documents the platform following a comprehensive data refresh completed in June 2026, covering all fighter profiles, event fight cards, ELO ratings, and prediction models.</p>
+  <p>CageMind AI is a full-stack UFC/MMA prediction platform combining real-time UFC.com data scraping, a custom ELO rating engine, and AI-powered fight analysis. This report documents the platform state as of June 2026, covering all fighter profiles, event fight cards, ELO ratings, prediction models, and the newly introduced three-state fighter status classification system.</p>
   <div class="info-box">
-    <strong>Refresh Completed:</strong> All 3,144 fighter profiles have been re-scraped from UFC.com with correct photos, career records, bio stats, and profile links. ELO ratings have been fully rebuilt from scratch across 4,139+ historical fights.
+    <strong>v2.3 Update (22 June 2026):</strong> Introduced a three-state fighter status system — <strong>Active</strong>, <strong>Inactive</strong>, and <strong>Retired</strong> — with accurate classification derived from UFC.com hero section data and 4-year fight history. Filters added to both the Fighters page and Rankings page. False-positive retired detection bug fixed.
+  </div>
+  <div class="info-box">
+    <strong>v2.2 Data Refresh (20 June 2026):</strong> Full DB re-scrape completed. All 1,962 fighter profiles re-scraped from UFC.com with correct photos, career records, bio stats, and profile links. ELO ratings fully rebuilt from scratch across 4,564+ historical fights.
   </div>
 
   <hr>
@@ -308,8 +356,8 @@
   <div class="kpi-grid">
     <div class="kpi-card gold">
       <label>Total Fighters</label>
-      <div class="value">3,144</div>
-      <div class="sub">Active &amp; Historical Roster</div>
+      <div class="value">1,962</div>
+      <div class="sub">Active, Inactive &amp; Historical</div>
     </div>
     <div class="kpi-card green">
       <label>Fight Records</label>
@@ -333,6 +381,28 @@
     </div>
   </div>
 
+  <h3>2.1 Fighter Status Breakdown</h3>
+  <div class="status-grid">
+    <div class="status-card active">
+      <label>Active</label>
+      <div class="value">983</div>
+      <div class="sub">On UFC roster + fought within 4 years</div>
+    </div>
+    <div class="status-card inactive">
+      <label>Inactive</label>
+      <div class="value">896</div>
+      <div class="sub">On roster but no recent fight or removed from listing</div>
+    </div>
+    <div class="status-card retired">
+      <label>Retired</label>
+      <div class="value">83</div>
+      <div class="sub">UFC.com hero section explicitly shows &ldquo;Retired&rdquo; tag</div>
+    </div>
+  </div>
+  <div class="new-box">
+    <strong>How Status Is Determined:</strong> The system checks each fighter's UFC.com profile hero section first. If the page explicitly says "Retired" &rarr; <strong>retired</strong>. If the page is not found (404) &rarr; <strong>inactive</strong>. If the fighter is on roster, a 4-year last-fight check determines <strong>active</strong> vs <strong>inactive</strong>. On page error, the 4-year rule is used as fallback. Only the hero section is checked &mdash; never full body text &mdash; to prevent false positives from fight history mentioning retired opponents.
+  </div>
+
   <hr>
 
   <!-- 3. Data Accuracy -->
@@ -354,6 +424,7 @@
       <tr><td>Reach</td><td><span class="pill pill-green">92%</span></td><td><span class="pill pill-green">High</span></td><td>UFC.com Bio</td><td>Stored in inches</td></tr>
       <tr><td>Weight Class</td><td><span class="pill pill-green">97%</span></td><td><span class="pill pill-green">High</span></td><td>UFC.com Athlete Listing</td><td>Current division</td></tr>
       <tr><td>UFC Profile Link</td><td><span class="pill pill-green">94%</span></td><td><span class="pill pill-green">High</span></td><td>Athletes Listing Page</td><td>829 ufcIds synced</td></tr>
+      <tr><td>Active / Inactive / Retired Status</td><td><span class="pill pill-green">100%</span></td><td><span class="pill pill-green">Very High</span></td><td>UFC.com Hero Section</td><td>Batch script + hero-section check</td></tr>
     </tbody>
   </table>
   <div class="warn-box">
@@ -385,8 +456,8 @@
     <tbody>
       <tr><td>Algorithm</td><td>Custom ELO</td><td>K-factor weighted by fight significance and title status</td></tr>
       <tr><td>Baseline Rating</td><td>1,200</td><td>Starting ELO for every new fighter</td></tr>
-      <tr><td>Fighters Rated</td><td>3,144</td><td>Full roster recalculated from scratch</td></tr>
-      <tr><td>Fights Processed</td><td>4,139+</td><td>Chronological, oldest to newest</td></tr>
+      <tr><td>Fighters Rated</td><td>1,962</td><td>Full roster recalculated from scratch</td></tr>
+      <tr><td>Fights Processed</td><td>4,564+</td><td>Chronological, oldest to newest</td></tr>
       <tr><td>Title Fight Bonus</td><td>Applied</td><td>Higher K-factor for championship bouts</td></tr>
       <tr><td>Auto Recalculate</td><td>Sundays 4:00 AM UTC</td><td>Vercel Cron &mdash; post-event processor</td></tr>
     </tbody>
@@ -426,6 +497,7 @@
       <tr><td>10</td><td>Performance / ROI Analytics (Picks)</td><td><span class="pill pill-green">&#10003; Live</span></td><td>AI picks shown</td><td>Post-event processor</td></tr>
       <tr><td>11</td><td>Performance / ROI Profit &amp; Net P&amp;L</td><td><span class="pill pill-green">&#10003; Live</span></td><td>2,085 fights with odds</td><td>BFO scraper auto-run</td></tr>
       <tr><td>12</td><td>2026 Fight Night Results</td><td><span class="pill pill-green">&#10003; Resolved</span></td><td>89 fights via ESPN API</td><td>Weekly ESPN sync</td></tr>
+      <tr style="background:#f0fdf4 !important"><td>13</td><td>Fighter Status System (Active / Inactive / Retired)</td><td><span class="pill pill-green">&#10003; New v2.3</span></td><td>UFC.com hero section</td><td>Manual: <code>fighters:update-status</code></td></tr>
     </tbody>
   </table>
 
@@ -495,15 +567,27 @@
         <td>6</td>
         <td>Performance Tab shows N/A for profits / ROI</td>
         <td>No historical betting odds in DB; all oddsFighter1/2 fields null</td>
-        <td>Built Playwright headless scraper targeting BestFightOdds.com (free, no API key). Scraped 261 events using date-based URL matching + dual rendering modes (mini-tables for recent events, synchronized column tables for historical). <strong>2,085 fights now have FanDuel moneyline odds</strong> written to DB. Performance Tab ROI/Profit auto-calculates from this data.</td>
+        <td>Built Playwright headless scraper targeting BestFightOdds.com (free, no API key). Scraped 261 events using date-based URL matching + dual rendering modes. <strong>2,085 fights now have FanDuel moneyline odds</strong> written to DB. Performance Tab ROI/Profit auto-calculates from this data.</td>
         <td><span class="pill pill-green">&#10003; Resolved</span></td>
       </tr>
       <tr>
         <td>7</td>
         <td>Missing 2026 Fight Night results (Muhammad vs Bonfim, Allen vs Costa, etc.)</td>
         <td>UFC.com does not publish fight results promptly; events exist in DB with 0 fights</td>
-        <td>Imported 89 fights across all 7 events via ESPN free public API. 87 AI predictions generated. ELO ratings rebuilt for all 3,146 fighters. All events now appear in Past Events tab with full fight cards.</td>
+        <td>Imported 89 fights across all 7 events via ESPN free public API. 87 AI predictions generated. ELO ratings rebuilt for all fighters. All events now appear in Past Events tab with full fight cards.</td>
         <td><span class="pill pill-green">&#10003; Resolved</span></td>
+      </tr>
+      <tr style="background:#f0fdf4 !important">
+        <td>8</td>
+        <td>Active/Retired filter showing wrong fighters &mdash; active fighters incorrectly marked retired</td>
+        <td>On-demand scraper checked full page body text for &ldquo;retired&rdquo; which matched fight descriptions mentioning retired opponents (false positive). Only two states existed: active/retired &mdash; no &ldquo;inactive&rdquo; state.</td>
+        <td>
+          <strong>(1) False-positive fix:</strong> Scraper now only reads the UFC.com hero section (<code>.hero-profile__division</code>, <code>.hero-profile__tag</code>) &mdash; never the full page body.<br><br>
+          <strong>(2) Three-state system added (v2.3):</strong> DB <code>status</code> field now stores <code>active</code>, <code>inactive</code>, or <code>retired</code>.<br><br>
+          <strong>Classification logic:</strong> UFC.com hero says &ldquo;Retired&rdquo; &rarr; retired. Page 404 &rarr; inactive. Page shows division + fought within 4 years &rarr; active. Page shows division + no recent fight &rarr; inactive.<br><br>
+          <strong>Result:</strong> 983 active / 896 inactive / 83 retired. Active, Inactive, and Retired filters now work correctly on Fighters page and Rankings page.
+        </td>
+        <td><span class="pill pill-green">&#10003; Resolved v2.3</span></td>
       </tr>
     </tbody>
   </table>
@@ -521,6 +605,7 @@
       <tr><td>Fight Cards</td><td>ufc.com/event/{slug}</td><td>HTML scrape</td><td>&lt; 2%</td><td>Date-slug + name-slug</td></tr>
       <tr><td>Fighter Profiles</td><td>ufc.com/athlete/{slug}</td><td>HTML scrape</td><td>&lt; 2%</td><td>Name-based slug + Unicode normalization</td></tr>
       <tr><td>Athlete Listing</td><td>ufc.com/athletes/all</td><td>HTML scrape (200 pages)</td><td>&lt; 0.5%</td><td>Fuzzy name matching</td></tr>
+      <tr><td>Fighter Status</td><td>ufc.com/athlete/{slug}</td><td>Hero-section scrape (Cheerio)</td><td>&lt; 5%</td><td>4-year last-fight fallback</td></tr>
       <tr><td>Betting Odds (Historical)</td><td>bestfightodds.com</td><td>Playwright headless scrape</td><td>&lt; 5%</td><td>Date-based event matching</td></tr>
     </tbody>
   </table>
@@ -537,10 +622,12 @@
       <tr><th>Priority</th><th>Item</th><th>Effort</th><th>Impact</th></tr>
     </thead>
     <tbody>
-      <tr><td><span class="pill pill-green">Done</span></td><td>Import 2026 Fight Night results via ESPN API (Burns vs Malott, Sterling vs Zalal, Della Maddalena vs Prates, Chimaev vs Strickland, Allen vs Costa, Song vs Figueiredo, Muhammad vs Bonfim)</td><td>&mdash;</td><td>89 fights imported, 87 AI predictions generated, ELO rebuilt</td></tr>
-      <tr><td><span class="pill pill-green">Done</span></td><td>Historical betting odds — Playwright scraper built for BestFightOdds.com (no API key, fully free). 261 events scraped, 2,085 fights updated with FanDuel moneyline odds. Performance Tab ROI now shows real data.</td><td>&mdash;</td><td>Run: <code>npm run odds:scrape-bfo</code> to refresh. Scraper in <code>src/scripts/scrape-bfo-odds.ts</code></td></tr>
+      <tr><td><span class="pill pill-green">Done</span></td><td>Import 2026 Fight Night results via ESPN API</td><td>&mdash;</td><td>89 fights imported, 87 AI predictions generated, ELO rebuilt</td></tr>
+      <tr><td><span class="pill pill-green">Done</span></td><td>Historical betting odds &mdash; BestFightOdds.com scraper. 261 events scraped, 2,085 fights updated with FanDuel moneyline odds.</td><td>&mdash;</td><td>Performance Tab ROI now shows real P&amp;L data</td></tr>
+      <tr><td><span class="pill pill-green">Done</span></td><td>Three-state fighter status system (Active / Inactive / Retired) with UFC.com hero-section classification</td><td>&mdash;</td><td>983 active, 896 inactive, 83 retired correctly classified. Filters work on Fighters + Rankings pages.</td></tr>
       <tr><td><span class="pill pill-blue">Low</span></td><td>Add UFC 321&ndash;328 event shells with correct dates</td><td>Low</td><td>Future events appear in Upcoming tab</td></tr>
       <tr><td><span class="pill pill-blue">Low</span></td><td>Increase athlete sync page depth to 300 pages</td><td>Low</td><td>Recovers ~20&ndash;30 additional fighter profile links</td></tr>
+      <tr><td><span class="pill pill-blue">Low</span></td><td>Schedule quarterly <code>fighters:update-status</code> re-run</td><td>Low</td><td>Keeps Active/Inactive/Retired status accurate as fighters retire or return</td></tr>
     </tbody>
   </table>
 
@@ -567,7 +654,7 @@
   <!-- Footer -->
   <div class="footer">
     <span>&copy; 2026 <span class="brand">CageMind AI</span> &mdash; Confidential. Not for redistribution.</span>
-    <span>Generated 20 June 2026 &middot; v2.2 All Issues Resolved</span>
+    <span>Generated 22 June 2026 &middot; v2.3 Status System Added</span>
   </div>
 
 </div>

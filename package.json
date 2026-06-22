@@ -44,7 +44,9 @@
     "odds:scrape-bfo-dry": "tsx src/scripts/scrape-bfo-odds.ts",
     "odds:scrape-bfo": "tsx src/scripts/scrape-bfo-odds.ts --execute",
     "fighters:update-status-dry": "tsx src/scripts/update-fighter-status.ts",
-    "fighters:update-status": "tsx src/scripts/update-fighter-status.ts --execute"
+    "fighters:update-status": "tsx src/scripts/update-fighter-status.ts --execute",
+    "gh:cron-daily": "tsx src/scripts/gh-cron-daily.ts",
+    "gh:cron-weekly": "tsx src/scripts/gh-cron-weekly.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
