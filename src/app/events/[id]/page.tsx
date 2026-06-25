@@ -24,7 +24,7 @@ export default async function EventPage({ params }: EventPageProps) {
     include: {
       fights: {
         take: 1,
-        orderBy: { createdAt: "asc" },
+        orderBy: { isTitleFight: "desc" },
         include: { fighter1: true, fighter2: true }
       }
     }
@@ -33,6 +33,11 @@ export default async function EventPage({ params }: EventPageProps) {
   if (!event) notFound();
 
   const mainEvent = event.fights[0];
+
+  // For free-tier teaser when no fights are in DB yet — parse fighter names from event name
+  const vsMatch = !mainEvent ? event.name.match(/^(.+?)\s+vs\.?\s+(.+)$/i) : null;
+  const teaserF1 = vsMatch?.[1]?.trim() ?? null;
+  const teaserF2 = vsMatch?.[2]?.trim().replace(/\s+(2|3|II|III|IV|V)$/i, "").trim() ?? null;
 
   return (
     <div className="min-h-screen py-10 sm:py-14 md:py-16 px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 max-w-5xl mx-auto">
@@ -67,7 +72,7 @@ export default async function EventPage({ params }: EventPageProps) {
         <div className="space-y-8">
 
           {/* Main event teaser (free) */}
-          {mainEvent && (
+          {mainEvent ? (
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
               <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Main Event</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-12">
@@ -96,7 +101,29 @@ export default async function EventPage({ params }: EventPageProps) {
                 {mainEvent.isTitleFight && " · 🏆 Title Bout"}
               </p>
             </div>
-          )}
+          ) : (teaserF1 && teaserF2) ? (
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
+              <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Main Event</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-12">
+                <div className="text-center sm:max-w-[40%]">
+                  <p className="text-xl sm:text-2xl md:text-4xl font-black uppercase tracking-tight text-white leading-tight">
+                    {teaserF1}
+                  </p>
+                </div>
+                <div className="text-zinc-600 font-black text-sm sm:text-xl uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 border border-zinc-800 rounded-xl bg-zinc-950">
+                  VS
+                </div>
+                <div className="text-center sm:max-w-[40%]">
+                  <p className="text-xl sm:text-2xl md:text-4xl font-black uppercase tracking-tight text-white leading-tight">
+                    {teaserF2}
+                  </p>
+                </div>
+              </div>
+              <p className="text-center text-xs text-zinc-600 uppercase tracking-widest font-bold mt-4">
+                Card Not Yet Announced
+              </p>
+            </div>
+          ) : null}
 
           {/* Paywall gate */}
           <div className="relative rounded-2xl overflow-hidden border border-zinc-800">

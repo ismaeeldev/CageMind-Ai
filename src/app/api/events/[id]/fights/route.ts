@@ -6,6 +6,11 @@ import { TapologyScraper } from "@/scrapers/tapology-scraper";
 
 export const maxDuration = 300;
 
+// Module-level cache: avoids re-scraping events with no published fight card on every reload.
+// Keyed by event ID. Expires after 1 hour so the app picks up newly announced cards automatically.
+const _noCardCache = new Map<string, { preview: object | null; ts: number }>();
+const CACHE_TTL = 60 * 60 * 1000;
+
 function needsImageScrape(imageUrl: string | null | undefined): boolean {
   if (!imageUrl) return true;
   const trimmed = imageUrl.trim();
@@ -79,9 +84,9 @@ export async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    // Fights already exist — update images and return real data
+    // Fights already exist — resolve any missing images and return
     if (event.fights.length > 0) {
-      await scrapeMainFighterImages(event.fights);
+      await enqueueImageScrapes(event.fights, event.isUpcoming);
       const refreshedEvent = await prisma.event.findUnique({
         where: { id },
         include: FIGHTS_INCLUDE,
@@ -92,7 +97,15 @@ export async function GET(
       });
     }
 
-    // No fights in DB yet — attempt to scrape from Tapology then UFC.com
+    // No fights in DB yet — check cache before hitting external scrapers
+    if (event.isUpcoming) {
+      const hit = _noCardCache.get(id);
+      if (hit && Date.now() - hit.ts < CACHE_TTL) {
+        return NextResponse.json({ fights: [], preview: hit.preview, isUpcoming: true });
+      }
+    }
+
+    // No cache hit — attempt to scrape from Tapology then UFC.com
     try {
       const tapologyScraper = new TapologyScraper(event.id, event.name);
       const tapologySuccess = await tapologyScraper.scrapeAndSave();
@@ -120,7 +133,7 @@ export async function GET(
       });
 
       if (refreshedEvent && refreshedEvent.fights.length > 0) {
-        await scrapeMainFighterImages(refreshedEvent.fights);
+        await enqueueImageScrapes(refreshedEvent.fights, event.isUpcoming);
         const finalEvent = await prisma.event.findUnique({
           where: { id },
           include: FIGHTS_INCLUDE,
@@ -135,41 +148,149 @@ export async function GET(
     }
 
     // Scrapers returned no data.
-    // For past events: show syncing (we'll retry). For upcoming: show "not yet announced".
-    return NextResponse.json({
-      fights: [],
-      syncing: !event.isUpcoming,
-      isUpcoming: event.isUpcoming,
-    });
+    // For upcoming events: try to resolve main fighters from the event name so the card can show images.
+    // For past events: show syncing (we'll retry).
+    if (event.isUpcoming) {
+      const preview = await buildNameBasedPreview(event.name);
+      _noCardCache.set(id, { preview, ts: Date.now() });
+      return NextResponse.json({ fights: [], preview, isUpcoming: true });
+    }
+
+    return NextResponse.json({ fights: [], syncing: true, isUpcoming: false });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-async function scrapeMainFighterImages(fights: any[]) {
-  if (fights.length === 0) return;
-  const mainFight = fights[0];
-  if (!mainFight) return;
+/**
+ * Looks up a fighter in the DB by an event-name segment like "Du Plessis", "Holloway 2", "Machado Garry".
+ * Strips trailing rematch numbers, tries full-segment contains-search first, then falls back to last word.
+ * Returns the highest-ELO match that has an image; falls back to highest-ELO if none have images.
+ */
+async function findFighterByEventNamePart(namePart: string) {
+  const cleaned = namePart.trim().replace(/\s+(2|3|II|III|IV|V)$/i, "").trim();
+  if (!cleaned || cleaned.toLowerCase() === "tbd") return null;
 
-  const promises: Promise<any>[] = [];
+  const pick = (rows: { id: string; name: string; imageUrl: string | null; wins: number | null; losses: number | null; draws: number | null; eloRating: number | null }[]) => {
+    if (rows.length === 0) return null;
+    return rows.find(f => !needsImageScrape(f.imageUrl)) ?? rows[0];
+  };
 
-  if (needsImageScrape(mainFight.fighter1?.imageUrl)) {
-    promises.push(
-      scrapeAndSaveFighter(mainFight.fighter1Id).catch((err) =>
-        console.error(`Image scrape failed for fighter1:`, err)
-      )
-    );
-  }
+  const fields = { id: true, name: true, imageUrl: true, wins: true, losses: true, draws: true, eloRating: true } as const;
 
-  if (needsImageScrape(mainFight.fighter2?.imageUrl)) {
-    promises.push(
-      scrapeAndSaveFighter(mainFight.fighter2Id).catch((err) =>
-        console.error(`Image scrape failed for fighter2:`, err)
-      )
-    );
-  }
+  // Full-segment search: finds "Du Plessis" → "Dricus Du Plessis", "Machado Garry" → "Ian Machado Garry"
+  const byFull = await prisma.fighter.findMany({
+    where: { name: { contains: cleaned, mode: "insensitive" } },
+    select: fields,
+    orderBy: { eloRating: "desc" },
+    take: 3,
+  });
+  const fromFull = pick(byFull);
+  if (fromFull) return fromFull;
 
-  if (promises.length > 0) {
-    await Promise.all(promises);
+  // Last-word fallback: "Holloway" from "Holloway", "Garry" from "Machado Garry"
+  const lastName = cleaned.split(" ").pop()!;
+  if (lastName.length < 3) return null;
+
+  const byLast = await prisma.fighter.findMany({
+    where: { name: { contains: lastName, mode: "insensitive" } },
+    select: fields,
+    orderBy: { eloRating: "desc" },
+    take: 3,
+  });
+  return pick(byLast);
+}
+
+/**
+ * Parses "Fighter1 vs Fighter2" from an event name and looks both up in the DB.
+ * Returns a preview object { fighter1, fighter2 } for use when no fight records exist yet.
+ * Returns null if the name doesn't match the pattern or either fighter is not found.
+ */
+async function buildNameBasedPreview(eventName: string) {
+  const vsMatch = eventName.match(/^(.+?)\s+vs\.?\s+(.+)$/i);
+  if (!vsMatch) return null;
+
+  const [fighter1, fighter2] = await Promise.all([
+    findFighterByEventNamePart(vsMatch[1]),
+    findFighterByEventNamePart(vsMatch[2]),
+  ]);
+
+  if (!fighter1 || !fighter2) return null;
+  return { fighter1, fighter2 };
+}
+
+/**
+ * For a fighter slot with no image, find the best matching DB record:
+ *   1. Search by name (case-insensitive) across all records
+ *   2. Prefer the record that already has a valid image
+ *   3. If none have an image, prefer the record with the most wins (real fighter, not empty duplicate)
+ *   4. Fall back to currentId if nothing better is found
+ */
+async function resolveBestFighterId(
+  currentId: string,
+  name: string,
+): Promise<string> {
+  const candidates = await prisma.fighter.findMany({
+    where: { name: { equals: name, mode: "insensitive" } },
+    select: { id: true, imageUrl: true, wins: true },
+  });
+
+  if (candidates.length === 0) return currentId;
+
+  // Prefer any record that already has a valid image
+  const withImage = candidates.find(f => !needsImageScrape(f.imageUrl));
+  if (withImage) return withImage.id;
+
+  // No image anywhere — prefer the record with most wins (more data = real fighter)
+  const sorted = [...candidates].sort((a, b) => (b.wins ?? 0) - (a.wins ?? 0));
+  const best = sorted[0];
+  return (best.wins ?? 0) > 0 ? best.id : currentId;
+}
+
+/**
+ * Processes all fights in an event sequentially (queue).
+ * Only runs for UPCOMING events.
+ * Only processes fighters that are missing an image — skips fighters that already have one.
+ * For each missing-image fighter:
+ *   1. Resolve the best matching DB record (fixes wrong-duplicate issues like Abus Magomedov)
+ *   2. If a better record is found, update the fight FK to point to it
+ *   3. Scrape UFC.com athlete page to fill in image + stats on that record
+ * Once a fighter has an image in DB, they are skipped on every subsequent request.
+ */
+async function enqueueImageScrapes(fights: any[], isUpcoming: boolean): Promise<void> {
+  if (!isUpcoming || fights.length === 0) return;
+
+  for (const fight of fights) {
+    // ── Fighter 1 ──────────────────────────────────────────────────────────
+    if (needsImageScrape(fight.fighter1?.imageUrl)) {
+      const bestId = await resolveBestFighterId(fight.fighter1Id, fight.fighter1.name);
+
+      if (bestId !== fight.fighter1Id) {
+        await prisma.fight.update({
+          where: { id: fight.id },
+          data: { fighter1Id: bestId },
+        }).catch(() => {});
+      }
+
+      await scrapeAndSaveFighter(bestId).catch(err =>
+        console.error(`[FightsAPI] Image scrape failed for ${fight.fighter1.name}:`, err)
+      );
+    }
+
+    // ── Fighter 2 ──────────────────────────────────────────────────────────
+    if (needsImageScrape(fight.fighter2?.imageUrl)) {
+      const bestId = await resolveBestFighterId(fight.fighter2Id, fight.fighter2.name);
+
+      if (bestId !== fight.fighter2Id) {
+        await prisma.fight.update({
+          where: { id: fight.id },
+          data: { fighter2Id: bestId },
+        }).catch(() => {});
+      }
+
+      await scrapeAndSaveFighter(bestId).catch(err =>
+        console.error(`[FightsAPI] Image scrape failed for ${fight.fighter2.name}:`, err)
+      );
+    }
   }
 }

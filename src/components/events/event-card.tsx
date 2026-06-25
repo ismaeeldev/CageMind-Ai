@@ -62,6 +62,14 @@ export function EventCard({ event }: { event: any }) {
             isTitleFight: fight.isTitleFight,
             weightClass: fight.weightClass,
           });
+        } else if (data.preview?.fighter1 && data.preview?.fighter2) {
+          // Card not yet announced — show main fighters found from event name
+          setMainFight({
+            fighter1: data.preview.fighter1,
+            fighter2: data.preview.fighter2,
+            isTitleFight: false,
+            weightClass: null,
+          });
         }
       } catch (err) {
         // Silently fail — card just shows TBD/initials

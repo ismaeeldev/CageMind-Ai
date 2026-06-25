@@ -17,6 +17,7 @@ interface FightRowProps {
 
 export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; isUpcoming: boolean }) {
   const [fights, setFights] = useState<any[]>([]);
+  const [preview, setPreview] = useState<{ fighter1: any; fighter2: any } | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,7 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
         const data = await res.json();
         if (active) {
           setFights(data.fights || []);
+          setPreview(data.preview ?? null);
           setSyncing(data.syncing === true && (!data.fights || data.fights.length === 0));
         }
       } catch (err: any) {
@@ -103,14 +105,60 @@ export function EventFightsSection({ eventId, isUpcoming }: { eventId: string; i
         </div>
       );
     }
+    // Upcoming with no card yet — show preview from event name if available
+    if (isUpcoming && preview) {
+      return (
+        <section className="animate-in fade-in duration-500">
+          <h2 className="text-2xl font-bold uppercase tracking-wider mb-6 border-b border-zinc-800 pb-2 text-zinc-400">
+            Fight Card & Bouts
+          </h2>
+          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/30 overflow-hidden">
+            <div className="px-6 py-3 bg-zinc-950/60 border-b border-zinc-800/40 flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Main Event</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Card Not Yet Announced</span>
+            </div>
+            <div className="p-8 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16">
+              {[preview.fighter1, preview.fighter2].map((f, i) => (
+                <div key={f.id} className="flex flex-col items-center gap-3 text-center">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-zinc-800 bg-zinc-950 shadow-xl">
+                    {f.imageUrl ? (
+                      <img src={f.imageUrl} alt={f.name} className="w-full h-full object-cover object-top" referrerPolicy="no-referrer" onError={(e) => { (e.target as HTMLImageElement).src = '/fallback_image.png'; }} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-400 font-black text-sm">
+                        {f.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xl font-black uppercase tracking-tight text-white">{f.name}</p>
+                    <p className="text-xs text-zinc-500 font-mono mt-1">{f.wins ?? 0}-{f.losses ?? 0}-{f.draws ?? 0}</p>
+                    <p className="text-[10px] text-zinc-600 font-mono">Elo: {f.eloRating ?? 'N/A'}</p>
+                  </div>
+                  {i === 0 && (
+                    <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full border border-zinc-800 bg-zinc-950 items-center justify-center text-[10px] font-black text-zinc-500">
+                      VS
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="sm:hidden text-center pb-4 text-xs font-black text-zinc-600 uppercase tracking-widest">VS</div>
+            <div className="px-6 py-3 bg-zinc-950/60 border-t border-zinc-800/40 text-center">
+              <p className="text-xs text-zinc-500">Full fight card not yet announced. Check back closer to the event date.</p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <div className="text-center py-20 text-zinc-500 border border-zinc-800 border-dashed rounded-xl bg-zinc-900/10">
         <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-2">
-          {isUpcoming ? "Bouts Not Finalized Yet" : "Results Not Yet Synced"}
+          {isUpcoming ? "Card Not Yet Announced" : "Results Not Yet Synced"}
         </h3>
         <p className="text-sm text-zinc-400">
           {isUpcoming
-            ? "The fight card for this upcoming event has not been finalized or scraped yet. Check back soon!"
+            ? "The fight card for this event hasn't been announced yet. Check back soon!"
             : "The results and bouts for this past event have not been imported or scraped yet."}
         </p>
       </div>

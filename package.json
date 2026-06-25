@@ -55,7 +55,11 @@
     "fighters:update-physical-dry": "tsx src/scripts/update-fighter-physical.ts",
     "fighters:update-physical": "tsx src/scripts/update-fighter-physical.ts --execute",
     "gh:cron-daily": "tsx src/scripts/gh-cron-daily.ts",
-    "gh:cron-weekly": "tsx src/scripts/gh-cron-weekly.ts"
+    "gh:cron-weekly": "tsx src/scripts/gh-cron-weekly.ts",
+    "events:fix-unknown-dry": "npx tsx src/scripts/fix-event-names-and-venues.ts",
+    "events:fix-unknown": "npx tsx src/scripts/fix-event-names-and-venues.ts --execute",
+    "fights:fix-main-event-dry": "npx tsx src/scripts/fix-main-event-fights.ts",
+    "fights:fix-main-event": "npx tsx src/scripts/fix-main-event-fights.ts --execute"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
