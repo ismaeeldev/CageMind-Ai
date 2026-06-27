@@ -53,8 +53,9 @@ export async function GET() {
         } else {
           profit = -100;
         }
-      } else if (!isCorrect) {
-        profit = -100; // loss is always $100 regardless of odds
+      } else {
+        // No odds in DB — use flat defaults so picks always show a number
+        profit = isCorrect ? 50 : -100;
       }
 
       return {

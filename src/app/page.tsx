@@ -219,7 +219,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
         <Container className="relative z-10 flex flex-col items-center text-center">
           <Badge variant="premium" className="mb-8 px-4 py-1.5 text-sm font-semibold tracking-widest uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            SaaS Platform Now Live
+            AI Fight Predictions · Now Live
           </Badge>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-foreground max-w-4xl mb-6 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150 fill-mode-both">
             Find Your Betting Edge with AI-Driven <span className="premium-gradient-text">MMA Analytics</span>

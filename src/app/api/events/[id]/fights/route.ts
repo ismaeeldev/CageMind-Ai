@@ -173,7 +173,14 @@ async function findFighterByEventNamePart(namePart: string) {
 
   const pick = (rows: { id: string; name: string; imageUrl: string | null; wins: number | null; losses: number | null; draws: number | null; eloRating: number | null }[]) => {
     if (rows.length === 0) return null;
-    return rows.find(f => !needsImageScrape(f.imageUrl)) ?? rows[0];
+    // Among candidates with a valid image, prefer the most experienced fighter (most wins).
+    // This prevents a lower-profile fighter with temporarily higher ELO from shadowing
+    // the real event headliner (e.g. Mohammed Usman over Kamaru Usman).
+    const withImage = rows.filter(f => !needsImageScrape(f.imageUrl));
+    if (withImage.length > 0) {
+      return withImage.sort((a, b) => (b.wins ?? 0) - (a.wins ?? 0))[0];
+    }
+    return rows[0];
   };
 
   const fields = { id: true, name: true, imageUrl: true, wins: true, losses: true, draws: true, eloRating: true } as const;
