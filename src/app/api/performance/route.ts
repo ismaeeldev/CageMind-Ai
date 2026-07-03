@@ -27,6 +27,18 @@ export async function GET() {
       orderBy: { event: { date: "asc" } },
     });
 
+    // Unit sizing based on AI confidence:
+    // <60% → 0u (no wager)  60–64.9% → 0.5u  65–69.9% → 0.75u
+    // 70–79.9% → 1u  80–89.9% → 2u  90%+ → 5u
+    function getUnits(conf: number): number {
+      if (conf >= 0.90) return 5;
+      if (conf >= 0.80) return 2;
+      if (conf >= 0.70) return 1;
+      if (conf >= 0.65) return 0.75;
+      if (conf >= 0.60) return 0.5;
+      return 0;
+    }
+
     // Grade each fight
     const gradedPicks = gradedFights.map((fight) => {
       const history = fight.predictionHistory[0];
@@ -40,22 +52,25 @@ export async function GET() {
       const confidence = history.confidence; // 0-1 scale
       const isHighConfidence = confidence >= 0.70;
 
-      // Flat $100 unit bet ROI — only calculated when real odds exist in DB.
-      // When odds are NULL we return null so the UI can show "N/A" instead of a fake number.
+      const units = getUnits(confidence);
+      const wager = units * 100; // 1u = $100
+
       const rawOdds = aiPickedFighter1 ? fight.oddsFighter1 : fight.oddsFighter2;
       const hasOdds = rawOdds !== null;
 
       let profit: number | null = null;
-      if (hasOdds) {
+      if (units === 0) {
+        profit = null; // below 60% confidence — no wager, excluded from P/L
+      } else if (hasOdds) {
         const aiOdds = rawOdds!;
         if (isCorrect) {
-          profit = aiOdds > 0 ? aiOdds : (100 / Math.abs(aiOdds)) * 100;
+          profit = aiOdds > 0 ? (wager * aiOdds / 100) : (wager * 100 / Math.abs(aiOdds));
         } else {
-          profit = -100;
+          profit = -wager;
         }
       } else {
-        // No odds in DB — use flat defaults so picks always show a number
-        profit = isCorrect ? 50 : -100;
+        // No odds — flat default scaled by units
+        profit = isCorrect ? units * 50 : -wager;
       }
 
       return {
@@ -70,14 +85,17 @@ export async function GET() {
         isCorrect,
         confidence,
         isHighConfidence,
-        profit,       // null = no odds data; number = real P/L
-        odds: rawOdds, // null when unavailable
+        units,
+        wager,
+        profit,
+        odds: rawOdds,
       };
     }).filter(Boolean) as {
       fightId: string; eventId: string; eventName: string; eventDate: Date;
       fighter1Name: string; fighter2Name: string; aiPickedFighter: string;
       actualWinner: string; isCorrect: boolean; confidence: number;
-      isHighConfidence: boolean; profit: number | null; odds: number | null;
+      isHighConfidence: boolean; units: number; wager: number;
+      profit: number | null; odds: number | null;
     }[];
 
     // ── Helper: compute aggregate stats ──────────────────────────────────
@@ -123,7 +141,7 @@ export async function GET() {
         const evtCorrect = evt.picks.filter((p) => p.isCorrect).length;
         // Only sum non-null profits (wins with real odds + all losses)
         const evtProfit = evt.picks.reduce((s, p) => p.profit !== null ? s + p.profit : s, 0);
-        const evtWager = evt.picks.reduce((s, p) => p.profit !== null ? s + 100 : s, 0);
+        const evtWager = evt.picks.reduce((s, p) => p.profit !== null ? s + p.wager : s, 0);
 
         const rawROI = evtWager > 0 ? (evtProfit / evtWager) * 100 : 0;
         const evtROI = isNaN(rawROI) ? 0 : rawROI;
@@ -153,7 +171,7 @@ export async function GET() {
 
       const totalCorrect = picks.filter((p) => p.isCorrect).length;
       const totalProfit = picksWithOdds.reduce((s, p) => s + p.profit!, 0);
-      const totalWager = picksWithOdds.reduce((s, p) => s + 100, 0);
+      const totalWager = picksWithOdds.reduce((s, p) => s + p.wager, 0);
 
       const rawAccuracy = picks.length > 0 ? (totalCorrect / picks.length) * 100 : 0;
 

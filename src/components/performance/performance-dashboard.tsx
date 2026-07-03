@@ -131,14 +131,14 @@ function StatsPanel({ stats }: { stats: Stats }) {
         <KpiCard
           label="Simulated ROI"
           value={safeRoi === null ? "N/A" : `${safeRoi >= 0 ? "+" : ""}${safeRoi}%`}
-          sub={safeRoi === null ? "no odds data" : "flat $100/bet"}
+          sub={safeRoi === null ? "no odds data" : "confidence-scaled units"}
           icon={TrendingUp}
           color={safeRoi === null ? "bg-zinc-700 text-zinc-500" : safeRoi >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
         <KpiCard
           label="Net P/L"
           value={safeTotalProfit === null ? "N/A" : `${safeTotalProfit >= 0 ? "+$" : "-$"}${Math.abs(safeTotalProfit).toFixed(0)}`}
-          sub={safeTotalProfit === null ? "no odds data" : "on $100 flat units"}
+          sub={safeTotalProfit === null ? "no odds data" : "unit-scaled bets (1u=$100)"}
           icon={DollarSign}
           color={safeTotalProfit === null ? "bg-zinc-700 text-zinc-500" : safeTotalProfit >= 0 ? "bg-emerald-500 text-emerald-400" : "bg-red-500 text-red-400"}
         />
